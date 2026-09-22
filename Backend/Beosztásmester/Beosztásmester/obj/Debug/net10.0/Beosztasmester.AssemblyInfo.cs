@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Beosztasmester")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+49c68092cfa5102c6e364dfba04197038ba55ed7")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+daf00146267876363190a71746e79baaa98dc83a")]
 [assembly: System.Reflection.AssemblyProductAttribute("Beosztasmester")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Beosztasmester")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
