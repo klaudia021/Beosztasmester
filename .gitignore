@@ -1,0 +1,72 @@
+## .NET / Visual Studio / Rider
+bin/
+obj/
+out/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+.vscode/
+*.rider.iml
+.idea/
+
+## Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+build/
+bld/
+[Bb]in/
+[Oo]bj/
+
+## Publish / deployment
+*.pubxml
+*.publishproj
+PublishScripts/
+publish/
+
+## EF Core
+*.efmigrationslock
+
+## Test / coverage results
+[Tt]est[Rr]esult*/
+*.trx
+*.coverage
+*.coveragexml
+coverage/
+TestResults/
+
+## NuGet
+*.nupkg
+*.snupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+*.nuget.props
+*.nuget.targets
+
+## Logs
+*.log
+logs/
+
+## User-specific / secrets
+appsettings.Development.json
+appsettings.*.local.json
+*.env
+.env
+.env.*
+!.env.example
+secrets.json
+
+## Docker
+docker-compose.override.yml
+
+## OS junk
+.DS_Store
+Thumbs.db
+
+## Misc
+*.tmp
+*.bak
+*.swp
