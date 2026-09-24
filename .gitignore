@@ -1,72 +1,122 @@
-## .NET / Visual Studio / Rider
+##############################
+# OS / Editor
+##############################
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+!.vscode/extensions.json
+
+##############################
+# .NET (Backend)
+##############################
 bin/
 obj/
 out/
 *.user
-*.suo
 *.userosscache
-*.sln.docstates
-.vs/
-.vscode/
-*.rider.iml
-.idea/
-
-## Build results
-[Dd]ebug/
-[Rr]elease/
-x64/
-x86/
-build/
-bld/
-[Bb]in/
-[Oo]bj/
-
-## Publish / deployment
-*.pubxml
-*.publishproj
-PublishScripts/
-publish/
-
-## EF Core
-*.efmigrationslock
-
-## Test / coverage results
-[Tt]est[Rr]esult*/
-*.trx
-*.coverage
-*.coveragexml
-coverage/
-TestResults/
-
-## NuGet
+*.suo
+*.userprefs
+*.dbmdl
+*.pdb
+*.cache
 *.nupkg
 *.snupkg
-**/[Pp]ackages/*
-!**/[Pp]ackages/build/
-*.nuget.props
-*.nuget.targets
+project.lock.json
+project.fragment.lock.json
+artifacts/
+.vs/
+TestResults/
+*.trx
+*.VisualState.xml
+*_i.c
+*_p.c
+*.tlog
+*.ilk
+*.meta
+*.obj
+*.iobj
+*.pch
+*.ipdb
+*.pgc
+*.pgd
+*.rsp
+*.sbr
+*.tlb
+*.tli
+*.tlh
+*.tmp
+*.tmp_proj
+*.vspscc
+*.vssscc
+*_h.h
+launchSettings.json
 
-## Logs
+##############################
+# Angular / Node (Frontend)
+##############################
+node_modules/
+dist/
+tmp/
+out-tsc/
+bazel-out/
+.angular/
+.angular/cache/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+package-lock.json.bak
+*.tsbuildinfo
+.env
+.env.local
+.env.*.local
+
+##############################
+# Python
+##############################
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.coverage
+.coverage.*
+htmlcov/
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+Pipfile.lock
+poetry.lock
+.python-version
+
+##############################
+# Logs / Misc
+##############################
 *.log
 logs/
-
-## User-specific / secrets
-appsettings.Development.json
-appsettings.*.local.json
-*.env
-.env
-.env.*
-!.env.example
-secrets.json
-
-## Docker
-docker-compose.override.yml
-
-## OS junk
-.DS_Store
-Thumbs.db
-
-## Misc
-*.tmp
 *.bak
-*.swp
+*.orig
