@@ -7,7 +7,7 @@ namespace Beosztásmester
     {
         public static void Main(string[] args)
         {
-            var builder = WebApplication.CreateBuilder(args);
+            var builer = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
 
