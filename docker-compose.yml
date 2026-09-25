@@ -1,24 +1,41 @@
 services:
-  server:
-    build:
-      context: .\Backend\Beosztásmester\Beosztásmester
-    ports:
-      - "8080:8080"
-    environment:
-      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=mydatabase;Username=postgres;Password=mypassword"
-    depends_on:
-      - postgres
-
   postgres:
     image: postgres:17
     environment:
-      POSTGRES_DB: Database
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: ${POSTGRES_DB:-mydatabase}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mypassword}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-mydatabase}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  migrator:
+    build:
+      context: ./Backend/Beosztásmester/Beosztásmester
+      target: build
+    environment:
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=${POSTGRES_DB:-mydatabase};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-mypassword}"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    entrypoint: ["dotnet", "ef", "database", "update"]
+
+  server:
+    build:
+      context: ./Backend/Beosztásmester/Beosztásmester
+    ports:
+      - "8080:8080"
+    environment:
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=${POSTGRES_DB:-mydatabase};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-mypassword}"
+    depends_on:
+      migrator:
+        condition: service_completed_successfully
 
 volumes:
   postgres_data:

@@ -7,6 +7,10 @@ COPY . .
 RUN dotnet restore
 RUN dotnet publish -c Release -o /app/publish --no-restore
 
+# Install dotnet-ef so this stage can run migrations (used by the "migrator" compose service)
+RUN dotnet tool install --global dotnet-ef
+ENV PATH="$PATH:/root/.dotnet/tools"
+
 FROM mcr.microsoft.com/dotnet/aspnet:10.0
 
 WORKDIR /app
