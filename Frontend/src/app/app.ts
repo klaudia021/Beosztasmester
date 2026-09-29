@@ -1,12 +1,14 @@
 import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { JobTrigger } from './job-trigger/job-trigger';
 
 @Component({
-  imports: [RouterOutlet],
+  imports: [JobTrigger],
   selector: 'app-root',
   styleUrl: './app.css',
   templateUrl: './app.html',
 })
 export class App {
   protected readonly title = signal('Frontend');
+
+  
 }
