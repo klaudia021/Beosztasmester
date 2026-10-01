@@ -6,21 +6,21 @@ namespace Beosztasmester.Models.Data
     public class Demand
     {
         [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
-        public int Organizational_Unit_Id { get; set; }
+        public Guid Department_Id { get; set; }
 
-        [ForeignKey(nameof(Organizational_Unit_Id))]
-        public Organizational_Unit Organizational_Unit { get; set; } = null!;
+        [ForeignKey(nameof(Department_Id))]
+        public Department Department { get; set; } = null!;
 
         public DateTime Date { get; set; }
 
-        public int Shift_Type_Id { get; set; }
+        public Guid Shift_Type_Id { get; set; }
 
         [ForeignKey(nameof(Shift_Type_Id))]
         public Shift_Type ShiftType { get; set; } = null!;
 
-        public int? Competency_Id { get; set; }
+        public Guid? Competency_Id { get; set; }
 
         [ForeignKey(nameof(Competency_Id))]
         public Competency? Competency { get; set; }

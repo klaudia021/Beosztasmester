@@ -6,10 +6,10 @@ namespace Beosztasmester.Models.Data
     public class Rule
     {
         [Key] 
-        public int Id { get; set; }
-        public int Organizational_Unit_Id { get; set; }
-        [ForeignKey(nameof(Organizational_Unit_Id))]
-        public Organizational_Unit Organizational_Unit { get; set; }
+        public Guid Id { get; set; }
+        public Guid Department_Id { get; set; }
+        [ForeignKey(nameof(Department_Id))]
+        public Department Department { get; set; }
         public string Type_Code { get; set; }
         public string Scope { get; set; }
         public string? Scope_Ref { get; set; }
