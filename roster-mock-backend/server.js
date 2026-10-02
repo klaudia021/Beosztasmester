@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const app = express();
+const { generateDummyRoster } = require('./dummy-data');
 
 app.use(cors());
 app.use(express.json());
@@ -8,16 +9,29 @@ app.use(express.json());
 const runs = {};
 let counter = 0;
 
-app.post('/solve', (req, res) => {
+let horizonCounter = 0;
+
+app.post('/api/horizons', (req, res) => {
+  const id = ++horizonCounter;
+
+  console.log(`Horizon ${id} created`);
+  
+  res.status(201).json({
+    id,
+    orgUnitId: req.body.orgUnitId,
+    start: req.body.start,
+    end: req.body.end,
+    status: 'DRAFT'
+  });
+});
+
+app.post('/api/solve', (req, res) => {
   const runId = 'run-' + (++counter);
   console.log(`[${runId}] Request received — starting fake solve`);
 
   runs[runId] = {
     status: 'RUNNING',
-    roster: [
-      { employeeId: 'E001', date: '2026-03-01', shiftType: 'D' },
-      { employeeId: 'E002', date: '2026-03-01', shiftType: 'N' }
-    ]
+    roster: generateDummyRoster()
   };
 
   res.json({ runId });
@@ -28,7 +42,7 @@ app.post('/solve', (req, res) => {
   }, 5000);
 });
 
-app.get('/status/:id', (req, res) => {
+app.get('/api/status/:id', (req, res) => {
   const run = runs[req.params.id];
   if (!run) {
     return res.status(404).json({ error: 'not found' });

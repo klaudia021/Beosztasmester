@@ -1,6 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { interval, switchMap, takeWhile } from 'rxjs';
+import { environment } from '../environments/environment';
 
 interface StatusResponse {
   status: 'QUEUED' | 'RUNNING' | 'DONE';
@@ -19,7 +20,7 @@ export class SolverService {
 
         interval(1500)
             .pipe(
-                switchMap(() => this.http.get<StatusResponse>(`http://localhost:3000/status/${runId}`)),
+                switchMap(() => this.http.get<StatusResponse>(`${environment.apiUrl}/api/status/${runId}`)),
                 takeWhile(res => res.status !== 'DONE', true)
             )
             .subscribe(res => {
@@ -31,5 +32,11 @@ export class SolverService {
                     this.roster.set(res.roster);
                 }
             });
+    }
+
+    createHorizon(orgUnitId: number, start: string, end: string) {
+        return this.http.post<{ id: number }>(`${ environment.apiUrl }/api/horizons`, {
+            orgUnitId, start, end
+        });
     }
 }
