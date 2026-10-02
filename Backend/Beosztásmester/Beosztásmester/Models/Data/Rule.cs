@@ -12,7 +12,7 @@ namespace Beosztasmester.Models.Data
         public Department Department { get; set; }
         public string Type_Code { get; set; }
         public string Scope { get; set; }
-        public string? Scope_Ref { get; set; }
+        public Guid? Scope_Ref_Id { get; set; }
         public bool Is_Hard { get; set; }
         public int Weight { get; set; }
         [Column(TypeName = "jsonb")]

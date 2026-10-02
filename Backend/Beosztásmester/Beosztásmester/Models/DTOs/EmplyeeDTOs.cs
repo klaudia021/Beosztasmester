@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Beosztasmester.Models.DTOs
-{
+namespace Beosztasmester.Models.DTOs;
+
     public class EmployeeDto
     {
         public Guid Id { get; set; }
@@ -39,4 +39,22 @@ namespace Beosztasmester.Models.DTOs
         public DateTime? Exit_Date { get; set; }
         public List<Guid> SkillIds { get; set; } = new();
     }
+
+//import
+public class EmployeeImportRowDto
+{
+    public int RowNumber { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public int ContractHours { get; set; }
+    public string SkillsCsv { get; set; } = string.Empty;
+    public bool IsValid { get; set; }
+    public List<string> ValidationErrors { get; set; } = new();
+}
+
+public class EmployeeImportPreviewDto
+{
+    public int TotalRows { get; set; }
+    public int ValidRowsCount { get; set; }
+    public int InvalidRowsCount { get; set; }
+    public List<EmployeeImportRowDto> Rows { get; set; } = new();
 }
