@@ -1,0 +1,22 @@
+[project]
+name = "beosztasmester-solver"
+version = "0.1.0"
+requires-python = ">=3.14"
+
+dependencies = [
+    "fastapi==0.142.2",
+    "uvicorn==0.54.0",
+]
+
+[tool.beosztasmester]
+config-revision = "20261005-0002"
+
+[project.optional-dependencies]
+dev = [
+    "pytest==9.1.1",
+    "ruff==0.16.10",
+    "mypy==2.4.0",
+
+    # Required by FastAPI/Starlette TestClient
+    "httpx2==2.13.1",
+]
