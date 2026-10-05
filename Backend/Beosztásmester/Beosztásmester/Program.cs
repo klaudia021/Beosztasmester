@@ -19,6 +19,10 @@ namespace Beosztásmester
             builder.Services.AddScoped<IMasterDataService, MasterDataService>();
             builder.Services.AddScoped<IRulesService, RulesService>();
 
+            builder.Services.AddScoped<IRequestsService, RequestsService>();
+            builder.Services.AddScoped<IUnavailabilitiesService, UnavailabilitiesService>();
+
+            builder.Services.AddScoped<IIntegrationService, IntegrationService>();
 
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
