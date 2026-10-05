@@ -10,3 +10,10 @@ def test_health() -> None:
 
     assert response.status_code == 200
     assert response.json() == {"status": "ok"}
+
+
+def test_solve() -> None:
+    response = client.post("/solve")
+
+    assert response.status_code == 200
+    assert response.json() == {"status": "accepted"}
