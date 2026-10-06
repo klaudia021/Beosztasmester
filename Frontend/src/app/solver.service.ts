@@ -10,7 +10,7 @@ interface StatusResponse {
 
 @Injectable({ providedIn: 'root' })
 export class SolverService {
-  private http = inject(HttpClient); // same pattern as constructor injection in .NET, just different syntax
+  private http = inject(HttpClient);
 
   status = signal<string>('idle');
   roster = signal<any[] | null>(null);

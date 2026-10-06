@@ -21,7 +21,7 @@ export class JobTrigger {
       next: horizon => {
         console.log('Horizon created:', horizon.id);
         
-        this.http.post<{ runId: string }>(`${ environment.apiUrl }/api/solve`, {})
+        this.http.post<{ runId: string }>(`${environment.apiUrl}/api/horizons/${horizon.id}/solve`, {})
           .subscribe({
             next: response => this.solver.startPolling(response.runId),
             error: err => console.error('Solve failed:', err)

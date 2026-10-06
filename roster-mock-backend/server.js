@@ -25,12 +25,15 @@ app.post('/api/horizons', (req, res) => {
   });
 });
 
-app.post('/api/solve', (req, res) => {
+app.post('/api/horizons/:horizonId/solve', (req, res) => {
+  const horizonId = req.params.horizonId;
   const runId = 'run-' + (++counter);
-  console.log(`[${runId}] Request received — starting fake solve`);
+
+  console.log(`[${runId}] Solving for horizon ${horizonId}`);
 
   runs[runId] = {
     status: 'RUNNING',
+    horizonId,
     roster: generateDummyRoster()
   };
 
