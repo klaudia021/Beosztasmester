@@ -37,5 +37,12 @@ services:
       migrator:
         condition: service_completed_successfully
 
+  solver:
+    image: beosztasmester-solver:dev
+    build:
+      context: ./Solver
+    ports:
+      - "8000:8000"
+
 volumes:
   postgres_data:
