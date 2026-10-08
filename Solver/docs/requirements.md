@@ -112,6 +112,31 @@ THE Solver service SHALL terminate the run and preserve the best available resul
 together with available solution-quality information.
 
 
+### F04.SOLV.0005 — Run lifecycle ownership
+
+**Status:** draft
+**Parent:** F04
+**Predecessor:** N/A
+**Successor:** N/A
+**Source:** Beosztásmester specification, F4
+**Verification:** Solver / integration test
+
+THE SolverRun object SHALL own its lifecycle state machine and expose the current run state through a read-only interface.
+
+
+### F04.SOLV.0006 — Run timestamps
+
+**Status:** draft
+**Parent:** F04
+**Predecessor:** N/A
+**Successor:** N/A
+**Source:** Beosztásmester specification, F4
+**Verification:** Solver / integration test
+
+THE SolverRun object SHALL record the acceptance timestamp at creation
+ and the execution start timestamp upon a successful transition to RUNNING.
+
+
 ---
 
 
