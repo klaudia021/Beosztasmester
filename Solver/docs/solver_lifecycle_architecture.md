@@ -65,7 +65,7 @@ flowchart TB
 
 
 ```mermaid
-flowchart LR
+flowchart TD
     CTRL["Control / API"]
     MD["Run model / registry"]
     ENG["Optimization engine"]

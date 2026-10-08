@@ -137,6 +137,20 @@ THE SolverRun object SHALL record the acceptance timestamp at creation
  and the execution start timestamp upon a successful transition to RUNNING.
 
 
+### F04.SOLV.0007 — Run registration and immediate visibility
+
+**Status:** draft  
+**Parent:** F04  
+**Predecessor:** N/A  
+**Successor:** N/A  
+**Source:** Beosztásmester specification, F4  
+**Verification:** Solver / integration test
+
+WHEN the Solver service successfully accepts a run request,
+THE Solver service SHALL register the run before returning its identifier
+and SHALL make the run immediately queryable by that identifier.
+
+
 ---
 
 
@@ -167,6 +181,38 @@ THE Solver service SHALL terminate the run with an infeasible result state.
 WHEN a Solver run terminates as infeasible,
 THE Solver service SHALL provide information identifying a minimal or otherwise
 narrow conflicting set of hard constraints suitable for human-readable explanation.
+
+
+---
+
+
+## D06 — Concurrent Solver execution
+
+### D06.SOLV.0001 — Exclusive lifecycle ownership
+
+**Status:** draft  
+**Parent:** D6  
+**Predecessor:** N/A  
+**Successor:** N/A  
+**Source:** Beosztásmester specification, D6 (F4 / Decision Point 2)  
+**Verification:** Architecture review / integration test
+
+THE SolverRunner SHALL exclusively own the SolverRun instances
+and SHALL NOT expose mutable SolverRun references to external components.
+
+
+### D06.SOLV.0002 — Concurrent lifecycle consistency
+
+**Status:** draft  
+**Parent:** D6  
+**Predecessor:** N/A  
+**Successor:** N/A  
+**Source:** Beosztásmester specification, D6 (F4 / Decision Point 2)  
+**Verification:** Solver / concurrency test
+
+WHEN concurrent events affect the same Solver run,
+THE Solver service SHALL serialize lifecycle modifications
+and preserve valid state transitions and consistent timestamps.
 
 
 ---
