@@ -10,6 +10,7 @@ class SolverRun:
         self._state_machine = SolverRunStateMachine()
         self._accepted_at = datetime.now(timezone.utc)
         self._started_at: datetime | None = None
+        self._finished_at: datetime | None = None
 
     @property
     def run_id(self) -> str:
@@ -27,6 +28,14 @@ class SolverRun:
     def started_at(self) -> datetime | None:
         return self._started_at
 
+    @property
+    def finished_at(self) -> datetime | None:
+        return self._finished_at
+
     def start(self) -> None:
         self._state_machine.start()
         self._started_at = datetime.now(timezone.utc)
+
+    def complete(self) -> None:
+        self._state_machine.complete()
+        self._finished_at = datetime.now(timezone.utc)
