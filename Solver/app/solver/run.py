@@ -1,3 +1,4 @@
+from collections.abc import Callable
 from datetime import datetime, timezone
 
 from app.solver.state_machine import SolverRunStateMachine
@@ -32,10 +33,25 @@ class SolverRun:
     def finished_at(self) -> datetime | None:
         return self._finished_at
 
+    def _finish(self, transition: Callable[[], None]) -> None:
+        transition()
+        self._finished_at = datetime.now(timezone.utc)
+
     def start(self) -> None:
         self._state_machine.start()
         self._started_at = datetime.now(timezone.utc)
 
     def complete(self) -> None:
-        self._state_machine.complete()
-        self._finished_at = datetime.now(timezone.utc)
+        self._finish(self._state_machine.complete)
+
+    def cancel(self) -> None:
+        self._finish(self._state_machine.cancel)
+
+    def time_limit_reached(self) -> None:
+        self._finish(self._state_machine.time_limit_reached)
+
+    def infeasibility_proven(self) -> None:
+        self._finish(self._state_machine.infeasibility_proven)
+
+    def fail(self) -> None:
+        self._finish(self._state_machine.fail)

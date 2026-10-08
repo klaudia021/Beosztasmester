@@ -100,3 +100,47 @@ def test_accepted_run_cannot_complete() -> None:
 
     assert run.state is SolverRunState.ACCEPTED
     assert run.finished_at is None
+
+
+@pytest.mark.parametrize(
+    ("method_name", "expected_state"),
+    [
+        ("cancel", SolverRunState.CANCELLED),
+        ("time_limit_reached", SolverRunState.TIMED_OUT),
+        ("infeasibility_proven", SolverRunState.INFEASIBLE),
+        ("fail", SolverRunState.FAILED),
+    ],
+)
+def test_terminal_transition_records_finished_at(
+    method_name: str,
+    expected_state: SolverRunState,
+) -> None:
+    run = SolverRun("run-001")
+    run.start()
+
+    getattr(run, method_name)()
+
+    assert run.state is expected_state
+    assert run.finished_at is not None
+    assert run.started_at is not None
+    assert run.started_at <= run.finished_at
+
+
+@pytest.mark.parametrize(
+    "method_name",
+    [
+        "cancel",
+        "time_limit_reached",
+        "infeasibility_proven",
+        "fail",
+    ],
+)
+def test_accepted_run_cannot_finish(method_name: str) -> None:
+    run = SolverRun("run-001")
+
+    with pytest.raises(InvalidStateTransitionError):
+        getattr(run, method_name)()
+
+    assert run.state is SolverRunState.ACCEPTED
+    assert run.started_at is None
+    assert run.finished_at is None
