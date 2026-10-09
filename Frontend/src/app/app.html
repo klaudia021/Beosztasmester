@@ -1,2 +1,26 @@
-<app-job-trigger></app-job-trigger>
-<app-roster-grid [roster]="solver.roster"></app-roster-grid>
+<div class="shell">
+    <aside class="sidebar">
+        <a class="brand" routerLink="/roster">Roster Manager</a>
+
+        <nav class="nav">
+            <div class="nav-group">
+                <p class="nav-heading">Planning</p>
+                <a routerLink="/roster" routerLinkActive="active">Roster</a>
+            </div>
+
+            @for (entity of entities; track entity.key) {
+            <div class="nav-group">
+                <p class="nav-heading">{{ entity.title }}</p>
+                <a [routerLink]="['/', entity.key]" routerLinkActive="active"
+                    [routerLinkActiveOptions]="{ exact: true }">List</a>
+                <a [routerLink]="['/', entity.key, 'new']" routerLinkActive="active"
+                    [routerLinkActiveOptions]="{ exact: true }">New</a>
+            </div>
+            }
+        </nav>
+    </aside>
+
+    <main class="content">
+        <router-outlet />
+    </main>
+</div>
