@@ -18,10 +18,16 @@ export class JobTrigger {
 
         this.rosterService.solve(horizon.id).subscribe({
           next: response => this.rosterService.startPolling(response.runId),
-          error: err => console.error('Solve failed:', err)
+          error: err => {
+            console.error('Solve failed:', err);
+            this.rosterService.status.set('FAILED');
+          }
         });
       },
-      error: err => console.error('Horizon creation failed:', err)
+      error: err => {
+        console.error('Horizon creation failed:', err);
+        this.rosterService.status.set('FAILED');
+      }
     });
   }
 }

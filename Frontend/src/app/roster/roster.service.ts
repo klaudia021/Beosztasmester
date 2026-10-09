@@ -23,13 +23,18 @@ export class RosterService {
                 switchMap(() => this.http.get<StatusResponse>(`${environment.apiUrl}/api/status/${runId}`)),
                 takeWhile(res => res.status !== 'DONE', true)
             )
-            .subscribe(res => {
-                console.log(`Poll response:`, res.status);
-
-                this.status.set(res.status);
-                if (res.status === 'DONE' && res.roster) {
-                    console.log('Roster received:', res.roster);
-                    this.roster.set(res.roster);
+            .subscribe({
+                next: res => {
+                    console.log('Poll response:', res.status);
+                    this.status.set(res.status);
+                    if (res.status === 'DONE' && res.roster) {
+                        console.log('Roster received:', res.roster);
+                        this.roster.set(res.roster);
+                    }
+                },
+                error: err => {
+                    console.error('Polling failed:', err);
+                    this.status.set('FAILED');
                 }
             });
     }
