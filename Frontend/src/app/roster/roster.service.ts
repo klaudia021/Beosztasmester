@@ -1,7 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { interval, switchMap, takeWhile } from 'rxjs';
-import { environment } from '../environments/environment';
+import { environment } from '../../environments/environment';
 
 interface StatusResponse {
   status: 'QUEUED' | 'RUNNING' | 'DONE';
@@ -9,7 +9,7 @@ interface StatusResponse {
 }
 
 @Injectable({ providedIn: 'root' })
-export class SolverService {
+export class RosterService {
   private http = inject(HttpClient);
 
   status = signal<string>('idle');
@@ -38,5 +38,9 @@ export class SolverService {
         return this.http.post<{ id: number }>(`${ environment.apiUrl }/api/horizons`, {
             orgUnitId, start, end
         });
+    }
+
+    solve(horizonId: number) {
+        return this.http.post<{ runId: string }>(`${environment.apiUrl}/api/horizons/${horizonId}/solve`, {});
     }
 }
