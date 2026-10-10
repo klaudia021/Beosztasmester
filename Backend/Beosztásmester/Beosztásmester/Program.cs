@@ -1,4 +1,5 @@
 using Beosztasmester.Model;
+using Beosztasmester.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Beosztásmester
@@ -12,8 +13,25 @@ namespace Beosztásmester
             // Add services to the container.
 
             builder.Services.AddControllers();
+
+
+            builder.Services.AddScoped<IEmployeeService, EmployeesService>();
+            builder.Services.AddScoped<IMasterDataService, MasterDataService>();
+            builder.Services.AddScoped<IRulesService, RulesService>();
+
+            builder.Services.AddScoped<IRequestsService, RequestsService>();
+            builder.Services.AddScoped<IUnavailabilitiesService, UnavailabilitiesService>();
+
+            builder.Services.AddScoped<IIntegrationService, IntegrationService>();
+
+            builder.Services.AddScoped<IDemandsService, DemandsService>();
+            builder.Services.AddScoped<IHorizonsService, HorizonsService>();
+            builder.Services.AddScoped<IRostersService, RostersService>();
+
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
 
             builder.Services.AddDbContext<DataContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
@@ -25,6 +43,9 @@ namespace Beosztásmester
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
+                app.UseSwagger();
+
+                app.UseSwaggerUI();
             }
 
             app.UseHttpsRedirection();

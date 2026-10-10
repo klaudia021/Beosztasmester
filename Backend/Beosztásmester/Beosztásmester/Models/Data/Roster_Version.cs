@@ -6,8 +6,8 @@ namespace Beosztasmester.Models.Data
     public class Roster_Version
     {
         [Key]
-        public int Id { get; set; }
-        public int Horizon_Id { get; set; }
+        public Guid Id { get; set; }
+        public Guid Horizon_Id { get; set; }
         [ForeignKey(nameof(Horizon_Id))]
         public Horizon Horizon { get; set; }
         public int Version_Number { get; set; }
