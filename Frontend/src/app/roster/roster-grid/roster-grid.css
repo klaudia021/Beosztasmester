@@ -1,0 +1,17 @@
+::ng-deep .shift-day {
+    background-color: #fff3cd;
+}
+
+::ng-deep .shift-afternoon {
+    background-color: #cfe2ff;
+}
+
+::ng-deep .shift-night {
+    background-color: #333;
+    color: white;
+}
+
+::ng-deep .shift-off {
+    background-color: #f0f0f0;
+    color: #888;
+}
