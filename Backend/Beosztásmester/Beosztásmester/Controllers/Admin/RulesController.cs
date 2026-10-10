@@ -7,7 +7,7 @@ namespace Beosztasmester.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RulesController : Controller
+    public class RulesController : ControllerBase
     {
         private readonly IRulesService _rulesService;
 

@@ -41,7 +41,7 @@ public class RequestsService: IRequestsService
         return await query.Select(r => new EmployeeRequestDto
         {
             Id = r.Id,
-            EmployeeId = r.Employee_Id,
+            Employee_Id = r.Employee_Id,
             Date = r.Date,
             Type = r.Type,
             Preferred_Shift_Type_Id = r.Shift_Type_Id,
@@ -58,7 +58,7 @@ public class RequestsService: IRequestsService
         return new EmployeeRequestDto
         {
             Id = request.Id,
-            EmployeeId = request.Employee_Id,
+            Employee_Id = request.Employee_Id,
             Date = request.Date,
             Type = request.Type,
             Preferred_Shift_Type_Id = request.Shift_Type_Id,
@@ -72,7 +72,7 @@ public class RequestsService: IRequestsService
         var request = new Request
         {
             Id = Guid.NewGuid(),
-            Employee_Id = dto.EmployeeId,
+            Employee_Id = dto.Employee_Id,
             Date = DateTime.SpecifyKind(dto.Date, DateTimeKind.Utc),
             Type = dto.Type, // e.g. "DAY_OFF", "SHIFT_PREFERENCE"
             Shift_Type_Id = dto.Preferred_Shift_Type_Id,
@@ -86,7 +86,7 @@ public class RequestsService: IRequestsService
         return new EmployeeRequestDto
         {
             Id = request.Id,
-            EmployeeId = request.Employee_Id,
+            Employee_Id = request.Employee_Id,
             Date = request.Date,
             Type = request.Type,
             Preferred_Shift_Type_Id = request.Shift_Type_Id,

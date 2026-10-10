@@ -3,26 +3,26 @@
 public class AssignmentDto
 {
     public Guid Id { get; set; }
-    public Guid RosterVersionId { get; set; }
-    public Guid EmployeeId { get; set; }
+    public Guid Roster_Version_Id { get; set; }
+    public Guid Employee_Id { get; set; }
     public DateTime Date { get; set; }
-    public Guid ShiftTypeId { get; set; }
+    public Guid Shift_Type_Id { get; set; }
     public bool IsLocked { get; set; }
 }
 
 public class PatchAssignmentDto
 {
-    public Guid EmployeeId { get; set; }
+    public Guid Employee_Id { get; set; }
     public DateTime Date { get; set; }
-    public Guid? ShiftTypeId { get; set; } // null = törlés
+    public Guid? Shift_Type_Id { get; set; } // null = törlés
     public bool IsLocked { get; set; }
 }
 
 public class AssignmentChangeDto
 {
-    public Guid EmployeeId { get; set; }
+    public Guid Employee_Id { get; set; }
     public DateTime Date { get; set; }
-    public Guid? OldShiftTypeId { get; set; }
-    public Guid? NewShiftTypeId { get; set; }
-    public string ChangeType { get; set; } = "Modified"; // Added, Removed, Modified
+    public Guid? Old_Shift_Type_Id { get; set; }
+    public Guid? New_Shift_Type_Id { get; set; }
+    public string Change_Type { get; set; } = "Modified"; // Added, Removed, Modified
 }

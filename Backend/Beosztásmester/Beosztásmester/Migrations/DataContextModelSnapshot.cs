@@ -37,7 +37,7 @@ namespace Beosztasmester.Migrations
                     b.Property<bool>("IsLocked")
                         .HasColumnType("boolean");
 
-                    b.Property<Guid?>("Roster_VersionId")
+                    b.Property<Guid>("Roster_Version_Id")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("Shift_Type_Id")
@@ -47,14 +47,11 @@ namespace Beosztasmester.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("Version_Id")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
 
                     b.HasIndex("Employee_Id");
 
-                    b.HasIndex("Roster_VersionId");
+                    b.HasIndex("Roster_Version_Id");
 
                     b.HasIndex("Shift_Type_Id");
 
@@ -276,10 +273,10 @@ namespace Beosztasmester.Migrations
                     b.Property<Guid>("Department_Id")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("EndDate")
+                    b.Property<DateTime>("End_Date")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("StartDate")
+                    b.Property<DateTime>("Start_Date")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Status")
@@ -477,9 +474,11 @@ namespace Beosztasmester.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Beosztasmester.Models.Data.Roster_Version", null)
+                    b.HasOne("Beosztasmester.Models.Data.Roster_Version", "Roster_Version")
                         .WithMany("Assignments")
-                        .HasForeignKey("Roster_VersionId");
+                        .HasForeignKey("Roster_Version_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Beosztasmester.Models.Data.Shift_Type", "Shift_Type")
                         .WithMany()
@@ -488,6 +487,8 @@ namespace Beosztasmester.Migrations
                         .IsRequired();
 
                     b.Navigation("Employee");
+
+                    b.Navigation("Roster_Version");
 
                     b.Navigation("Shift_Type");
                 });
@@ -504,7 +505,7 @@ namespace Beosztasmester.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Beosztasmester.Models.Data.Shift_Type", "ShiftType")
+                    b.HasOne("Beosztasmester.Models.Data.Shift_Type", "Shift_Type")
                         .WithMany()
                         .HasForeignKey("Shift_Type_Id")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -514,7 +515,7 @@ namespace Beosztasmester.Migrations
 
                     b.Navigation("Department");
 
-                    b.Navigation("ShiftType");
+                    b.Navigation("Shift_Type");
                 });
 
             modelBuilder.Entity("Beosztasmester.Models.Data.Demand_Template", b =>

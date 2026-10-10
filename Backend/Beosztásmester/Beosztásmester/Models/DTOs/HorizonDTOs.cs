@@ -9,9 +9,20 @@ public class HorizonDto
     public string Status { get; set; } = "Draft";
 }
 
-public class CreateHorizonDto
+public class CreateHorizonRequestDto
 {
-    public Guid DepartmentId { get; set; }
-    public DateTime StartDate { get; set; }
-    public int Days { get; set; } = 28;
+    public Guid OrgUnitId { get; set; } // Vagy int, ha a frontendnél az orgUnitId egész szám
+    public string Start { get; set; } = string.Empty; // "YYYY-MM-DD"
+    public string End { get; set; } = string.Empty;   // "YYYY-MM-DD"
 }
+
+public class HorizonResponseDto
+{
+    public string Id { get; set; } = string.Empty;
+    public Guid OrgUnitId { get; set; }
+    public string Start { get; set; } = string.Empty;
+    public string End { get; set; } = string.Empty;
+    public string Status { get; set; } = "DRAFT";
+}
+
+

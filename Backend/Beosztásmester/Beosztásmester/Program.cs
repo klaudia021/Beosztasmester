@@ -24,6 +24,10 @@ namespace Beosztásmester
 
             builder.Services.AddScoped<IIntegrationService, IntegrationService>();
 
+            builder.Services.AddScoped<IDemandsService, DemandsService>();
+            builder.Services.AddScoped<IHorizonsService, HorizonsService>();
+            builder.Services.AddScoped<IRostersService, RostersService>();
+
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
             builder.Services.AddEndpointsApiExplorer();

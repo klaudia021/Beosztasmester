@@ -6,7 +6,7 @@ namespace Beosztasmester.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class EmployeesController : Controller
+    public class EmployeesController : ControllerBase
     {
         private readonly IEmployeeService _employeeService;
         public EmployeesController(IEmployeeService employeeService)

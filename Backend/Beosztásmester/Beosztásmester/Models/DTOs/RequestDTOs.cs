@@ -2,7 +2,7 @@
     public class EmployeeRequestDto
     {
         public Guid Id { get; set; }
-        public Guid EmployeeId { get; set; }
+        public Guid Employee_Id { get; set; }
         public DateTime Date { get; set; }
         public string Type { get; set; } = string.Empty; // DAY_OFF, SHIFT_PREFERENCE
         public Guid? Preferred_Shift_Type_Id { get; set; }
@@ -12,7 +12,7 @@
 
     public class CreateEmployeeRequestDto
     {
-        public Guid EmployeeId { get; set; }
+        public Guid Employee_Id { get; set; }
         public DateTime Date { get; set; }
         public string Type { get; set; } = string.Empty;
         public Guid? Preferred_Shift_Type_Id { get; set; }

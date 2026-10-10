@@ -6,7 +6,7 @@ namespace Beosztasmester.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MasterDataController : Controller
+    public class MasterDataController : ControllerBase
     {
         private readonly IMasterDataService _masterDataService;
 

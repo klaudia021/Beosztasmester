@@ -18,7 +18,7 @@ namespace Beosztasmester.Models.Data
         public Guid Shift_Type_Id { get; set; }
 
         [ForeignKey(nameof(Shift_Type_Id))]
-        public Shift_Type ShiftType { get; set; } = null!;
+        public Shift_Type Shift_Type { get; set; } = null!;
 
         public Guid? Competency_Id { get; set; }
 
