@@ -11,17 +11,17 @@ public class HorizonDto
 
 public class CreateHorizonRequestDto
 {
-    public Guid OrgUnitId { get; set; } // Vagy int, ha a frontendnél az orgUnitId egész szám
-    public string Start { get; set; } = string.Empty; // "YYYY-MM-DD"
-    public string End { get; set; } = string.Empty;   // "YYYY-MM-DD"
+    public Guid OrgUnitId { get; set; }
+    public DateTime Start { get; set; }
+    public DateTime End { get; set; }
 }
 
 public class HorizonResponseDto
 {
     public string Id { get; set; } = string.Empty;
     public Guid OrgUnitId { get; set; }
-    public string Start { get; set; } = string.Empty;
-    public string End { get; set; } = string.Empty;
+    public DateTime Start { get; set; }
+    public DateTime End { get; set; }
     public string Status { get; set; } = "DRAFT";
 }
 

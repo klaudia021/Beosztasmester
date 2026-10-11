@@ -27,8 +27,8 @@ public class HorizonsService : IHorizonsService
         {
             Id = Guid.NewGuid(),
             Department_Id = dto.OrgUnitId,
-            Start_Date = DateTime.SpecifyKind(DateTime.Parse(dto.Start), DateTimeKind.Utc),
-            End_Date = DateTime.SpecifyKind(DateTime.Parse(dto.End), DateTimeKind.Utc),
+            Start_Date = dto.Start,
+            End_Date = dto.End,
             Status = "DRAFT"
         };
 
@@ -72,8 +72,8 @@ public class HorizonsService : IHorizonsService
             HorizonId = "121",
             Roster = new List<RosterItemDto>
             {
-                new RosterItemDto { Employee_Id = "E001", Date = "2026-03-01", Shift_Type = "D" },
-                new RosterItemDto { Employee_Id = "E002", Date = "2026-03-01", Shift_Type = "N" }
+                new RosterItemDto { Employee_Id = "E001", Date =  new DateTime(2026, 3, 1, 0, 0, 0, DateTimeKind.Utc), Shift_Type = "D" },
+                new RosterItemDto { Employee_Id = "E002", Date = new DateTime(2026, 3, 1, 0, 0, 0, DateTimeKind.Utc), Shift_Type = "N" }
             }
         });
     }
