@@ -20,7 +20,7 @@ export class RosterService {
 
         interval(1500)
             .pipe(
-                switchMap(() => this.http.get<StatusResponse>(`${environment.apiUrl}/api/status/${runId}`)),
+                switchMap(() => this.http.get<StatusResponse>(`${environment.apiUrl}/api/horizons/${runId}`)),
                 takeWhile(res => res.status !== 'DONE', true)
             )
             .subscribe({
@@ -39,13 +39,13 @@ export class RosterService {
             });
     }
 
-    createHorizon(orgUnitId: number, start: string, end: string) {
-        return this.http.post<{ id: number }>(`${ environment.apiUrl }/api/horizons`, {
+    createHorizon(orgUnitId: string, start: string, end: string) {
+        return this.http.post<{ id: string }>(`${ environment.apiUrl }/api/horizons`, {
             orgUnitId, start, end
         });
     }
 
-    solve(horizonId: number) {
+    solve(horizonId: string) {
         return this.http.post<{ runId: string }>(`${environment.apiUrl}/api/horizons/${horizonId}/solve`, {});
     }
 }
