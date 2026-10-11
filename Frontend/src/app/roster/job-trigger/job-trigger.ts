@@ -12,20 +12,13 @@ export class JobTrigger {
   status = this.rosterService.status;
 
   start() {
-    this.rosterService.createHorizon(5, '2026-03-01', '2026-03-28').subscribe({
-      next: horizon => {
-        console.log('Horizon created:', horizon.id);
+    const horizonId = '23f45e89-8b5a-5c55-9df7-240d78a3ce15';
+    console.log('Sending solve request...');
 
-        this.rosterService.solve(horizon.id).subscribe({
-          next: response => this.rosterService.startPolling(response.runId),
-          error: err => {
-            console.error('Solve failed:', err);
-            this.rosterService.status.set('FAILED');
-          }
-        });
-      },
+    this.rosterService.solve(horizonId).subscribe({
+      next: response => this.rosterService.startPolling(response.runId),
       error: err => {
-        console.error('Horizon creation failed:', err);
+        console.error('Solve failed:', err);
         this.rosterService.status.set('FAILED');
       }
     });
