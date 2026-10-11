@@ -22,6 +22,6 @@ public class RosterDiffDto
 public class RosterItemDto
 {
     public string Employee_Id { get; set; } = string.Empty;
-    public string Date { get; set; } = string.Empty;
+    public DateTime Date { get; set; }
     public string Shift_Type { get; set; } = string.Empty;
 }

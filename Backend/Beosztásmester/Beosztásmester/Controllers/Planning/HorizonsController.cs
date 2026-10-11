@@ -22,8 +22,18 @@ public class HorizonsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<HorizonResponseDto>> CreateHorizon([FromBody] CreateHorizonRequestDto dto)
     {
-        var result = await _horizonsService.CreateHorizonAsync(dto);
-        return CreatedAtAction(nameof(CreateHorizon), new { id = result.Id }, result);
+        try
+        {
+            var result = await _horizonsService.CreateHorizonAsync(dto);
+            return CreatedAtAction(nameof(CreateHorizon), new { id = result.Id }, result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new
+            {
+                error = $"Failed to create Horizon - CreateHorizon function. Details: {ex.Message}"
+            });
+        }
     }
 
     /// <summary>
@@ -35,7 +45,10 @@ public class HorizonsController : ControllerBase
         var result = await _horizonsService.StartSolveAsync(id);
         if (result == null)
         {
-            return NotFound(new { error = "not found" });
+            return NotFound(new
+            {
+                error = $"Entity not found with id '{id}' - StartSolve function"
+            });
         }
 
         return StatusCode(202, result);
@@ -50,7 +63,10 @@ public class HorizonsController : ControllerBase
         var result = await _horizonsService.GetSolverStatusAsync(runId);
         if (result == null)
         {
-            return NotFound(new { error = "not found" });
+            return NotFound(new
+            {
+                error = $"Solver run process not found with runId '{runId}' - GetStatus function"
+            });
         }
 
         return Ok(result);
