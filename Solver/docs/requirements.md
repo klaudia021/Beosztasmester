@@ -353,6 +353,28 @@ The in-memory Registry and admission protection SHALL be considered
 process-local; multi-process coordination is not supported.
 
 
+
+### D06.SOLV.0008 — Atomic run status and result retrieval
+
+**Status:** draft  
+**Parent:** D6  
+**Predecessor:** N/A  
+**Successor:** N/A  
+**Source:** Solver service architecture decision; D06.SOLV.0001–0002; F04.SOLV.0003–0004  
+**Verification:** Solver / concurrency test
+
+WHEN a caller requests a Solver run's lifecycle snapshot together with its available result,
+THE SolverRunner SHALL return an atomic, consistent view of both,
+preventing concurrent lifecycle or result modifications from producing an inconsistent response.
+
+THE SolverRunner SHALL NOT expose mutable internal result storage
+to external callers.
+
+Result availability SHALL be independent of the run's terminal lifecycle
+state. Available results SHALL remain retrievable after normal completion,
+cancellation, or time-limit termination.
+
+
 ---
 
 

@@ -5,6 +5,8 @@
 **Derived requirements:** `Solver/docs/requirements.md`  
 **Date:** 2026-10-12
 
+**Integration change notice (2026-10-12):** Section 4 changes the previously shared GET response contract. `GET /solver-runs/{runId}` no longer includes `result`; a separate `GET /solver-runs/{runId}/result` is proposed. Backend implementers must review this change before relying on either GET response shape. The two GET endpoints are not yet implemented.
+
 ## 1. Scope
 
 This document proposes the internal HTTP/JSON contract between the .NET Backend and the Python Solver service.
@@ -90,33 +92,34 @@ The run is registered and immediately queryable. HTTP 202 does not indicate a co
 
 Error bodies and failure recovery remain open.
 
-## 4. GET /solver-runs/{runId}
+## 4. Run status and result retrieval
 
-**Requirements:** `F04.SOLV.0002`, `F04.SOLV.0007`, `F04.SOLV.0008`, `D06.SOLV.0001`, `FR.SOLV.0002`
+**Requirements:** `F04.SOLV.0002`, `F04.SOLV.0007`, `F04.SOLV.0008`, `D06.SOLV.0001`, `D06.SOLV.0008`, `FR.SOLV.0002`
 
-Returns lifecycle status and available result.
+### GET /solver-runs/{runId} — status polling
 
-### While running
-
-**HTTP 200 OK**
+**HTTP 200 OK.** Returns lifecycle status and metadata; **no `result` field**.
 
 ```json
 {
   "runId": "0fbd20fb-4b16-40ef-936e-f81a7f07f5aa",
   "horizonId": "73d9882a-5b2e-4c4e-ae0b-65b1c6bdbaf8",
   "instanceId": "M-01",
-  "engineType": "cpsat",
+  "engineType": "dummy",
   "status": "running",
   "acceptedAt": "2026-10-12T06:30:00Z",
   "startedAt": "2026-10-12T06:30:01Z",
-  "finishedAt": null,
-  "result": null
+  "finishedAt": null
 }
 ```
 
-### When completed
+### GET /solver-runs/{runId}/result — result retrieval
 
-**HTTP 200 OK**
+Returns lifecycle metadata together with the available result, read atomically
+from the Runner. The result is **not limited to `completed`**: cancelled and
+timed-out runs may retain a best-available solution.
+
+**Target response (Ch 7.2 solution; not yet implemented):**
 
 ```json
 {
@@ -155,11 +158,20 @@ Returns lifecycle status and available result.
 }
 ```
 
-The nested `result` follows Ch 7.2.
+The nested `result` SHALL conform to the common Solution JSON format in Ch 7.2.
+**Current implementation limitation:** The Runner currently stores only
+`list[dict[str, str]]`, not the Ch 7.2 solution object.
 
-**Lifecycle status and solution status are distinct:** `completed` describes execution termination; `FEASIBLE` describes the algorithmic result.
+The result endpoint and its final response/error details remain subject to
+Backend/Solver agreement. In particular, behavior when no result is available
+is not yet specified.
 
-An unknown `runId` returns HTTP 404 (response body TBD).
+Lifecycle status and solution status are distinct (e.g. `completed` versus
+`FEASIBLE`). Unknown `runId` returns HTTP 404 (response body TBD).
+
+**Compatibility note:** The previously shared draft placed `result` inside
+`GET /solver-runs/{runId}`. Splitting these calls is a breaking response-contract
+change and requires Backend coordination before integration.
 
 ## 5. Execution semantics
 
@@ -190,7 +202,7 @@ Ch 7.2 `runtimeSec` represents algorithm execution time, not necessarily the com
 **Current limitations:**
 
 - Only `engineType: "dummy"` is supported. The dummy roster provider is not yet implemented; execution currently ends in FAILED state.
-- GET `/solver-runs/{runId}` polling is not yet implemented.
+- GET status polling and GET result retrieval endpoints are not yet implemented.
 - Complete Ch 7.1 validation, Ch 7.2 solution generation, Greedy/CP-SAT engines, cancellation and timeout APIs are pending.
 - Run storage is process-local and non-persistent; scheduling failure after successful admission has no recovery mechanism yet.
 
@@ -203,10 +215,10 @@ SolverRunner lifecycle management.
 The principal decisions requiring Backend/Solver agreement are:
 
 1. **Input:** Complete Ch 7.1 instance supplied by the Backend inside the proposed POST envelope.
-2. **Output:** Lifecycle metadata wrapping the unmodified Ch 7.2 solution object.
+2. **Output:** Separate status polling and result retrieval GET calls (breaking change from the previously shared draft); final Ch 7.2 payload and no-result HTTP behavior require agreement.
 3. **Selection:** `engineType` values, defaults and execution options.
 4. **Errors:** HTTP error responses, cancellation and timeout semantics.
-5. **Integration:** Internal endpoint naming, authentication and deployment assumptions.
+5. **Integration:** Backend acknowledgment of the changed GET contract, endpoint naming, authentication and deployment assumptions.
 
 Development may proceed against this draft. Changes agreed during review will be reflected first in the corresponding Solver requirements, retaining their history and traceability, and then in this contract, implementation and tests.
 
