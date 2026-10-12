@@ -186,15 +186,26 @@ Ch 7.2 `runtimeSec` represents algorithm execution time, not necessarily the com
 - Serialized background execution
 - Dummy Engine execution and result storage
 - Lifecycle timestamps and failure state
+- FastAPI lifespan ownership of the SolverRunner
+- POST /solve request envelope validation (partial Ch 7.1)
+- HTTP 202 with registered runId
+- HTTP 409 for duplicate active run admission
+- HTTP 422 for invalid request envelope
 
 **Not yet implemented:**
 
-- HTTP endpoints described above
+- POST /solve background execution scheduling (C2.2b)
+- GET /solver-runs/{runId} status and result polling (C3)
 - Complete Ch 7.1 request validation
 - Complete Ch 7.2 solution generation
 - Dani's actual dummy roster dataset (placeholder only)
 - Cancellation, timeout and partial-result APIs
 - Persistent run storage and distributed execution
+
+The current POST /solve implementation performs run admission only.
+Accepted runs remain in ACCEPTED state until background scheduling
+is integrated. This is an intermediate implementation milestone,
+not the complete asynchronous execution contract.
 
 The current Dummy Engine is an interim vertical-slice implementation, not the final common Greedy/CP-SAT Engine contract.
 

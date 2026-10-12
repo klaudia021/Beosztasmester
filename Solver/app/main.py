@@ -1,9 +1,11 @@
+
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Request
 
-from app.solver.runner import SolverRunner
+from app.api.models import SolveRequest
+from app.solver.runner import DuplicateActiveRunError, SolverRunner
 
 
 @asynccontextmanager
@@ -25,6 +27,20 @@ def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
-@app.post("/solve")
-def solve() -> dict[str, str]:
-    return {"status": "accepted"}
+@app.post("/solve", status_code=202)
+def solve(payload: SolveRequest, request: Request) -> dict[str, str]:
+    runner: SolverRunner = request.app.state.runner
+
+    try:
+        run_id = runner.submit(
+            horizon_id=payload.horizonId,
+            engine_type=payload.engineType,
+            instance_id=payload.instance.instanceId,
+        )
+    except DuplicateActiveRunError as exc:
+        raise HTTPException(
+            status_code=409,
+            detail="Active Solver run already exists",
+        ) from exc
+
+    return {"runId": run_id}
