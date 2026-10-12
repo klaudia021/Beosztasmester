@@ -168,6 +168,27 @@ THE Backend SHALL be able to query the status
 and available result of the run using that runId.
 
 
+### F04.SOLV.0009 — Engine selection and background scheduling
+
+**Status:** draft
+**Parent:** F04
+**Predecessor:** N/A
+**Successor:** N/A
+**Source:** Solver service architecture decision; F04.SOLV.0001, D06.SOLV.0001
+**Verification:** API / integration test
+
+WHEN the Solver service receives a valid execution request,
+THE Solver service SHALL select the Solver Engine according to
+the requested engineType and schedule the admitted run for
+asynchronous background execution.
+
+IF the requested engineType is unsupported,
+THE Solver service SHALL reject the request before run registration.
+
+The SolverRunner SHALL remain independent of concrete
+Solver Engine implementations.
+
+
 ---
 
 

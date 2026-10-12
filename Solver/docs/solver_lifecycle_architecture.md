@@ -206,6 +206,10 @@ to execute scheduled Solver runs.
 
 Engine implementations do not own or mutate SolverRun lifecycle state.
 
+Engine selection is performed outside SolverRunner using the requested
+`engineType`. The HTTP layer passes the selected Engine callable to
+SolverRunner for scheduling; the Runner remains Engine-agnostic.
+
 Cancellation, timeout, detailed failure reporting, resource limits,
 and the final Engine contract remain pending.
 

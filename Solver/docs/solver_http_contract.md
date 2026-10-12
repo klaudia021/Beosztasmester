@@ -179,35 +179,24 @@ Ch 7.2 `runtimeSec` represents algorithm execution time, not necessarily the com
 
 ## 6. Current implementation boundary
 
-**Implemented and tested:**
+**Implemented:**
 
-- Run registration, UUID generation and admission protection
-- Immutable status snapshots
-- Serialized background execution
-- Dummy Engine execution and result storage
-- Lifecycle timestamps and failure state
-- FastAPI lifespan ownership of the SolverRunner
-- POST /solve request envelope validation (partial Ch 7.1)
-- HTTP 202 with registered runId
-- HTTP 409 for duplicate active run admission
-- HTTP 422 for invalid request envelope
+- FastAPI lifespan ownership of a single in-memory SolverRunner
+- Run registration, duplicate-active-run protection, UUIDs and immutable snapshots
+- Serialized background execution, lifecycle timestamps and result retention
+- POST `/solve`: partial request-envelope validation, engine selection, run admission and scheduling
+- HTTP 202 for accepted runs; HTTP 409 for duplicate active runs; HTTP 422 for invalid requests or unsupported engines
 
-**Not yet implemented:**
+**Current limitations:**
 
-- POST /solve background execution scheduling (C2.2b)
-- GET /solver-runs/{runId} status and result polling (C3)
-- Complete Ch 7.1 request validation
-- Complete Ch 7.2 solution generation
-- Dani's actual dummy roster dataset (placeholder only)
-- Cancellation, timeout and partial-result APIs
-- Persistent run storage and distributed execution
+- Only `engineType: "dummy"` is supported. The dummy roster provider is not yet implemented; execution currently ends in FAILED state.
+- GET `/solver-runs/{runId}` polling is not yet implemented.
+- Complete Ch 7.1 validation, Ch 7.2 solution generation, Greedy/CP-SAT engines, cancellation and timeout APIs are pending.
+- Run storage is process-local and non-persistent; scheduling failure after successful admission has no recovery mechanism yet.
 
-The current POST /solve implementation performs run admission only.
-Accepted runs remain in ACCEPTED state until background scheduling
-is integrated. This is an intermediate implementation milestone,
-not the complete asynchronous execution contract.
-
-The current Dummy Engine is an interim vertical-slice implementation, not the final common Greedy/CP-SAT Engine contract.
+HTTP 202 confirms admission and scheduling, not execution completion. A run may remain
+ACCEPTED while waiting for the single worker. Engine selection is separate from
+SolverRunner lifecycle management.
 
 ## 7. Open items for team review
 
