@@ -25,7 +25,7 @@ def test_dummy_engine_returns_provider_result() -> None:
 
 def test_scheduled_run_completes_and_stores_result() -> None:
     runner = SolverRunner()
-    run_id = runner.submit("horizon-1", "dummy")
+    run_id = runner.submit("horizon-1", "dummy", "instance-1")
     assignments = [{"employeeId": "employee-1"}]
 
     try:
@@ -43,7 +43,7 @@ def test_scheduled_run_completes_and_stores_result() -> None:
 
 def test_engine_failure_marks_run_failed() -> None:
     runner = SolverRunner()
-    run_id = runner.submit("horizon-1", "dummy")
+    run_id = runner.submit("horizon-1", "dummy", "instance-1")
 
     def failing_engine() -> list[dict[str, str]]:
         raise ValueError("Simulated engine failure")
@@ -70,8 +70,8 @@ def test_second_run_waits_for_available_worker() -> None:
             raise TimeoutError("Test worker was not released")
         return []
 
-    first_id = runner.submit("horizon-1", "dummy")
-    second_id = runner.submit("horizon-2", "dummy")
+    first_id = runner.submit("horizon-1", "dummy", "instance-1")
+    second_id = runner.submit("horizon-2", "dummy", "instance-1")
 
     try:
         runner.schedule(first_id, blocking_engine)
@@ -102,7 +102,7 @@ def test_second_run_waits_for_available_worker() -> None:
 
 def test_get_result_returns_independent_copy() -> None:
     runner = SolverRunner()
-    run_id = runner.submit("horizon-1", "dummy")
+    run_id = runner.submit("horizon-1", "dummy", "instance-1")
 
     try:
         runner.schedule(

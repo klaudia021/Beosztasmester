@@ -27,20 +27,27 @@ class SolverRunner:
     def __init__(self) -> None:
         self._lock = RLock()
         self._runs: dict[str, SolverRun] = {}
-        self._run_context: dict[str, tuple[str, str]] = {}
+        self._run_context: dict[str, tuple[str, str, str]] = {}
         self._executor = ThreadPoolExecutor(max_workers=1)
         self._scheduled: set[str] = set()
         self._results: dict[str, list[dict[str, str]]] = {}
 
-    def submit(self, horizon_id: str, engine_type: str) -> str:
+
+    def submit(
+        self, horizon_id: str, engine_type: str, instance_id: str,
+    ) -> str:
+
         if not horizon_id:
             raise ValueError("horizon_id must not be empty")
 
         if not engine_type:
             raise ValueError("engine_type must not be empty")
 
+        if not instance_id:
+            raise ValueError("instance_id must not be empty")
+
         with self._lock:
-            for run_id, (registered_horizon, registered_engine) in (
+            for run_id, (registered_horizon, registered_engine, _) in (
                 self._run_context.items()
             ):
                 if (
@@ -60,7 +67,11 @@ class SolverRunner:
             run = SolverRun(run_id)
 
             self._runs[run_id] = run
-            self._run_context[run_id] = (horizon_id, engine_type)
+            self._run_context[run_id] = (
+                horizon_id,
+                engine_type,
+                instance_id,
+            )
 
             return run_id
 
@@ -71,11 +82,12 @@ class SolverRunner:
             if run is None:
                 return None
 
-            horizon_id, engine_type = self._run_context[run_id]
+            horizon_id, engine_type, instance_id = self._run_context[run_id]
 
             return SolverRunSnapshot(
                 run_id=run.run_id,
                 horizon_id=horizon_id,
+                instance_id=instance_id,
                 engine_type=engine_type,
                 state=run.state,
                 accepted_at=run.accepted_at,

@@ -18,7 +18,7 @@ def test_new_runner_has_empty_registry() -> None:
 def test_submit_registers_immediately_visible_run() -> None:
     runner = SolverRunner()
 
-    run_id = runner.submit("horizon-1", "greedy")
+    run_id = runner.submit("horizon-1", "greedy", "instance-1")
     snapshot = runner.get_run(run_id)
 
     assert snapshot is not None
@@ -39,7 +39,7 @@ def test_get_run_returns_none_for_unknown_id() -> None:
 
 def test_snapshot_is_immutable() -> None:
     runner = SolverRunner()
-    run_id = runner.submit("horizon-1", "greedy")
+    run_id = runner.submit("horizon-1", "greedy", "instance-1")
     snapshot = runner.get_run(run_id)
 
     assert snapshot is not None
@@ -52,10 +52,10 @@ def test_snapshot_is_immutable() -> None:
 
 def test_submit_rejects_duplicate_active_run() -> None:
     runner = SolverRunner()
-    first_id = runner.submit("horizon-1", "greedy")
+    first_id = runner.submit("horizon-1", "greedy", "instance-1")
 
     with pytest.raises(DuplicateActiveRunError):
-        runner.submit("horizon-1", "greedy")
+        runner.submit("horizon-1", "greedy", "instance-1")
 
     assert len(runner._runs) == 1
     assert len(runner._run_context) == 1
@@ -65,8 +65,8 @@ def test_submit_rejects_duplicate_active_run() -> None:
 def test_different_engines_are_independent() -> None:
     runner = SolverRunner()
 
-    greedy_id = runner.submit("horizon-1", "greedy")
-    cpsat_id = runner.submit("horizon-1", "cpsat")
+    greedy_id = runner.submit("horizon-1", "greedy", "instance-1")
+    cpsat_id = runner.submit("horizon-1", "cpsat", "instance-1")
 
     assert greedy_id != cpsat_id
     assert len(runner._runs) == 2
@@ -77,8 +77,8 @@ def test_different_engines_are_independent() -> None:
 def test_different_horizons_are_independent() -> None:
     runner = SolverRunner()
 
-    first_id = runner.submit("horizon-1", "greedy")
-    second_id = runner.submit("horizon-2", "greedy")
+    first_id = runner.submit("horizon-1", "greedy", "instance-1")
+    second_id = runner.submit("horizon-2", "dummy", "instance-1")
 
     assert first_id != second_id
     assert len(runner._runs) == 2
@@ -87,13 +87,13 @@ def test_different_horizons_are_independent() -> None:
 def test_terminal_run_allows_resubmission() -> None:
     runner = SolverRunner()
 
-    first_id = runner.submit("horizon-1", "greedy")
+    first_id = runner.submit("horizon-1", "greedy", "instance-1")
 
     # Temporary test setup until Runner owns execution transitions.
     runner._runs[first_id].start()
     runner._runs[first_id].complete()
 
-    second_id = runner.submit("horizon-1", "greedy")
+    second_id = runner.submit("horizon-1", "greedy", "instance-1")
 
     assert first_id != second_id
     assert len(runner._runs) == 2
@@ -111,10 +111,13 @@ def test_invalid_submission_leaves_registry_unchanged() -> None:
     runner = SolverRunner()
 
     with pytest.raises(ValueError):
-        runner.submit("", "greedy")
+        runner.submit("", "greedy", "")
 
     with pytest.raises(ValueError):
-        runner.submit("horizon-1", "")
+        runner.submit("horizon-1", "", "")
+
+    with pytest.raises(ValueError):
+        runner.submit("horizon-1", "greedy", "")
 
     assert runner._runs == {}
     assert runner._run_context == {}
@@ -132,13 +135,52 @@ def test_submit_rejects_duplicate_uuid(
         lambda: fixed_uuid,
     )
 
-    first_id = runner.submit("horizon-1", "greedy")
+    first_id = runner.submit("horizon-1", "greedy", "instance-1")
     original_run = runner._runs[first_id]
 
     with pytest.raises(RuntimeError, match="Duplicate run ID"):
-        runner.submit("horizon-2", "greedy")
+        runner.submit("horizon-2", "greedy", "instance-1")
 
     assert len(runner._runs) == 1
     assert len(runner._run_context) == 1
     assert runner._runs[first_id] is original_run
-    assert runner._run_context[first_id] == ("horizon-1", "greedy")
+    assert runner._run_context[first_id] == ("horizon-1", "greedy", "instance-1")
+
+
+def test_submit_preserves_instance_id() -> None:
+    runner = SolverRunner()
+
+    try:
+        run_id = runner.submit("horizon-1", "dummy", "instance-1")
+        snapshot = runner.get_run(run_id)
+
+        assert snapshot is not None
+        assert snapshot.instance_id == "instance-1"
+        assert snapshot.horizon_id == "horizon-1"
+        assert snapshot.engine_type == "dummy"
+    finally:
+        runner.close()
+
+
+def test_submit_rejects_empty_instance_id() -> None:
+    runner = SolverRunner()
+
+    try:
+        with pytest.raises(ValueError, match="instance_id"):
+            runner.submit("horizon-1", "dummy", "")
+    finally:
+        runner.close()
+
+
+def test_different_instance_does_not_bypass_admission() -> None:
+    runner = SolverRunner()
+
+    try:
+        first_id = runner.submit("horizon-1", "dummy", "instance-1")
+
+        with pytest.raises(DuplicateActiveRunError):
+            runner.submit("horizon-1", "dummy", "instance-2")
+
+        assert runner.get_run(first_id) is not None
+    finally:
+        runner.close()
