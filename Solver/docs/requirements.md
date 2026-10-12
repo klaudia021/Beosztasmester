@@ -151,6 +151,23 @@ THE Solver service SHALL register the run before returning its identifier
 and SHALL make the run immediately queryable by that identifier.
 
 
+### F04.SOLV.0008 — Asynchronous HTTP execution contract
+
+**Status:** draft
+**Parent:** F04
+**Predecessor:** N/A
+**Successor:** N/A
+**Source:** Beosztásmester specification, Ch 6 / F4
+**Verification:** API test
+
+WHEN the Backend submits a valid Solver request,
+THE Solver service SHALL return HTTP 202 and a runId
+without waiting for calculation to complete.
+
+THE Backend SHALL be able to query the status
+and available result of the run using that runId.
+
+
 ---
 
 
@@ -237,6 +254,59 @@ Rejected admission SHALL NOT modify any existing run
 or leave a partially registered run.
 
 
+### D06.SOLV.0004 — Independent Solver service boundary
+
+**Status:** draft
+**Parent:** D6
+**Predecessor:** N/A
+**Successor:** N/A
+**Source:** Beosztásmester specification, Ch 6; team architecture decision  
+**Verification:** Architecture review / API integration test
+
+THE Solver service SHALL expose an HTTP/JSON interface
+through which the Backend can initiate Solver runs and
+retrieve their execution status and results.
+
+The Solver service SHALL NOT require direct access to
+the application database.
+
+
+### D06.SOLV.0005 — Backend-provided problem instance
+
+**Status:** draft
+**Parent:** D6
+**Predecessor:** N/A
+**Successor:** N/A
+**Source:** Beosztásmester specification, Ch 6 and Ch 7.1; proposed Backend/Solver integration assumption  
+**Verification:** API contract test
+
+WHEN a Solver run is requested,
+THE Backend SHALL provide the problem instance
+using the common JSON representation defined in Ch 7.1.
+
+THE Solver SHALL consume that instance independently
+of the Backend's persistence model.
+
+
+### D06.SOLV.0006 — Separate execution identifiers
+
+**Status:** draft
+**Parent:** D6
+**Predecessor:** N/A
+**Successor:** N/A
+**Source:** Beosztásmester specification, Ch 4, Ch 6 and Ch 7.1; proposed identifier model  
+**Verification:** API contract / integration test
+
+THE Solver service SHALL distinguish between:
+
+- horizonId: application planning horizon;
+- instanceId: concrete Solver problem instance;
+- runId: one Solver execution.
+
+THE service SHALL NOT assume that horizonId
+and instanceId are interchangeable.
+
+
 ---
 
 
@@ -255,3 +325,44 @@ WHEN a technical failure prevents a Solver run from continuing,
 THE Solver service SHALL leave the run in an explicitly identifiable failed state
 or make the run restartable.
 
+
+---
+
+
+## FR — Solver interface requirements
+
+
+
+### FR.SOLV.0001 — Self-contained Solver instance input
+
+**Status:** draft  
+**Parent:** N/A  
+**Predecessor:** N/A  
+**Successor:** N/A  
+**Source:** Beosztásmester specification, Ch 7.1 and Ch 7.3; team decision: separate Solver service  
+**Verification:** API contract / integration / reproducibility test
+
+WHEN the Backend requests a Solver execution,
+THE Backend SHALL provide a self-contained problem instance
+conforming to the common JSON format defined in Ch 7.1.
+
+THE Solver SHALL use the supplied instance data as its
+problem input without requiring direct access to the
+application database.
+
+THE same instance SHALL be usable as input for different
+Solver engines and repeated benchmark executions.
+
+
+### FR.SOLV.0002 — Common solution JSON
+
+**Status:** draft  
+**Parent:** N/A  
+**Predecessor:** N/A  
+**Successor:** N/A  
+**Source:** Beosztásmester specification, Chapter 7.2  
+**Verification:** JSON schema / contract test
+
+THE Solver service SHALL provide Solver results conforming
+to the common JSON solution format defined in Chapter 7.2
+of the Beosztásmester system specification.
