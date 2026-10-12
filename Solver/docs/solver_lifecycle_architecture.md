@@ -116,6 +116,24 @@ The current implementation provides registration and status
 snapshots only. Execution scheduling and Engine integration
 remain pending.
 
+### Serialized execution – initial implementation
+
+The SolverRunner uses a ThreadPoolExecutor with one worker
+to execute scheduled Solver runs.
+
+- `submit()` registers a run without starting execution.
+- `schedule(run_id, engine)` submits an engine callable for execution.
+- A queued run remains in ACCEPTED state.
+- The Runner changes the state to RUNNING when execution begins.
+- Successful execution stores the returned result and completes the run.
+- An Engine exception results in FAILED state.
+- `get_result(run_id)` returns an independent copy of a stored result.
+
+Engine implementations do not own or mutate SolverRun lifecycle state.
+
+Cancellation, timeout, detailed failure reporting, resource limits,
+and the final Engine contract remain pending.
+
 ## Runtime interaction — proposed successful run
 
 The following sequence shows one *possible* asynchronous execution flow; it is **not yet an implemented API contract or execution mechanism**. In particular, it does not decide the cancellation semantics of an `ACCEPTED` run.

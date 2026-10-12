@@ -1,3 +1,6 @@
+from collections.abc import Callable
+from concurrent.futures import ThreadPoolExecutor
+from copy import deepcopy
 from threading import RLock
 from uuid import uuid4
 
@@ -25,6 +28,9 @@ class SolverRunner:
         self._lock = RLock()
         self._runs: dict[str, SolverRun] = {}
         self._run_context: dict[str, tuple[str, str]] = {}
+        self._executor = ThreadPoolExecutor(max_workers=1)
+        self._scheduled: set[str] = set()
+        self._results: dict[str, list[dict[str, str]]] = {}
 
     def submit(self, horizon_id: str, engine_type: str) -> str:
         if not horizon_id:
@@ -76,3 +82,60 @@ class SolverRunner:
                 started_at=run.started_at,
                 finished_at=run.finished_at,
             )
+
+    def schedule(
+        self,
+        run_id: str,
+        engine: Callable[[], list[dict[str, str]]],
+    ) -> None:
+        with self._lock:
+            if run_id not in self._runs:
+                raise KeyError(f"Unknown run ID: {run_id}")
+
+            if self._runs[run_id].state is not SolverRunState.ACCEPTED:
+                raise RuntimeError(f"Run cannot be scheduled: {run_id}")
+
+            if run_id in self._scheduled:
+                raise RuntimeError(f"Run already scheduled: {run_id}")
+
+            self._scheduled.add(run_id)
+
+            try:
+                self._executor.submit(self._execute, run_id, engine)
+            except RuntimeError:
+                self._scheduled.remove(run_id)
+                raise
+
+    def _execute(
+        self,
+        run_id: str,
+        engine: Callable[[], list[dict[str, str]]],
+    ) -> None:
+        with self._lock:
+            self._runs[run_id].start()
+
+        try:
+            result = engine()
+        except Exception:
+            with self._lock:
+                self._runs[run_id].fail()
+            return
+
+        with self._lock:
+            self._results[run_id] = deepcopy(result)
+            self._runs[run_id].complete()
+
+    def get_result(
+        self,
+        run_id: str,
+    ) -> list[dict[str, str]] | None:
+        with self._lock:
+            result = self._results.get(run_id)
+
+            if result is None:
+                return None
+
+            return deepcopy(result)
+
+    def close(self) -> None:
+        self._executor.shutdown(wait=True)
