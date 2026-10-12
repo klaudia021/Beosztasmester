@@ -13,7 +13,7 @@ namespace Beosztasmester.Model
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Employee_Competency> Employee_Competencies { get; set; }
         public DbSet<Horizon> Horizons { get; set; }
-        public DbSet<Organizational_Unit> Organizational_Units { get; set; }
+        public DbSet<Department> Department { get; set; }
         public DbSet<Request> Requests { get; set; }
         public DbSet<Roster_Version> Roster_Versions { get; set; }
         public DbSet<Rule> Rules { get; set; }

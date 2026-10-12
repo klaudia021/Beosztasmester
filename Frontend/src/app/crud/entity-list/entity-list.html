@@ -1,0 +1,43 @@
+@if (config(); as cfg) {
+    <header class="page-header">
+        <h1>{{ cfg.title }}</h1>
+        <a class="btn btn-primary" [routerLink]="['/', cfg.key, 'new']">New {{ cfg.singular }}</a>
+    </header>
+
+@if (error()) {
+    <p class="alert alert-error">{{ error() }}</p>
+} @else if (loading()) {
+    <p class="muted">Loading…</p>
+} @else if (rows().length === 0) {
+    <div class="card empty">No records yet.</div>
+} @else {
+    <div class="card table-wrap">
+        <table class="table">
+            <thead>
+                <tr>
+                    @for (col of columns(); track col.key) {
+                    <th>{{ col.label }}</th>
+                    }
+                    <th class="actions-col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (row of rows(); track row.id) {
+                <tr>
+                    @for (col of columns(); track col.key) {
+                    <td>{{ display(row, col) }}</td>
+                    }
+                    <td class="actions-col">
+                        <a class="btn btn-small" [routerLink]="['/', cfg.key, row.id, 'edit']">Edit</a>
+                        <a class="btn btn-small btn-danger-outline"
+                            [routerLink]="['/', cfg.key, row.id, 'delete']">Delete</a>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+} @else {
+    <p class="alert alert-error">This page does not exist.</p>
+}

@@ -6,9 +6,9 @@ namespace Beosztasmester.Models.Data
     public class Unavailability
     {
         [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
-        public int Employee_Id { get; set; }
+        public Guid Employee_Id { get; set; }
 
         [ForeignKey(nameof(Employee_Id))]
         public Employee Employee { get; set; } = null!;

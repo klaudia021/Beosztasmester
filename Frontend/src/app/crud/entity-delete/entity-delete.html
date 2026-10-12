@@ -1,0 +1,27 @@
+@if (config(); as cfg) {
+    <header class="page-header">
+        <h1>Delete {{ cfg.singular }}</h1>
+        <a class="btn btn-ghost" [routerLink]="['/', cfg.key]">Back to list</a>
+    </header>
+
+@if (error()) {
+    <p class="alert alert-error">{{ error() }}</p>
+}
+
+@if (loading()) {
+    <p class="muted">Loading…</p>
+} @else if (record()) {
+    <div class="card confirm">
+        <p>Are you sure you want to delete <strong>{{ name() }}</strong>?</p>
+        <p class="muted">This action cannot be undone.</p>
+        <div class="actions">
+            <button type="button" class="btn btn-danger" [disabled]="deleting()" (click)="confirmDelete()">
+                Delete
+            </button>
+            <a class="btn btn-ghost" [routerLink]="['/', cfg.key]">Cancel</a>
+        </div>
+    </div>
+}
+} @else {
+    <p class="alert alert-error">This page does not exist.</p>
+}

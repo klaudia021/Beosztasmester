@@ -1,0 +1,89 @@
+@if (config(); as cfg) {
+    <header class="page-header">
+        <h1>{{ isEdit() ? 'Edit' : 'New' }} {{ cfg.singular }}</h1>
+        <a class="btn btn-ghost" [routerLink]="['/', cfg.key]">Back to list</a>
+    </header>
+
+@if (error()) {
+    <p class="alert alert-error">{{ error() }}</p>
+}
+
+@if (loading()) {
+    <p class="muted">Loading…</p>
+} @else {
+    <form class="card form" [formGroup]="form" (ngSubmit)="save()">
+        @for (field of cfg.fields; track field.key) {
+        <div class="field">
+            @if (field.type === 'checkbox') {
+            <label class="checkbox">
+                <input type="checkbox" [formControlName]="field.key" />
+                {{ field.label }}
+            </label>
+            } @else {
+            <label [attr.for]="field.key">
+                {{ field.label }}
+                @if (field.required) {
+                <span class="required">*</span>
+                }
+            </label>
+
+            @switch (field.type) {
+            @case ('number') {
+            <input type="number" [id]="field.key" [formControlName]="field.key" />
+            }
+            @case ('date') {
+            <input type="date" [id]="field.key" [formControlName]="field.key" />
+            }
+            @case ('time') {
+            <input type="time" [id]="field.key" [formControlName]="field.key" />
+            }
+            @case ('select') {
+            <select [id]="field.key" [formControlName]="field.key">
+                <option [ngValue]="null" [disabled]="!!field.required">{{ field.required ? 'Select…' : '—' }}</option>
+                @for (option of (field.options ?? []); track option.value) {
+                <option [ngValue]="option.value">{{ option.label }}</option>
+                }
+            </select>
+            }
+            @case ('ref') {
+            <select [id]="field.key" [formControlName]="field.key">
+                <option [ngValue]="null" [disabled]="!!field.required">{{ field.required ? 'Select…' : '—' }}</option>
+                @for (option of (options()[field.key] ?? []); track option.value) {
+                <option [ngValue]="option.value">{{ option.label }}</option>
+                }
+            </select>
+            }
+            @case ('multiref') {
+            <div class="checkbox-group">
+                @for (option of (options()[field.key] ?? []); track option.value) {
+                <label class="checkbox">
+                    <input type="checkbox" [checked]="isChecked(field.key, option.value)"
+                        (change)="toggle(field.key, option.value, $event)" />
+                    {{ option.label }}
+                </label>
+                } @empty {
+                <span class="muted">Nothing to choose from yet.</span>
+                }
+            </div>
+            }
+            @default {
+            <input type="text" [id]="field.key" [formControlName]="field.key" />
+            }
+            }
+
+            @if (errorText(field); as message) {
+            <p class="field-error">{{ message }}</p>
+            }
+            }
+        </div>
+        }
+
+        <div class="actions">
+            <button type="submit" class="btn btn-primary" [disabled]="saving()">Save</button>
+            <a class="btn btn-ghost" [routerLink]="['/', cfg.key]">Cancel</a>
+        </div>
+    </form>
+}
+} @else {
+    <p class="alert alert-error">This page does not exist.</p>
+}

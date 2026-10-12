@@ -1,4 +1,4 @@
-function generateDummyRoster() {
+function generateDummyRoster() {    
     const employees = ['E001', 'E002', 'E003', 'E004', 'E005'];
     const shiftTypes = ['D', 'A', 'N', 'OFF'];
     const assignments = [];

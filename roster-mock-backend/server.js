@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 const { generateDummyRoster } = require('./dummy-data');
+const { registerCrud } = require('./crud-routes');
+const seed = require('./seed-data');
 
 app.use(cors());
 app.use(express.json());
@@ -28,13 +30,12 @@ app.post('/api/horizons', (req, res) => {
 app.post('/api/horizons/:horizonId/solve', (req, res) => {
   const horizonId = req.params.horizonId;
   const runId = 'run-' + (++counter);
-
-  console.log(`[${runId}] Solving for horizon ${horizonId}`);
+  console.log(`[${runId}] Request received — starting fake solve`);
 
   runs[runId] = {
     status: 'RUNNING',
     horizonId,
-    roster: generateDummyRoster()
+    roster: seed.dummyRoster
   };
 
   res.json({ runId });
@@ -59,5 +60,11 @@ app.get('/api/status/:id', (req, res) => {
 
   res.json(run);
 });
+
+registerCrud(app, 'org-units', seed.orgUnits);
+registerCrud(app, 'competencies', seed.competencies);
+registerCrud(app, 'shift-types', seed.shiftTypes);
+registerCrud(app, 'employees', seed.employees, 'E');
+registerCrud(app, 'unavailabilities', seed.unavailabilities);
 
 app.listen(3000, () => console.log('Fake backend running on http://localhost:3000'));

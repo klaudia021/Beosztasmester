@@ -1,1 +1,400 @@
-/* You can add global styles to this file, and also import other style files */
+/* ===== Design tokens ===== */
+:root {
+    --color-bg: #f6f7f9;
+    --color-surface: #ffffff;
+    --color-border: #e3e6eb;
+    --color-text: #1b1f27;
+    --color-muted: #6b7280;
+    --color-primary: #3b5bdb;
+    --color-primary-hover: #2f49b8;
+    --color-primary-soft: #edf0fd;
+    --color-danger: #d92d20;
+    --color-danger-hover: #b42318;
+    --color-danger-soft: #fdecea;
+
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 24px;
+    --space-6: 32px;
+
+    --radius: 8px;
+    --shadow: 0 1px 2px rgba(16, 24, 40, 0.06);
+    --font: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* ===== Base ===== */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font);
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+h1 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 600;
+}
+
+a {
+    color: var(--color-primary);
+}
+
+.muted {
+    color: var(--color-muted);
+}
+
+/* ===== App shell (sidebar + content) ===== */
+.shell {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    min-height: 100vh;
+}
+
+.sidebar {
+    align-self: start;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding: var(--space-5) var(--space-4);
+    background: var(--color-surface);
+    border-right: 1px solid var(--color-border);
+}
+
+.brand {
+    display: block;
+    margin-bottom: var(--space-5);
+    padding: 0 10px;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--color-text);
+    text-decoration: none;
+}
+
+.nav-group {
+    margin-bottom: var(--space-4);
+}
+
+.nav-heading {
+    margin: 0 0 var(--space-1);
+    padding: 0 10px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+}
+
+.nav a {
+    display: block;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 14px;
+    color: var(--color-muted);
+    text-decoration: none;
+}
+
+.nav a:hover {
+    background: var(--color-bg);
+    color: var(--color-text);
+}
+
+.nav a.active {
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+    font-weight: 500;
+}
+
+.content {
+    min-width: 0;
+    padding: var(--space-6);
+}
+
+/* ===== Page structure ===== */
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin-bottom: var(--space-5);
+}
+
+.card {
+    margin-bottom: var(--space-5);
+    padding: var(--space-5);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.empty {
+    padding: var(--space-6);
+    text-align: center;
+    color: var(--color-muted);
+}
+
+.toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+/* ===== Buttons ===== */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: 8px 14px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.btn:hover {
+    background: var(--color-bg);
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-primary {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: #ffffff;
+}
+
+.btn-primary:hover {
+    background: var(--color-primary-hover);
+    border-color: var(--color-primary-hover);
+}
+
+.btn-danger {
+    background: var(--color-danger);
+    border-color: var(--color-danger);
+    color: #ffffff;
+}
+
+.btn-danger:hover {
+    background: var(--color-danger-hover);
+    border-color: var(--color-danger-hover);
+}
+
+.btn-danger-outline {
+    color: var(--color-danger);
+}
+
+.btn-danger-outline:hover {
+    background: var(--color-danger-soft);
+}
+
+.btn-ghost {
+    border-color: transparent;
+    background: transparent;
+    color: var(--color-muted);
+}
+
+.btn-small {
+    padding: 4px 10px;
+    font-size: 13px;
+}
+
+/* ===== Table ===== */
+.table-wrap {
+    padding: 0;
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.table th,
+.table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--color-border);
+    text-align: left;
+}
+
+.table th {
+    background: #fafbfc;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+}
+
+.table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.table tbody tr:hover {
+    background: #fafbfc;
+}
+
+.table th.actions-col,
+.table td.actions-col {
+    text-align: right;
+    white-space: nowrap;
+}
+
+/* ===== Forms ===== */
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    max-width: 560px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.field>label:not(.checkbox) {
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.required {
+    margin-left: 2px;
+    color: var(--color-danger);
+}
+
+.field input:not([type='checkbox']),
+.field select {
+    padding: 9px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font: inherit;
+    font-size: 14px;
+}
+
+.field input:focus,
+.field select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-soft);
+}
+
+.field input.ng-invalid.ng-touched,
+.field select.ng-invalid.ng-touched {
+    border-color: var(--color-danger);
+}
+
+.field-error {
+    margin: 0;
+    font-size: 12px;
+    color: var(--color-danger);
+}
+
+.checkbox {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 14px;
+}
+
+.checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+}
+
+.actions {
+    display: flex;
+    gap: var(--space-3);
+    margin-top: var(--space-2);
+}
+
+.confirm {
+    max-width: 560px;
+}
+
+/* ===== Alerts ===== */
+.alert {
+    margin: 0 0 var(--space-4);
+    padding: 12px 16px;
+    border-radius: var(--radius);
+    font-size: 14px;
+}
+
+.alert-error {
+    background: var(--color-danger-soft);
+    border: 1px solid #f4c7c3;
+    color: var(--color-danger-hover);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 800px) {
+    .shell {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+        position: static;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--color-border);
+    }
+
+    .nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-2) var(--space-5);
+    }
+
+    .nav-group {
+        min-width: 120px;
+        margin-bottom: 0;
+    }
+
+    .content {
+        padding: var(--space-4);
+    }
+
+    .page-header {
+        flex-wrap: wrap;
+    }
+}

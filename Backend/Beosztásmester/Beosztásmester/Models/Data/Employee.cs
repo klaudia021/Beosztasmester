@@ -6,12 +6,12 @@ namespace Beosztasmester.Models.Data
     public class Employee
     {
         [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
-        public int Organizational_Unit_Id { get; set; }
+        public Guid Department_Id { get; set; }
 
-        [ForeignKey(nameof(Organizational_Unit_Id))]
-        public Organizational_Unit Organizational_Unit { get; set; } = null!;
+        [ForeignKey(nameof(Department_Id))]
+        public Department Department { get; set; } = null!;
 
         [Required]
         [StringLength(200)]
