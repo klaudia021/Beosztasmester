@@ -57,3 +57,35 @@ def solve(payload: SolveRequest, request: Request) -> dict[str, str]:
     runner.schedule(run_id, engine)
 
     return {"runId": run_id}
+
+
+
+@app.get("/solver-runs/{run_id}")
+def get_solver_run(run_id: str, request: Request) -> dict[str, str | None]:
+    runner: SolverRunner = request.app.state.runner
+    snapshot = runner.get_run(run_id)
+
+    if snapshot is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Solver run not found",
+        )
+
+    return {
+        "runId": snapshot.run_id,
+        "horizonId": snapshot.horizon_id,
+        "instanceId": snapshot.instance_id,
+        "engineType": snapshot.engine_type,
+        "status": snapshot.state.value,
+        "acceptedAt": snapshot.accepted_at.isoformat(),
+        "startedAt": (
+            snapshot.started_at.isoformat()
+            if snapshot.started_at is not None
+            else None
+        ),
+        "finishedAt": (
+            snapshot.finished_at.isoformat()
+            if snapshot.finished_at is not None
+            else None
+        ),
+    }

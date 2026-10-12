@@ -1,5 +1,6 @@
 
 from threading import Event
+from time import monotonic, sleep
 from unittest.mock import patch
 
 from fastapi.testclient import TestClient
@@ -153,3 +154,104 @@ def test_runner_lifecycle() -> None:
             close_mock.assert_not_called()
 
         close_mock.assert_called_once_with(runner)
+
+
+def test_get_solver_run_unknown_id() -> None:
+    with TestClient(app) as client:
+        response = client.get("/solver-runs/unknown")
+
+    assert response.status_code == 404
+    assert response.json() == {
+        "detail": "Solver run not found",
+    }
+
+
+def test_get_solver_run_accepted() -> None:
+    with TestClient(app) as client:
+        runner: SolverRunner = app.state.runner
+        run_id = runner.submit("horizon-1", "dummy", "instance-1")
+
+        response = client.get(f"/solver-runs/{run_id}")
+
+    assert response.status_code == 200
+
+    body = response.json()
+
+    assert body["runId"] == run_id
+    assert body["horizonId"] == "horizon-1"
+    assert body["instanceId"] == "instance-1"
+    assert body["engineType"] == "dummy"
+    assert body["status"] == "accepted"
+    assert body["acceptedAt"] is not None
+    assert body["startedAt"] is None
+    assert body["finishedAt"] is None
+    assert "result" not in body
+
+
+def test_get_solver_run_during_and_after_execution() -> None:
+    engine_started = Event()
+    release_engine = Event()
+
+    def controlled_engine() -> list[dict[str, str]]:
+        engine_started.set()
+        if not release_engine.wait(timeout=5):
+            raise TimeoutError("Test engine was not released")
+        return [{"employeeId": "E001"}]
+
+    with patch(
+        "app.main.select_engine",
+        return_value=controlled_engine,
+    ):
+        with TestClient(app) as client:
+            try:
+                response = client.post(
+                    "/solve",
+                    json={
+                        "horizonId": "H-01",
+                        "engineType": "dummy",
+                        "instance": {"instanceId": "M-01"},
+                    },
+                )
+
+                assert response.status_code == 202
+                assert engine_started.wait(timeout=5)
+
+                run_id = response.json()["runId"]
+
+                running_response = client.get(
+                    f"/solver-runs/{run_id}"
+                )
+
+                assert running_response.status_code == 200
+                running_body = running_response.json()
+
+                assert running_body["status"] == "running"
+                assert running_body["startedAt"] is not None
+                assert running_body["finishedAt"] is None
+                assert "result" not in running_body
+
+                release_engine.set()
+
+                deadline = monotonic() + 5
+
+                while True:
+                    completed_response = client.get(
+                        f"/solver-runs/{run_id}"
+                    )
+
+                    assert completed_response.status_code == 200
+                    completed_body = completed_response.json()
+
+                    if completed_body["status"] == "completed":
+                        break
+
+                    assert monotonic() < deadline, (
+                        "Solver run did not complete"
+                    )
+                    sleep(0.01)
+
+                assert completed_body["finishedAt"] is not None
+                assert "result" not in completed_body
+
+            finally:
+                release_engine.set()

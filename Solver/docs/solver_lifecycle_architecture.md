@@ -219,8 +219,8 @@ and the final Engine contract remain pending.
 ## Runtime interaction — proposed successful run
 
 The sequence illustrates a successful asynchronous run using the implemented
-POST /solve and Runner execution flow. The two GET endpoints follow the
-proposed HTTP contract and are not yet implemented.
+POST /solve and Runner execution flow. The status GET endpoint is implemented;
+the result GET endpoint remains proposed.
 
 ```mermaid
 sequenceDiagram

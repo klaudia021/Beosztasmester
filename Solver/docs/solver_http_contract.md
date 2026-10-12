@@ -5,7 +5,9 @@
 **Derived requirements:** `Solver/docs/requirements.md`  
 **Date:** 2026-10-12
 
-**Integration change notice (2026-10-12):** Section 4 changes the previously shared GET response contract. `GET /solver-runs/{runId}` no longer includes `result`; a separate `GET /solver-runs/{runId}/result` is proposed. Backend implementers must review this change before relying on either GET response shape. The two GET endpoints are not yet implemented.
+**Integration change notice (2026-10-12):** Section 4 changes the previously shared GET response contract. `GET /solver-runs/{runId}` no longer includes `result`;  
+a separate `GET /solver-runs/{runId}/result` is proposed. Backend implementers must review this change before relying on either GET response shape.  
+The status GET endpoint is implemented; the result GET endpoint remains pending.
 
 ## 1. Scope
 
@@ -198,11 +200,12 @@ Ch 7.2 `runtimeSec` represents algorithm execution time, not necessarily the com
 - Serialized background execution, lifecycle timestamps and result retention
 - POST `/solve`: partial request-envelope validation, engine selection, run admission and scheduling
 - HTTP 202 for accepted runs; HTTP 409 for duplicate active runs; HTTP 422 for invalid requests or unsupported engines
+- GET `/solver-runs/{runId}`: status and lifecycle metadata without result data; HTTP 404 for unknown runId.
 
 **Current limitations:**
 
-- Only `engineType: "dummy"` is supported. The dummy roster provider is not yet implemented; execution currently ends in FAILED state.
-- GET status polling and GET result retrieval endpoints are not yet implemented.
+- Only `engineType: "dummy"` is supported. The production roster provider is not implemented; the default Dummy Engine currently fails without it.
+- GET result retrieval endpoint is not yet implemented.
 - Complete Ch 7.1 validation, Ch 7.2 solution generation, Greedy/CP-SAT engines, cancellation and timeout APIs are pending.
 - Run storage is process-local and non-persistent; scheduling failure after successful admission has no recovery mechanism yet.
 
