@@ -89,3 +89,41 @@ def get_solver_run(run_id: str, request: Request) -> dict[str, str | None]:
             else None
         ),
     }
+
+
+@app.get("/solver-runs/{run_id}/result")
+def get_solver_run_result(
+    run_id: str,
+    request: Request,
+) -> dict[str, object]:
+    runner: SolverRunner = request.app.state.runner
+
+    run_with_result = runner.get_run_with_result(run_id)
+
+    if run_with_result is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Solver run not found",
+        )
+
+    snapshot, result = run_with_result
+
+    return {
+        "runId": snapshot.run_id,
+        "horizonId": snapshot.horizon_id,
+        "instanceId": snapshot.instance_id,
+        "engineType": snapshot.engine_type,
+        "status": snapshot.state.value,
+        "acceptedAt": snapshot.accepted_at.isoformat(),
+        "startedAt": (
+            snapshot.started_at.isoformat()
+            if snapshot.started_at is not None
+            else None
+        ),
+        "finishedAt": (
+            snapshot.finished_at.isoformat()
+            if snapshot.finished_at is not None
+            else None
+        ),
+        "result": result,
+    }
