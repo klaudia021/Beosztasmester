@@ -215,6 +215,28 @@ THE Solver service SHALL serialize lifecycle modifications
 and preserve valid state transitions and consistent timestamps.
 
 
+### D06.SOLV.0003 – Duplicate active run admission
+
+**Status:** draft  
+**Parent:** D6  
+**Predecessor:** N/A  
+**Successor:** N/A  
+**Source:** Beosztásmester specification, D6 (F4 / Decision Point 2)  
+**Verification:** Solver / concurrency test
+
+THE SolverRunner SHALL prevent the admission of more than one
+non-terminal SolverRun for the same horizon identifier and engine type.
+
+The admission check and run registration SHALL be atomic.
+
+WHEN an existing run reaches a terminal state,
+THE SolverRunner SHALL permit a new run for the same horizon
+identifier and engine type.
+
+Rejected admission SHALL NOT modify any existing run
+or leave a partially registered run.
+
+
 ---
 
 

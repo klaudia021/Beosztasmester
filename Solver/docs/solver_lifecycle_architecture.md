@@ -93,6 +93,29 @@ Solid arrows show coordination, access or ownership as indicated by their labels
 - **Deployment:** One logical Runner does not automatically imply one shared Python instance across multiple server processes. Deployment and shared-state strategy remain open.
 - **Result ownership (open):** The `SolverEngine` returns its computational result to the `SolverRunner`. The Runner associates the result with the corresponding run. Whether the result is stored directly in `SolverRun` or in a separate result store remains to be decided. Engine instances do not need to remain alive for completed runs.
 
+### Runner registration and admission
+
+The SolverRunner provides two public operations:
+
+- `submit(horizon_id, engine_type) -> run_id`
+- `get_run(run_id) -> SolverRunSnapshot | None`
+
+Admission is serialized by a Runner-owned lock.
+
+Each admitted run is associated with one horizon identifier and
+one engine type. Multiple non-terminal runs with the same
+(horizon_id, engine_type) pair are rejected.
+
+Runs in terminal states remain queryable and do not prevent
+resubmission for the same pair.
+
+The Runner retains ownership of mutable SolverRun objects and
+exposes immutable snapshots to callers.
+
+The current implementation provides registration and status
+snapshots only. Execution scheduling and Engine integration
+remain pending.
+
 ## Runtime interaction — proposed successful run
 
 The following sequence shows one *possible* asynchronous execution flow; it is **not yet an implemented API contract or execution mechanism**. In particular, it does not decide the cancellation semantics of an `ACCEPTED` run.
@@ -137,7 +160,8 @@ sequenceDiagram
 
 - `accepted_at`: time at which the run is accepted and registered.
 - `started_at`: time at which the run transitions successfully to `RUNNING`.
-- `finished_at` (**proposed**, not yet implemented): time at which the run successfully enters a terminal lifecycle state, rather than the Engine's exact computation-stop time.
+- `finished_at` : time at which the run successfully enters a terminal lifecycle state, rather than the Engine's exact computation-stop time.
 - These timestamps are UTC `datetime` values. Durations and solver statistics can be evaluated separately; the Engine may expose its own computation timing.
 
 The diagram shows successful completion only. Cancellation, timeouts, failure handling and any waiting queue require separate decisions and tests.
+
