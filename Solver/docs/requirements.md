@@ -307,6 +307,31 @@ THE service SHALL NOT assume that horizonId
 and instanceId are interchangeable.
 
 
+
+### D06.SOLV.0007 — Application-scoped Runner lifecycle
+
+**Status:** draft  
+**Parent:** D6  
+**Predecessor:** N/A  
+**Successor:** N/A  
+**Source:** Solver service architecture decision; D06.SOLV.0001–0003  
+**Verification:** FastAPI lifespan integration test (`test_runner_lifecycle`)
+
+THE Solver service SHALL create one application-owned SolverRunner
+during FastAPI lifespan startup and SHALL make that instance available
+to HTTP request handlers.
+
+HTTP request handlers SHALL NOT create independent SolverRunner
+instances for processing Solver requests.
+
+During normal FastAPI lifespan shutdown, the application SHALL invoke
+the owned SolverRunner's close operation.
+
+The initial deployment SHALL use one Uvicorn worker process.
+The in-memory Registry and admission protection SHALL be considered
+process-local; multi-process coordination is not supported.
+
+
 ---
 
 

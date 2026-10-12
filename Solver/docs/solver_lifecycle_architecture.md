@@ -90,8 +90,69 @@ Solid arrows show coordination, access or ownership as indicated by their labels
 - **Logical components, not necessarily classes:** The Run Registry and Execution Policy express responsibilities of the Runner. Whether to implement them as separate Python classes remains open.
 - **Illustrative instances:** Runs `#123` and `#124` and the two Engine boxes illustrate multiple jobs and executions. They neither require a permanent one-to-one Run–Engine ownership relation nor imply simultaneous optimization.
 - **Capacity and scheduling:** The number of simultaneously active Engines, queuing, execution mechanism (threads/processes), cancellation coordination and resource limits remain design decisions (specification F4/D6).
-- **Deployment:** One logical Runner does not automatically imply one shared Python instance across multiple server processes. Deployment and shared-state strategy remain open.
+- **Deployment:** The initial implementation uses one Runner and one in-memory Registry per FastAPI application process, with a single Uvicorn worker assumed. Shared-state coordination for multi-worker deployment remains an open architectural extension.
 - **Result ownership (open):** The `SolverEngine` returns its computational result to the `SolverRunner`. The Runner associates the result with the corresponding run. Whether the result is stored directly in `SolverRun` or in a separate result store remains to be decided. Engine instances do not need to remain alive for completed runs.
+
+### FastAPI application lifecycle and Runner ownership
+
+**Requirement:** `D06.SOLV.0007`  
+**Implementation:** `app/main.py`, `app/solver/runner.py`  
+**Verification:** `tests/test_health.py::test_runner_lifecycle`
+
+The FastAPI application owns one SolverRunner through its lifespan
+context manager.
+
+- Startup creates a SolverRunner and stores its reference in
+  `app.state.runner`.
+- HTTP handlers access the application-owned Runner rather than
+  creating independent Runner instances.
+- Normal lifespan shutdown invokes `runner.close()`.
+- `SolverRunner.close()` calls `ThreadPoolExecutor.shutdown(wait=True)`,
+  waiting for submitted execution tasks to finish.
+- Closing the Runner does not imply Python object destruction.
+
+```mermaid
+sequenceDiagram
+    participant S as ASGI Server
+    participant A as FastAPI Lifespan
+    participant R as SolverRunner
+    participant E as ThreadPoolExecutor
+
+    S->>A: Startup
+    A->>R: SolverRunner()
+    R->>E: Create executor (max_workers=1)
+    A->>A: app.state.runner = runner
+    A-->>S: yield / startup complete
+
+    Note over S,R: HTTP requests use the shared Runner
+
+    S->>A: Shutdown
+    A->>R: runner.close()
+    R->>E: shutdown(wait=True)
+    E-->>R: Submitted tasks finished
+    R-->>A: close() returns
+```
+
+#### Deployment boundary
+
+The initial implementation assumes one Uvicorn worker process.
+
+Each independent application process would create its own Runner,
+Registry, lock, and executor. The current in-memory Registry does
+not provide cross-process admission protection or run lookup.
+
+Multi-worker deployment requires an explicitly designed shared-state
+and coordination mechanism before it can be supported.
+
+#### Current verification boundary
+
+The lifecycle test verifies Runner creation and availability
+during startup and exactly one `close()` invocation during shutdown.
+
+The test executes the original close implementation through a
+mock spy. It does not independently verify forced process termination,
+multi-worker coordination, or shutdown behavior under long-running
+solver computations.
 
 ### Runner registration and admission
 

@@ -1,6 +1,23 @@
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 
-app = FastAPI()
+from app.solver.runner import SolverRunner
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+    runner = SolverRunner()
+    app.state.runner = runner
+
+    try:
+        yield
+    finally:
+        runner.close()
+
+
+app = FastAPI(lifespan=lifespan)
 
 
 @app.get("/health")
