@@ -75,24 +75,42 @@ class SolverRunner:
 
             return run_id
 
+    def _make_snapshot(self, run_id: str) -> SolverRunSnapshot:
+        run = self._runs[run_id]
+        horizon_id, engine_type, instance_id = self._run_context[run_id]
+
+        return SolverRunSnapshot(
+            run_id=run.run_id,
+            horizon_id=horizon_id,
+            instance_id=instance_id,
+            engine_type=engine_type,
+            state=run.state,
+            accepted_at=run.accepted_at,
+            started_at=run.started_at,
+            finished_at=run.finished_at,
+        )
+
     def get_run(self, run_id: str) -> SolverRunSnapshot | None:
         with self._lock:
-            run = self._runs.get(run_id)
-
-            if run is None:
+            if run_id not in self._runs:
                 return None
 
-            horizon_id, engine_type, instance_id = self._run_context[run_id]
+            return self._make_snapshot(run_id)
 
-            return SolverRunSnapshot(
-                run_id=run.run_id,
-                horizon_id=horizon_id,
-                instance_id=instance_id,
-                engine_type=engine_type,
-                state=run.state,
-                accepted_at=run.accepted_at,
-                started_at=run.started_at,
-                finished_at=run.finished_at,
+    def get_run_with_result(
+        self,
+        run_id: str,
+    ) -> tuple[SolverRunSnapshot, list[dict[str, str]] | None] | None:
+        with self._lock:
+            if run_id not in self._runs:
+                return None
+
+            snapshot = self._make_snapshot(run_id)
+            result = self._results.get(run_id)
+
+            return (
+                snapshot,
+                deepcopy(result) if result is not None else None,
             )
 
     def schedule(
@@ -136,18 +154,6 @@ class SolverRunner:
         with self._lock:
             self._results[run_id] = deepcopy(result)
             self._runs[run_id].complete()
-
-    def get_result(
-        self,
-        run_id: str,
-    ) -> list[dict[str, str]] | None:
-        with self._lock:
-            result = self._results.get(run_id)
-
-            if result is None:
-                return None
-
-            return deepcopy(result)
 
     def close(self) -> None:
         self._executor.shutdown(wait=True)

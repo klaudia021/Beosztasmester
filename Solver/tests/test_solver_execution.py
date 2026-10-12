@@ -33,12 +33,15 @@ def test_scheduled_run_completes_and_stores_result() -> None:
     finally:
         runner.close()
 
-    snapshot = runner.get_run(run_id)
-    assert snapshot is not None
+    retrieved = runner.get_run_with_result(run_id)
+
+    assert retrieved is not None
+    snapshot, result = retrieved
+
     assert snapshot.state is SolverRunState.COMPLETED
     assert snapshot.started_at is not None
     assert snapshot.finished_at is not None
-    assert runner.get_result(run_id) == assignments
+    assert result == assignments
 
 
 def test_engine_failure_marks_run_failed() -> None:
@@ -53,10 +56,13 @@ def test_engine_failure_marks_run_failed() -> None:
     finally:
         runner.close()
 
-    snapshot = runner.get_run(run_id)
-    assert snapshot is not None
+    retrieved = runner.get_run_with_result(run_id)
+
+    assert retrieved is not None
+    snapshot, result = retrieved
+
     assert snapshot.state is SolverRunState.FAILED
-    assert runner.get_result(run_id) is None
+    assert result is None
 
 
 def test_second_run_waits_for_available_worker() -> None:
@@ -100,7 +106,7 @@ def test_second_run_waits_for_available_worker() -> None:
     assert second_snapshot.state is SolverRunState.COMPLETED
 
 
-def test_get_result_returns_independent_copy() -> None:
+def test_get_run_with_result_returns_independent_copy() -> None:
     runner = SolverRunner()
     run_id = runner.submit("horizon-1", "dummy", "instance-1")
 
@@ -112,14 +118,22 @@ def test_get_result_returns_independent_copy() -> None:
     finally:
         runner.close()
 
-    result = runner.get_result(run_id)
+    retrieved = runner.get_run_with_result(run_id)
+
+    assert retrieved is not None
+    snapshot, result = retrieved
+
+    assert snapshot.state is SolverRunState.COMPLETED
     assert result is not None
 
     result[0]["employeeId"] = "modified"
 
-    assert runner.get_result(run_id) == [
-        {"employeeId": "employee-1"}
-    ]
+    second_retrieval = runner.get_run_with_result(run_id)
+
+    assert second_retrieval is not None
+    _, stored_result = second_retrieval
+
+    assert stored_result == [{"employeeId": "employee-1"}]
 
 
 def test_dummy_engine_uses_injected_provider() -> None:

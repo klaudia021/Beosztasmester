@@ -56,10 +56,13 @@ def test_solve() -> None:
             finally:
                 release_engine.set()
 
-        completed = runner.get_run(run_id)
-        assert completed is not None
+        retrieved = runner.get_run_with_result(run_id)
+
+        assert retrieved is not None
+        completed, result = retrieved
+
         assert completed.state is SolverRunState.COMPLETED
-        assert runner.get_result(run_id) == []
+        assert result == []
 
 
 def test_solve_invalid_request() -> None:

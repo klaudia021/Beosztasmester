@@ -1,5 +1,7 @@
-
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import FrozenInstanceError
+from threading import Event
+from unittest.mock import patch
 from uuid import UUID
 
 import pytest
@@ -184,3 +186,135 @@ def test_different_instance_does_not_bypass_admission() -> None:
         assert runner.get_run(first_id) is not None
     finally:
         runner.close()
+
+
+def test_get_run_with_result_unknown_id() -> None:
+    runner = SolverRunner()
+
+    assert runner.get_run_with_result("unknown") is None
+
+
+def test_get_run_with_result_before_execution() -> None:
+    runner = SolverRunner()
+    run_id = runner.submit("horizon-1", "dummy", "instance-1")
+
+    retrieved = runner.get_run_with_result(run_id)
+
+    assert retrieved is not None
+    snapshot, result = retrieved
+
+    assert snapshot.run_id == run_id
+    assert snapshot.state is SolverRunState.ACCEPTED
+    assert result is None
+
+
+def test_get_run_with_result_empty_result() -> None:
+    runner = SolverRunner()
+    run_id = runner.submit("horizon-1", "dummy", "instance-1")
+
+    runner.schedule(run_id, lambda: [])
+    runner.close()
+
+    retrieved = runner.get_run_with_result(run_id)
+
+    assert retrieved is not None
+    snapshot, result = retrieved
+
+    assert snapshot.state is SolverRunState.COMPLETED
+    assert result == []
+
+
+def test_get_run_with_result_returns_independent_copy() -> None:
+    runner = SolverRunner()
+    run_id = runner.submit("horizon-1", "dummy", "instance-1")
+
+    expected = [{"employeeId": "E001", "shiftType": "D"}]
+
+    runner.schedule(run_id, lambda: expected)
+    runner.close()
+
+    retrieved = runner.get_run_with_result(run_id)
+
+    assert retrieved is not None
+    snapshot, result = retrieved
+
+    assert snapshot.state is SolverRunState.COMPLETED
+    assert result == expected
+    assert result is not None
+
+    result[0]["shiftType"] = "N"
+    result.append({"employeeId": "E002", "shiftType": "D"})
+
+    second_retrieval = runner.get_run_with_result(run_id)
+
+    assert second_retrieval is not None
+    _, stored_result = second_retrieval
+    assert stored_result == expected
+
+
+def test_get_run_with_result_is_atomic_during_completion() -> None:
+    runner = SolverRunner()
+    run_id = runner.submit("horizon-1", "dummy", "instance-1")
+
+    engine_started = Event()
+    release_engine = Event()
+    snapshot_created = Event()
+    release_snapshot = Event()
+
+    expected = [{"employeeId": "E001"}]
+
+    def controlled_engine() -> list[dict[str, str]]:
+        engine_started.set()
+        if not release_engine.wait(timeout=5):
+            raise TimeoutError("Engine was not released")
+        return expected
+
+    original_make_snapshot = runner._make_snapshot
+
+    def controlled_snapshot(run_id: str):  # type: ignore[no-untyped-def]
+        snapshot = original_make_snapshot(run_id)
+        snapshot_created.set()
+        if not release_snapshot.wait(timeout=5):
+            raise TimeoutError("Snapshot was not released")
+        return snapshot
+
+    runner.schedule(run_id, controlled_engine)
+
+    try:
+        assert engine_started.wait(timeout=5)
+
+        with patch.object(
+            runner,
+            "_make_snapshot",
+            side_effect=controlled_snapshot,
+        ):
+            with ThreadPoolExecutor(max_workers=1) as reader:
+                try:
+                    future = reader.submit(
+                        runner.get_run_with_result, run_id
+                    )
+
+                    assert snapshot_created.wait(timeout=5)
+
+                    release_engine.set()
+                finally:
+                    release_snapshot.set()
+
+                retrieved = future.result(timeout=5)
+    finally:
+        release_engine.set()
+        release_snapshot.set()
+        runner.close()
+
+    assert retrieved is not None
+    snapshot, result = retrieved
+
+    assert snapshot.state is SolverRunState.RUNNING
+    assert result is None
+
+    completed = runner.get_run_with_result(run_id)
+    assert completed is not None
+
+    final_snapshot, final_result = completed
+    assert final_snapshot.state is SolverRunState.COMPLETED
+    assert final_result == expected

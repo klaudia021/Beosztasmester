@@ -89,9 +89,9 @@ Solid arrows show coordination, access or ownership as indicated by their labels
 - **Decided responsibility split:** The Runner coordinates lifecycle events; the `SolverRun` owns its state machine and timestamps; the Engine performs calculations. The Engine must not directly mutate the `SolverRun` lifecycle.
 - **Logical components, not necessarily classes:** The Run Registry and Execution Policy express responsibilities of the Runner. Whether to implement them as separate Python classes remains open.
 - **Illustrative instances:** Runs `#123` and `#124` and the two Engine boxes illustrate multiple jobs and executions. They neither require a permanent one-to-one Run–Engine ownership relation nor imply simultaneous optimization.
-- **Capacity and scheduling:** The number of simultaneously active Engines, queuing, execution mechanism (threads/processes), cancellation coordination and resource limits remain design decisions (specification F4/D6).
+- **Capacity and scheduling:** The initial implementation serializes Engine execution with a single-worker ThreadPoolExecutor. Parallel execution, cancellation coordination and resource limits remain future design decisions.
 - **Deployment:** The initial implementation uses one Runner and one in-memory Registry per FastAPI application process, with a single Uvicorn worker assumed. Shared-state coordination for multi-worker deployment remains an open architectural extension.
-- **Result ownership (open):** The `SolverEngine` returns its computational result to the `SolverRunner`. The Runner associates the result with the corresponding run. Whether the result is stored directly in `SolverRun` or in a separate result store remains to be decided. Engine instances do not need to remain alive for completed runs.
+- **Result ownership:** The SolverRunner owns an in-memory result store keyed by runId. Engines return their computational results to the Runner, which stores independent copies. External callers receive independent result copies; mutable internal storage is never exposed.
 
 ### FastAPI application lifecycle and Runner ownership
 
@@ -156,11 +156,15 @@ solver computations.
 
 ### Runner registration and admission
 
-The SolverRunner provides the following run registration
-and lookup operations:
+The SolverRunner provides the following run registration and lookup operations:
 
 - `submit(horizon_id, engine_type, instance_id) -> run_id`
 - `get_run(run_id) -> SolverRunSnapshot | None`
+- `get_run_with_result(run_id) -> tuple[SolverRunSnapshot, list[dict[str, str]] | None] | None`
+
+`get_run_with_result()` reads the snapshot and result atomically under the Runner's RLock and returns a deep copy of the result. Result availability is independent of lifecycle state.
+
+The current result format is temporary; Chapter 7.2 Solution JSON remains pending.
 
 Admission is serialized by a Runner-owned lock.
 
@@ -202,7 +206,6 @@ to execute scheduled Solver runs.
 - The Runner changes the state to RUNNING when execution begins.
 - Successful execution stores the returned result and completes the run.
 - An Engine exception results in FAILED state.
-- `get_result(run_id)` returns an independent copy of a stored result.
 
 Engine implementations do not own or mutate SolverRun lifecycle state.
 
@@ -215,42 +218,48 @@ and the final Engine contract remain pending.
 
 ## Runtime interaction — proposed successful run
 
-The following sequence shows one *possible* asynchronous execution flow; it is **not yet an implemented API contract or execution mechanism**. In particular, it does not decide the cancellation semantics of an `ACCEPTED` run.
+The sequence illustrates a successful asynchronous run using the implemented
+POST /solve and Runner execution flow. The two GET endpoints follow the
+proposed HTTP contract and are not yet implemented.
 
 ```mermaid
 sequenceDiagram
     autonumber
-    participant F as Frontend
+    participant B as Backend
     participant A as FastAPI
     participant R as SolverRunner
     participant M as SolverRun
     participant E as SolverEngine
 
-    F->>A: POST /solve
-    A->>R: submit(request)
-    R->>M: create(run_id)
+    B->>A: POST /solve
+    A->>A: select_engine(engineType)
+    A->>R: submit(horizonId, engineType, instanceId)
+    R->>M: create(runId)
     Note over M: ACCEPTED
-    R-->>A: run_id, status
-    A-->>F: 202 Accepted + run_id
+    R-->>A: runId
+    A->>R: schedule(runId, engine)
+    A-->>B: 202 Accepted + runId
 
-    opt Execution capacity available
+    par Background execution
         R->>M: start()
-        Note over M: RUNNING - started_at recorded
-        R->>E: start execution
+        Note over M: RUNNING
+        R->>E: execute
+        E-->>R: result
+        R->>R: store result
+        R->>M: complete()
+        Note over M: COMPLETED
+    and Status polling
+        B->>A: GET /solver-runs/{runId}
+        A->>R: get_run(runId)
+        R-->>A: snapshot
+        A-->>B: status + metadata
     end
 
-    par Engine computation
-        Note over E: CP-SAT / greedy computation
-    and Status request
-        F->>A: GET /runs/{id}
-        A->>R: get_status(id)
-        R-->>A: current status
-        A-->>F: status response
-    end
-
-    E-->>R: result / completion information
-    R->>M: complete()
-    Note over M: COMPLETED - finished_at recorded
+    B->>A: GET /solver-runs/{runId}/result
+    A->>R: get_run_with_result(runId)
+    Note over R: Atomic snapshot + result read
+    R-->>A: snapshot + result
+    A-->>B: status + available result
 ```
 
 ### Timestamp semantics
