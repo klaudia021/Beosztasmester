@@ -1,5 +1,4 @@
-﻿using Beosztasmester.Models;
-using Beosztasmester.Models.DTOs;
+﻿using Beosztasmester.Models.DTOs;
 using Beosztasmester.Services;
 using Microsoft.AspNetCore.Mvc;
 

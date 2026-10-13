@@ -49,8 +49,8 @@ public class HorizonsService : IHorizonsService
     {
         if (!Guid.TryParse(horizonId, out var id)) return null;
 
-        var horizon = await _dataContext.Horizons.FindAsync(id);
-        if (horizon == null) return null;
+        // var horizon = await _dataContext.Horizons.FindAsync(id);
+        //if (horizon == null) return null;
 
         // Generálunk egy egyedi runId azonosítót a solver futásnak
         string runId = $"run-{Guid.NewGuid().ToString().Substring(0, 8)}";
