@@ -1,8 +1,18 @@
 def get_dummy_assignments() -> list[dict[str, str]]:
-    """Return deterministic dummy roster assignments.
+    """Return a fresh, deterministic demo roster in assignment JSON format.
 
-    TODO (Dani): implement using the agreed test dataset.
+    Uses the mock backend's five employees, seven dates and four shift codes.
+    This fixed fixture does not solve or validate the supplied problem instance.
     """
-    raise NotImplementedError(
-        "Dummy roster provider has not been implemented yet"
-    )
+    employees = ("E001", "E002", "E003", "E004", "E005")
+    shift_types = ("D", "A", "N", "OFF")
+
+    return [
+        {
+            "employeeId": employee_id,
+            "date": f"2026-03-{day:02d}",
+            "shiftType": shift_types[(employee_index + day - 1) % 4],
+        }
+        for employee_index, employee_id in enumerate(employees)
+        for day in range(1, 8)
+    ]
