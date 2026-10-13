@@ -2,8 +2,26 @@
 from threading import Event
 
 from app.solver.engines.dummy import DummySolverEngine
+from app.solver.roster.dummy import get_dummy_assignments
 from app.solver.runner import SolverRunner
 from app.solver.states import SolverRunState
+
+
+def test_default_dummy_provider_completes_run() -> None:
+    runner = SolverRunner()
+    run_id = runner.submit("horizon-demo", "dummy", "instance-demo")
+    engine = DummySolverEngine(delay_seconds=0)
+
+    try:
+        runner.schedule(run_id, engine.run)
+    finally:
+        runner.close()
+
+    retrieved = runner.get_run_with_result(run_id)
+    assert retrieved is not None
+    snapshot, result = retrieved
+    assert snapshot.state is SolverRunState.COMPLETED
+    assert result == get_dummy_assignments()
 
 
 def test_dummy_engine_returns_provider_result() -> None:
