@@ -37,6 +37,15 @@ namespace Beosztásmester
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
             );
 
+            builder.Services.AddHttpClient<IHorizonsService, HorizonsService>(client =>
+            {
+                // Docker Compose-ban a solver konténer címe: http://solver:8000
+                // Ha helyileg futtatod: http://localhost:8000
+                var solverUrl = builder.Configuration["SolverService:BaseUrl"] ?? "http://solver:8000";
+                client.BaseAddress = new Uri(solverUrl);
+            });
+
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

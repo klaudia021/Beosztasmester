@@ -3,6 +3,7 @@ using Beosztasmester.Models;
 using Beosztasmester.Models.Data;
 using Beosztasmester.Models.DTOs;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 
 namespace Beosztasmester.Services;
 
@@ -15,10 +16,12 @@ public interface IHorizonsService
 public class HorizonsService : IHorizonsService
 {
     private readonly DataContext _dataContext;
+    private readonly HttpClient _httpClient;
 
-    public HorizonsService(DataContext dataContext)
+    public HorizonsService(DataContext dataContext, HttpClient httpClient)
     {
         _dataContext = dataContext;
+        _httpClient = httpClient;
     }
 
     public async Task<HorizonResponseDto> CreateHorizonAsync(CreateHorizonRequestDto dto)
@@ -49,22 +52,81 @@ public class HorizonsService : IHorizonsService
     {
         if (!Guid.TryParse(horizonId, out var id)) return null;
 
-        // var horizon = await _dataContext.Horizons.FindAsync(id);
-        // if (horizon == null) return null;
+        var solvePayload = new
+        {
+            horizonId = horizonId,
+            engineType = "dummy",
+            instance = new
+            {
+                instanceId = $"inst-{horizonId}"
+            }
+        };
+        try
+        {
+            var response = await _httpClient.PostAsJsonAsync("/solve", solvePayload);
 
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<StartSolveResponseDto>();
+                if (result != null) return result;
+            }
+        }
+        catch (Exception)
+        {
+            // Ha a Python Solver HTTP microservice nem elérhető (fallback megoldás teszteléshez)
+        }
         // Generálunk egy egyedi runId azonosítót a solver futásnak
-        string runId = $"run-{Guid.NewGuid().ToString().Substring(0, 8)}";
+        string fallbackRunId = $"run-{Guid.NewGuid().ToString().Substring(0, 8)}";
 
-        // TODO: Az OR-Tools Solver elindítása a háttérben (BackgroundService / Task)
-
-        return new StartSolveResponseDto { RunId = runId };
+        
+        return new StartSolveResponseDto { RunId = fallbackRunId };
     }
 
     public async Task<SolverStatusResponseDto?> GetSolverStatusAsync(string runId)
     {
         // 1. Ha a runId nem létezik a nyilvántartásban:
         // return null;
+        try
+        {
+            var response = await _httpClient.GetAsync($"/solver-runs/{runId}/result");
 
+            if (response.IsSuccessStatusCode)
+            {
+                var solverResponse = await response.Content.ReadFromJsonAsync<JsonElement>();
+
+                string status = solverResponse.GetProperty("status").GetString() ?? "RUNNING";
+
+                var statusDto = new SolverStatusResponseDto
+                {
+                    Status = status.ToUpper(),
+                    HorizonId = solverResponse.TryGetProperty("horizonId", out var h) ? h.GetString() : null,
+                    Roster = new List<RosterItemDto>()
+                };
+
+                // Ha van kiszámolt roster eredmény
+                if (solverResponse.TryGetProperty("result", out var res) && res.ValueKind != JsonValueKind.Null)
+                {
+                    if (res.TryGetProperty("assignments", out var assignments))
+                    {
+                        foreach (var item in assignments.EnumerateArray())
+                        {
+                            statusDto.Roster.Add(new RosterItemDto
+                            {
+                                EmployeeId = item.GetProperty("employeeId").GetString() ?? "",
+                                Date = DateTime.Parse(item.GetProperty("date").GetString()!),
+                                ShiftType = item.GetProperty("shiftType").GetString() ?? ""
+                            });
+                        }
+                    }
+                }
+
+                return statusDto;
+            }
+        }
+        catch (Exception)
+        {
+            // Fallback, ha a Python Solver nem érhető el
+        }
         // 2. Szimulált válasz a V1 JSON szerződés szerint:
         return await Task.FromResult(new SolverStatusResponseDto
         {
