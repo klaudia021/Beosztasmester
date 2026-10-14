@@ -50,7 +50,7 @@ public class HorizonsService : IHorizonsService
         if (!Guid.TryParse(horizonId, out var id)) return null;
 
         // var horizon = await _dataContext.Horizons.FindAsync(id);
-        //if (horizon == null) return null;
+        // if (horizon == null) return null;
 
         // Generálunk egy egyedi runId azonosítót a solver futásnak
         string runId = $"run-{Guid.NewGuid().ToString().Substring(0, 8)}";
@@ -72,8 +72,76 @@ public class HorizonsService : IHorizonsService
             HorizonId = "121",
             Roster = new List<RosterItemDto>
             {
-                new RosterItemDto { Employee_Id = "E001", Date =  new DateTime(2026, 3, 1, 0, 0, 0, DateTimeKind.Utc), Shift_Type = "D" },
-                new RosterItemDto { Employee_Id = "E002", Date = new DateTime(2026, 3, 1, 0, 0, 0, DateTimeKind.Utc), Shift_Type = "N" }
+                new RosterItemDto { EmployeeId = "E001", Date = new DateTime(2026, 3, 2, 0, 0, 0, DateTimeKind.Utc), ShiftType = "D" },
+                new RosterItemDto { EmployeeId = "E001", Date = new DateTime(2026, 3, 3, 0, 0, 0, DateTimeKind.Utc), ShiftType = "D" },
+                new RosterItemDto { EmployeeId = "E001", Date = new DateTime(2026, 3, 4, 0, 0, 0, DateTimeKind.Utc), ShiftType = "OFF" },
+                new RosterItemDto { EmployeeId = "E001", Date = new DateTime(2026, 3, 5, 0, 0, 0, DateTimeKind.Utc), ShiftType = "N" },
+                new RosterItemDto { EmployeeId = "E001", Date = new DateTime(2026, 3, 6, 0, 0, 0, DateTimeKind.Utc), ShiftType = "N" },
+                new RosterItemDto { EmployeeId = "E001", Date = new DateTime(2026, 3, 7, 0, 0, 0, DateTimeKind.Utc), ShiftType = "OFF" },
+                new RosterItemDto { EmployeeId = "E001", Date = new DateTime(2026, 3, 8, 0, 0, 0, DateTimeKind.Utc), ShiftType = "A" },
+
+                // E002
+                new RosterItemDto { EmployeeId = "E002", Date = new DateTime(2026, 3, 2, 0, 0, 0, DateTimeKind.Utc), ShiftType = "N" },
+                new RosterItemDto { EmployeeId = "E002", Date = new DateTime(2026, 3, 3, 0, 0, 0, DateTimeKind.Utc), ShiftType = "OFF" },
+                new RosterItemDto { EmployeeId = "E002", Date = new DateTime(2026, 3, 4, 0, 0, 0, DateTimeKind.Utc), ShiftType = "D" },
+                new RosterItemDto { EmployeeId = "E002", Date = new DateTime(2026, 3, 5, 0, 0, 0, DateTimeKind.Utc), ShiftType = "D" },
+                new RosterItemDto { EmployeeId = "E002", Date = new DateTime(2026, 3, 6, 0, 0, 0, DateTimeKind.Utc), ShiftType = "A" },
+                new RosterItemDto { EmployeeId = "E002", Date = new DateTime(2026, 3, 7, 0, 0, 0, DateTimeKind.Utc), ShiftType = "A" },
+                new RosterItemDto { EmployeeId = "E002", Date = new DateTime(2026, 3, 8, 0, 0, 0, DateTimeKind.Utc), ShiftType = "OFF" },
+
+                // E003
+                new RosterItemDto { EmployeeId = "E003", Date = new DateTime(2026, 3, 2, 0, 0, 0, DateTimeKind.Utc), ShiftType = "A" },
+                new RosterItemDto { EmployeeId = "E003", Date = new DateTime(2026, 3, 3, 0, 0, 0, DateTimeKind.Utc), ShiftType = "A" },
+                new RosterItemDto { EmployeeId = "E003", Date = new DateTime(2026, 3, 4, 0, 0, 0, DateTimeKind.Utc), ShiftType = "N" },
+                new RosterItemDto { EmployeeId = "E003", Date = new DateTime(2026, 3, 5, 0, 0, 0, DateTimeKind.Utc), ShiftType = "OFF" },
+                new RosterItemDto { EmployeeId = "E003", Date = new DateTime(2026, 3, 6, 0, 0, 0, DateTimeKind.Utc), ShiftType = "D" },
+                new RosterItemDto { EmployeeId = "E003", Date = new DateTime(2026, 3, 7, 0, 0, 0, DateTimeKind.Utc), ShiftType = "D" },
+                new RosterItemDto { EmployeeId = "E003", Date = new DateTime(2026, 3, 8, 0, 0, 0, DateTimeKind.Utc), ShiftType = "D" },
+
+                // E004
+                new RosterItemDto { EmployeeId = "E004", Date = new DateTime(2026, 3, 2, 0, 0, 0, DateTimeKind.Utc), ShiftType = "OFF" },
+                new RosterItemDto { EmployeeId = "E004", Date = new DateTime(2026, 3, 3, 0, 0, 0, DateTimeKind.Utc), ShiftType = "N" },
+                new RosterItemDto { EmployeeId = "E004", Date = new DateTime(2026, 3, 4, 0, 0, 0, DateTimeKind.Utc), ShiftType = "N" },
+                new RosterItemDto { EmployeeId = "E004", Date = new DateTime(2026, 3, 5, 0, 0, 0, DateTimeKind.Utc), ShiftType = "A" },
+                new RosterItemDto { EmployeeId = "E004", Date = new DateTime(2026, 3, 6, 0, 0, 0, DateTimeKind.Utc), ShiftType = "OFF" },
+                new RosterItemDto { EmployeeId = "E004", Date = new DateTime(2026, 3, 7, 0, 0, 0, DateTimeKind.Utc), ShiftType = "D" },
+                new RosterItemDto { EmployeeId = "E004", Date = new DateTime(2026, 3, 8, 0, 0, 0, DateTimeKind.Utc), ShiftType = "A" },
+
+                // E005
+                new RosterItemDto { EmployeeId = "E005", Date = new DateTime(2026, 3, 2, 0, 0, 0, DateTimeKind.Utc), ShiftType = "D" },
+                new RosterItemDto { EmployeeId = "E005", Date = new DateTime(2026, 3, 3, 0, 0, 0, DateTimeKind.Utc), ShiftType = "OFF" },
+                new RosterItemDto { EmployeeId = "E005", Date = new DateTime(2026, 3, 4, 0, 0, 0, DateTimeKind.Utc), ShiftType = "A" },
+                new RosterItemDto { EmployeeId = "E005", Date = new DateTime(2026, 3, 5, 0, 0, 0, DateTimeKind.Utc), ShiftType = "N" },
+                new RosterItemDto { EmployeeId = "E005", Date = new DateTime(2026, 3, 6, 0, 0, 0, DateTimeKind.Utc), ShiftType = "N" },
+                new RosterItemDto { EmployeeId = "E005", Date = new DateTime(2026, 3, 7, 0, 0, 0, DateTimeKind.Utc), ShiftType = "OFF" },
+                new RosterItemDto { EmployeeId = "E005", Date = new DateTime(2026, 3, 8, 0, 0, 0, DateTimeKind.Utc), ShiftType = "D" },
+
+                // E006
+                new RosterItemDto { EmployeeId = "E006", Date = new DateTime(2026, 3, 2, 0, 0, 0, DateTimeKind.Utc), ShiftType = "A" },
+                new RosterItemDto { EmployeeId = "E006", Date = new DateTime(2026, 3, 3, 0, 0, 0, DateTimeKind.Utc), ShiftType = "D" },
+                new RosterItemDto { EmployeeId = "E006", Date = new DateTime(2026, 3, 4, 0, 0, 0, DateTimeKind.Utc), ShiftType = "OFF" },
+                new RosterItemDto { EmployeeId = "E006", Date = new DateTime(2026, 3, 5, 0, 0, 0, DateTimeKind.Utc), ShiftType = "D" },
+                new RosterItemDto { EmployeeId = "E006", Date = new DateTime(2026, 3, 6, 0, 0, 0, DateTimeKind.Utc), ShiftType = "A" },
+                new RosterItemDto { EmployeeId = "E006", Date = new DateTime(2026, 3, 7, 0, 0, 0, DateTimeKind.Utc), ShiftType = "N" },
+                new RosterItemDto { EmployeeId = "E006", Date = new DateTime(2026, 3, 8, 0, 0, 0, DateTimeKind.Utc), ShiftType = "OFF" },
+
+                // E007
+                new RosterItemDto { EmployeeId = "E007", Date = new DateTime(2026, 3, 2, 0, 0, 0, DateTimeKind.Utc), ShiftType = "OFF" },
+                new RosterItemDto { EmployeeId = "E007", Date = new DateTime(2026, 3, 3, 0, 0, 0, DateTimeKind.Utc), ShiftType = "D" },
+                new RosterItemDto { EmployeeId = "E007", Date = new DateTime(2026, 3, 4, 0, 0, 0, DateTimeKind.Utc), ShiftType = "OFF" },
+                new RosterItemDto { EmployeeId = "E007", Date = new DateTime(2026, 3, 5, 0, 0, 0, DateTimeKind.Utc), ShiftType = "A" },
+                new RosterItemDto { EmployeeId = "E007", Date = new DateTime(2026, 3, 6, 0, 0, 0, DateTimeKind.Utc), ShiftType = "OFF" },
+                new RosterItemDto { EmployeeId = "E007", Date = new DateTime(2026, 3, 7, 0, 0, 0, DateTimeKind.Utc), ShiftType = "D" },
+                new RosterItemDto { EmployeeId = "E007", Date = new DateTime(2026, 3, 8, 0, 0, 0, DateTimeKind.Utc), ShiftType = "N" },
+
+                // E008
+                new RosterItemDto { EmployeeId = "E008", Date = new DateTime(2026, 3, 2, 0, 0, 0, DateTimeKind.Utc), ShiftType = "D" },
+                new RosterItemDto { EmployeeId = "E008", Date = new DateTime(2026, 3, 3, 0, 0, 0, DateTimeKind.Utc), ShiftType = "D" },
+                new RosterItemDto { EmployeeId = "E008", Date = new DateTime(2026, 3, 4, 0, 0, 0, DateTimeKind.Utc), ShiftType = "A" },
+                new RosterItemDto { EmployeeId = "E008", Date = new DateTime(2026, 3, 5, 0, 0, 0, DateTimeKind.Utc), ShiftType = "A" },
+                new RosterItemDto { EmployeeId = "E008", Date = new DateTime(2026, 3, 6, 0, 0, 0, DateTimeKind.Utc), ShiftType = "OFF" },
+                new RosterItemDto { EmployeeId = "E008", Date = new DateTime(2026, 3, 7, 0, 0, 0, DateTimeKind.Utc), ShiftType = "N" },
+                new RosterItemDto { EmployeeId = "E008", Date = new DateTime(2026, 3, 8, 0, 0, 0, DateTimeKind.Utc), ShiftType = "A" },
             }
         });
     }
