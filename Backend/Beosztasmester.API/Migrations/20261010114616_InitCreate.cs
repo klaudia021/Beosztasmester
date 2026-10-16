@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -15,11 +16,12 @@ namespace Beosztasmester.Migrations
                 name: "Audit_Entries",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Entity = table.Column<string>(type: "text", nullable: false),
-                    Entity_Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Entity_Id = table.Column<int>(type: "integer", nullable: false),
                     Operation = table.Column<string>(type: "text", nullable: false),
-                    User_Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    User_Id = table.Column<int>(type: "integer", nullable: false),
                     Timestamp = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ChangesJson = table.Column<string>(type: "jsonb", nullable: false)
                 },
@@ -32,7 +34,8 @@ namespace Beosztasmester.Migrations
                 name: "Competencies",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Code = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false)
                 },
@@ -45,9 +48,10 @@ namespace Beosztasmester.Migrations
                 name: "Department",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    Parent_Id = table.Column<Guid>(type: "uuid", nullable: true)
+                    Parent_Id = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -63,8 +67,9 @@ namespace Beosztasmester.Migrations
                 name: "Employees",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Department_Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Department_Id = table.Column<int>(type: "integer", nullable: false),
                     Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     Status = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     Contract_Hours_Per_Week = table.Column<int>(type: "integer", nullable: false),
@@ -86,8 +91,9 @@ namespace Beosztasmester.Migrations
                 name: "Horizons",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Department_Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Department_Id = table.Column<int>(type: "integer", nullable: false),
                     Start_Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     End_Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Status = table.Column<string>(type: "text", nullable: false)
@@ -107,11 +113,12 @@ namespace Beosztasmester.Migrations
                 name: "Rules",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Department_Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Department_Id = table.Column<int>(type: "integer", nullable: false),
                     Type_Code = table.Column<string>(type: "text", nullable: false),
                     Scope = table.Column<string>(type: "text", nullable: false),
-                    Scope_Ref_Id = table.Column<Guid>(type: "uuid", nullable: true),
+                    Scope_Ref_Id = table.Column<int>(type: "integer", nullable: true),
                     Is_Hard = table.Column<bool>(type: "boolean", nullable: false),
                     Weight = table.Column<int>(type: "integer", nullable: false),
                     Parameters_Json = table.Column<string>(type: "jsonb", nullable: false),
@@ -132,8 +139,9 @@ namespace Beosztasmester.Migrations
                 name: "Shift_Types",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Department_Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Department_Id = table.Column<int>(type: "integer", nullable: false),
                     Code = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
                     Start_Time = table.Column<TimeSpan>(type: "interval", nullable: false),
                     End_Time = table.Column<TimeSpan>(type: "interval", nullable: false),
@@ -155,9 +163,10 @@ namespace Beosztasmester.Migrations
                 name: "Employee_Competencies",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Employee_Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Competency_Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Employee_Id = table.Column<int>(type: "integer", nullable: false),
+                    Competency_Id = table.Column<int>(type: "integer", nullable: false),
                     Valid_From = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Valid_To = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
@@ -182,8 +191,9 @@ namespace Beosztasmester.Migrations
                 name: "Unavailabilities",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Employee_Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Employee_Id = table.Column<int>(type: "integer", nullable: false),
                     Type = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     Start_Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     End_Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -204,8 +214,9 @@ namespace Beosztasmester.Migrations
                 name: "Roster_Versions",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Horizon_Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Horizon_Id = table.Column<int>(type: "integer", nullable: false),
                     Version_Number = table.Column<int>(type: "integer", nullable: false),
                     Status = table.Column<string>(type: "text", nullable: false),
                     Created_By = table.Column<string>(type: "text", nullable: false),
@@ -228,11 +239,12 @@ namespace Beosztasmester.Migrations
                 name: "Demand_Templates",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Department_Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Department_Id = table.Column<int>(type: "integer", nullable: false),
                     DayOfWeek = table.Column<int>(type: "integer", nullable: false),
-                    Shift_Type_Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Competency_Id = table.Column<Guid>(type: "uuid", nullable: true),
+                    Shift_Type_Id = table.Column<int>(type: "integer", nullable: false),
+                    Competency_Id = table.Column<int>(type: "integer", nullable: true),
                     Min_Headcount = table.Column<int>(type: "integer", nullable: false),
                     Max_Headcount = table.Column<int>(type: "integer", nullable: true)
                 },
@@ -262,11 +274,12 @@ namespace Beosztasmester.Migrations
                 name: "Demands",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Department_Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Department_Id = table.Column<int>(type: "integer", nullable: false),
                     Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Shift_Type_Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Competency_Id = table.Column<Guid>(type: "uuid", nullable: true),
+                    Shift_Type_Id = table.Column<int>(type: "integer", nullable: false),
+                    Competency_Id = table.Column<int>(type: "integer", nullable: true),
                     Min_Headcount = table.Column<int>(type: "integer", nullable: false),
                     Max_Headcount = table.Column<int>(type: "integer", nullable: true)
                 },
@@ -296,11 +309,12 @@ namespace Beosztasmester.Migrations
                 name: "Requests",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Employee_Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Employee_Id = table.Column<int>(type: "integer", nullable: false),
                     Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Type = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    Shift_Type_Id = table.Column<Guid>(type: "uuid", nullable: true),
+                    Shift_Type_Id = table.Column<int>(type: "integer", nullable: true),
                     Priority = table.Column<int>(type: "integer", nullable: false),
                     Status = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false)
                 },
@@ -324,11 +338,12 @@ namespace Beosztasmester.Migrations
                 name: "Assignments",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Roster_Version_Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Employee_Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Roster_Version_Id = table.Column<int>(type: "integer", nullable: false),
+                    Employee_Id = table.Column<int>(type: "integer", nullable: false),
                     Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Shift_Type_Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Shift_Type_Id = table.Column<int>(type: "integer", nullable: false),
                     IsLocked = table.Column<bool>(type: "boolean", nullable: false),
                     Source = table.Column<string>(type: "text", nullable: false)
                 },

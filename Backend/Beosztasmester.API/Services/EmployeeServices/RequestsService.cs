@@ -7,11 +7,11 @@ namespace Beosztasmester.Services;
 
 public interface IRequestsService
 {
-    Task<IEnumerable<EmployeeRequestDto>> GetRequestsAsync(Guid? employeeId, string? status);
-    Task<EmployeeRequestDto?> GetRequestByIdAsync(Guid id);
+    Task<IEnumerable<EmployeeRequestDto>> GetRequestsAsync(int? employeeId, string? status);
+    Task<EmployeeRequestDto?> GetRequestByIdAsync(int id);
     Task<EmployeeRequestDto> CreateRequestAsync(CreateEmployeeRequestDto dto);
-    Task<bool> UpdateRequestStatusAsync(Guid id, UpdateRequestStatusDto dto);
-    Task<bool> DeleteRequestAsync(Guid id);
+    Task<bool> UpdateRequestStatusAsync(int id, UpdateRequestStatusDto dto);
+    Task<bool> DeleteRequestAsync(int id);
 }
 
 public class RequestsService: IRequestsService
@@ -23,13 +23,13 @@ public class RequestsService: IRequestsService
         _dataContext = c;
     }
 
-    public async Task<IEnumerable<EmployeeRequestDto>> GetRequestsAsync(Guid? employeeId, string? status)
+    public async Task<IEnumerable<EmployeeRequestDto>> GetRequestsAsync(int? employeeId, string? status)
     {
         var query = _dataContext.Requests.AsQueryable();
 
         if (employeeId.HasValue)
         {
-            query = query.Where(r => r.Employee_Id == employeeId.Value);
+            query = query.Where(r => r.EmployeeId == employeeId.Value);
         }
 
         if (!string.IsNullOrWhiteSpace(status))
@@ -40,16 +40,16 @@ public class RequestsService: IRequestsService
         return await query.Select(r => new EmployeeRequestDto
         {
             Id = r.Id,
-            Employee_Id = r.Employee_Id,
+            EmployeeId = r.EmployeeId,
             Date = r.Date,
             Type = r.Type,
-            Preferred_Shift_Type_Id = r.Shift_Type_Id,
+            PreferredShiftTypeId = r.ShiftTypeId,
             Priority = r.Priority,
             Status = r.Status
         }).ToListAsync();
     }
 
-    public async Task<EmployeeRequestDto?> GetRequestByIdAsync(Guid id)
+    public async Task<EmployeeRequestDto?> GetRequestByIdAsync(int id)
     {
         var request = await _dataContext.Requests.FindAsync(id);
         if (request == null) return null;
@@ -57,10 +57,10 @@ public class RequestsService: IRequestsService
         return new EmployeeRequestDto
         {
             Id = request.Id,
-            Employee_Id = request.Employee_Id,
+            EmployeeId = request.EmployeeId,
             Date = request.Date,
             Type = request.Type,
-            Preferred_Shift_Type_Id = request.Shift_Type_Id,
+            PreferredShiftTypeId = request.ShiftTypeId,
             Priority = request.Priority,
             Status = request.Status
         };
@@ -70,11 +70,10 @@ public class RequestsService: IRequestsService
     {
         var request = new Request
         {
-            Id = Guid.NewGuid(),
-            Employee_Id = dto.Employee_Id,
+            EmployeeId = dto.EmployeeId,
             Date = DateTime.SpecifyKind(dto.Date, DateTimeKind.Utc),
             Type = dto.Type, // e.g. "DAY_OFF", "SHIFT_PREFERENCE"
-            Shift_Type_Id = dto.Preferred_Shift_Type_Id,
+            ShiftTypeId = dto.PreferredShiftTypeId,
             Priority = dto.Priority,
             Status = "Pending"
         };
@@ -85,16 +84,16 @@ public class RequestsService: IRequestsService
         return new EmployeeRequestDto
         {
             Id = request.Id,
-            Employee_Id = request.Employee_Id,
+            EmployeeId = request.EmployeeId,
             Date = request.Date,
             Type = request.Type,
-            Preferred_Shift_Type_Id = request.Shift_Type_Id,
+            PreferredShiftTypeId = request.ShiftTypeId,
             Priority = request.Priority,
             Status = request.Status
         };
     }
 
-    public async Task<bool> UpdateRequestStatusAsync(Guid id, UpdateRequestStatusDto dto)
+    public async Task<bool> UpdateRequestStatusAsync(int id, UpdateRequestStatusDto dto)
     {
         var request = await _dataContext.Requests.FindAsync(id);
         if (request == null) return false;
@@ -105,7 +104,7 @@ public class RequestsService: IRequestsService
         return true;
     }
 
-    public async Task<bool> DeleteRequestAsync(Guid id)
+    public async Task<bool> DeleteRequestAsync(int id)
     {
         var request = await _dataContext.Requests.FindAsync(id);
         if (request == null) return false;

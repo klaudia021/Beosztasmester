@@ -24,24 +24,26 @@ namespace Beosztasmester.Migrations
 
             modelBuilder.Entity("Beosztasmester.Models.Data.Assignment", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("Employee_Id")
-                        .HasColumnType("uuid");
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("integer");
 
                     b.Property<bool>("IsLocked")
                         .HasColumnType("boolean");
 
-                    b.Property<Guid>("Roster_Version_Id")
-                        .HasColumnType("uuid");
+                    b.Property<int>("RosterVersionId")
+                        .HasColumnType("integer");
 
-                    b.Property<Guid>("Shift_Type_Id")
-                        .HasColumnType("uuid");
+                    b.Property<int>("ShiftTypeId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Source")
                         .IsRequired()
@@ -49,20 +51,22 @@ namespace Beosztasmester.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Employee_Id");
+                    b.HasIndex("EmployeeId");
 
-                    b.HasIndex("Roster_Version_Id");
+                    b.HasIndex("RosterVersionId");
 
-                    b.HasIndex("Shift_Type_Id");
+                    b.HasIndex("ShiftTypeId");
 
                     b.ToTable("Assignments");
                 });
 
-            modelBuilder.Entity("Beosztasmester.Models.Data.Audit_Entry", b =>
+            modelBuilder.Entity("Beosztasmester.Models.Data.AuditEntry", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ChangesJson")
                         .IsRequired()
@@ -72,8 +76,8 @@ namespace Beosztasmester.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("Entity_Id")
-                        .HasColumnType("uuid");
+                    b.Property<int>("EntityId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Operation")
                         .IsRequired()
@@ -82,19 +86,21 @@ namespace Beosztasmester.Migrations
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("User_Id")
-                        .HasColumnType("uuid");
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Audit_Entries");
+                    b.ToTable("AuditEntries");
                 });
 
             modelBuilder.Entity("Beosztasmester.Models.Data.Competency", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Code")
                         .IsRequired()
@@ -113,111 +119,119 @@ namespace Beosztasmester.Migrations
 
             modelBuilder.Entity("Beosztasmester.Models.Data.Demand", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
 
-                    b.Property<Guid?>("Competency_Id")
-                        .HasColumnType("uuid");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("CompetencyId")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("Department_Id")
-                        .HasColumnType("uuid");
-
-                    b.Property<int?>("Max_Headcount")
+                    b.Property<int>("DepartmentId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Min_Headcount")
+                    b.Property<int?>("MaxHeadcount")
                         .HasColumnType("integer");
 
-                    b.Property<Guid>("Shift_Type_Id")
-                        .HasColumnType("uuid");
+                    b.Property<int>("MinHeadcount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ShiftTypeId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Competency_Id");
+                    b.HasIndex("CompetencyId");
 
-                    b.HasIndex("Department_Id");
+                    b.HasIndex("DepartmentId");
 
-                    b.HasIndex("Shift_Type_Id");
+                    b.HasIndex("ShiftTypeId");
 
                     b.ToTable("Demands");
                 });
 
-            modelBuilder.Entity("Beosztasmester.Models.Data.Demand_Template", b =>
+            modelBuilder.Entity("Beosztasmester.Models.Data.DemandTemplate", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
 
-                    b.Property<Guid?>("Competency_Id")
-                        .HasColumnType("uuid");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("CompetencyId")
+                        .HasColumnType("integer");
 
                     b.Property<int>("DayOfWeek")
                         .HasColumnType("integer");
 
-                    b.Property<Guid>("Department_Id")
-                        .HasColumnType("uuid");
-
-                    b.Property<int?>("Max_Headcount")
+                    b.Property<int>("DepartmentId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Min_Headcount")
+                    b.Property<int?>("MaxHeadcount")
                         .HasColumnType("integer");
 
-                    b.Property<Guid>("Shift_Type_Id")
-                        .HasColumnType("uuid");
+                    b.Property<int>("MinHeadcount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ShiftTypeId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Competency_Id");
+                    b.HasIndex("CompetencyId");
 
-                    b.HasIndex("Department_Id");
+                    b.HasIndex("DepartmentId");
 
-                    b.HasIndex("Shift_Type_Id");
+                    b.HasIndex("ShiftTypeId");
 
-                    b.ToTable("Demand_Templates");
+                    b.ToTable("DemandTemplates");
                 });
 
             modelBuilder.Entity("Beosztasmester.Models.Data.Department", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
-                    b.Property<Guid?>("Parent_Id")
-                        .HasColumnType("uuid");
+                    b.Property<int?>("ParentId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Parent_Id");
+                    b.HasIndex("ParentId");
 
                     b.ToTable("Department");
                 });
 
             modelBuilder.Entity("Beosztasmester.Models.Data.Employee", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Contract_Hours_Per_Week")
                         .HasColumnType("integer");
 
-                    b.Property<Guid>("Department_Id")
-                        .HasColumnType("uuid");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("Entry_Date")
+                    b.Property<int>("ContractHoursPerWeek")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("DepartmentId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("EntryDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime?>("Exit_Date")
+                    b.Property<DateTime?>("ExitDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
@@ -232,51 +246,55 @@ namespace Beosztasmester.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Department_Id");
+                    b.HasIndex("DepartmentId");
 
                     b.ToTable("Employees");
                 });
 
-            modelBuilder.Entity("Beosztasmester.Models.Data.Employee_Competency", b =>
+            modelBuilder.Entity("Beosztasmester.Models.Data.EmployeeCompetency", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
 
-                    b.Property<Guid>("Competency_Id")
-                        .HasColumnType("uuid");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<Guid>("Employee_Id")
-                        .HasColumnType("uuid");
+                    b.Property<int>("CompetencyId")
+                        .HasColumnType("integer");
 
-                    b.Property<DateTime>("Valid_From")
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ValidFrom")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime?>("Valid_To")
+                    b.Property<DateTime?>("ValidTo")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Competency_Id");
+                    b.HasIndex("CompetencyId");
 
-                    b.HasIndex("Employee_Id");
+                    b.HasIndex("EmployeeId");
 
-                    b.ToTable("Employee_Competencies");
+                    b.ToTable("EmployeeCompetencies");
                 });
 
             modelBuilder.Entity("Beosztasmester.Models.Data.Horizon", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
 
-                    b.Property<Guid>("Department_Id")
-                        .HasColumnType("uuid");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("End_Date")
+                    b.Property<int>("DepartmentId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("EndDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("Start_Date")
+                    b.Property<DateTime>("StartDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Status")
@@ -285,28 +303,30 @@ namespace Beosztasmester.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Department_Id");
+                    b.HasIndex("DepartmentId");
 
                     b.ToTable("Horizons");
                 });
 
             modelBuilder.Entity("Beosztasmester.Models.Data.Request", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("Employee_Id")
-                        .HasColumnType("uuid");
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("integer");
 
                     b.Property<int>("Priority")
                         .HasColumnType("integer");
 
-                    b.Property<Guid?>("Shift_Type_Id")
-                        .HasColumnType("uuid");
+                    b.Property<int?>("ShiftTypeId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -320,65 +340,69 @@ namespace Beosztasmester.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Employee_Id");
+                    b.HasIndex("EmployeeId");
 
-                    b.HasIndex("Shift_Type_Id");
+                    b.HasIndex("ShiftTypeId");
 
                     b.ToTable("Requests");
                 });
 
-            modelBuilder.Entity("Beosztasmester.Models.Data.Roster_Version", b =>
+            modelBuilder.Entity("Beosztasmester.Models.Data.RosterVersion", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
 
-                    b.Property<string>("Created_By")
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("Created_Date")
+                    b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("Horizon_Id")
-                        .HasColumnType("uuid");
+                    b.Property<int>("HorizonId")
+                        .HasColumnType("integer");
 
-                    b.Property<double?>("Objective_Value")
+                    b.Property<double?>("ObjectiveValue")
                         .HasColumnType("double precision");
 
-                    b.Property<string>("Solution_Metadata_Json")
+                    b.Property<string>("SolutionMetadataJson")
                         .HasColumnType("jsonb");
 
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("Version_Number")
+                    b.Property<int>("VersionNumber")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Horizon_Id");
+                    b.HasIndex("HorizonId");
 
-                    b.ToTable("Roster_Versions");
+                    b.ToTable("RosterVersions");
                 });
 
             modelBuilder.Entity("Beosztasmester.Models.Data.Rule", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
 
-                    b.Property<Guid>("Department_Id")
-                        .HasColumnType("uuid");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("Is_Active")
+                    b.Property<int>("DepartmentId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("Is_Hard")
+                    b.Property<bool>("IsHard")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("Parameters_Json")
+                    b.Property<string>("ParametersJson")
                         .IsRequired()
                         .HasColumnType("jsonb");
 
@@ -386,10 +410,10 @@ namespace Beosztasmester.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("Scope_Ref_Id")
-                        .HasColumnType("uuid");
+                    b.Property<int?>("ScopeRefId")
+                        .HasColumnType("integer");
 
-                    b.Property<string>("Type_Code")
+                    b.Property<string>("TypeCode")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -398,60 +422,84 @@ namespace Beosztasmester.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Department_Id");
+                    b.HasIndex("DepartmentId");
 
                     b.ToTable("Rules");
                 });
 
-            modelBuilder.Entity("Beosztasmester.Models.Data.Shift_Type", b =>
+            modelBuilder.Entity("Beosztasmester.Models.Data.ShiftType", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)");
 
-                    b.Property<Guid>("Department_Id")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Duration_Minutes")
+                    b.Property<int>("DepartmentId")
                         .HasColumnType("integer");
 
-                    b.Property<TimeSpan>("End_Time")
+                    b.Property<int>("DurationMinutes")
+                        .HasColumnType("integer");
+
+                    b.Property<TimeSpan>("EndTime")
                         .HasColumnType("interval");
 
-                    b.Property<bool>("Is_Night_Shift")
+                    b.Property<bool>("IsNightShift")
                         .HasColumnType("boolean");
 
-                    b.Property<TimeSpan>("Start_Time")
+                    b.Property<TimeSpan>("StartTime")
                         .HasColumnType("interval");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Department_Id");
+                    b.HasIndex("DepartmentId");
 
-                    b.ToTable("Shift_Types");
+                    b.ToTable("ShiftTypes");
+                });
+
+            modelBuilder.Entity("Beosztasmester.Models.Data.SolverRun", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("HorizonId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SolverRuns");
                 });
 
             modelBuilder.Entity("Beosztasmester.Models.Data.Unavailability", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
 
-                    b.Property<Guid>("Employee_Id")
-                        .HasColumnType("uuid");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("End_Date")
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("EndDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Reason")
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("Start_Date")
+                    b.Property<DateTime>("StartDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Type")
@@ -461,7 +509,7 @@ namespace Beosztasmester.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Employee_Id");
+                    b.HasIndex("EmployeeId");
 
                     b.ToTable("Unavailabilities");
                 });
@@ -470,44 +518,44 @@ namespace Beosztasmester.Migrations
                 {
                     b.HasOne("Beosztasmester.Models.Data.Employee", "Employee")
                         .WithMany("Assignments")
-                        .HasForeignKey("Employee_Id")
+                        .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Beosztasmester.Models.Data.Roster_Version", "Roster_Version")
+                    b.HasOne("Beosztasmester.Models.Data.RosterVersion", "RosterVersion")
                         .WithMany("Assignments")
-                        .HasForeignKey("Roster_Version_Id")
+                        .HasForeignKey("RosterVersionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Beosztasmester.Models.Data.Shift_Type", "Shift_Type")
+                    b.HasOne("Beosztasmester.Models.Data.ShiftType", "ShiftType")
                         .WithMany()
-                        .HasForeignKey("Shift_Type_Id")
+                        .HasForeignKey("ShiftTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Employee");
 
-                    b.Navigation("Roster_Version");
+                    b.Navigation("RosterVersion");
 
-                    b.Navigation("Shift_Type");
+                    b.Navigation("ShiftType");
                 });
 
             modelBuilder.Entity("Beosztasmester.Models.Data.Demand", b =>
                 {
                     b.HasOne("Beosztasmester.Models.Data.Competency", "Competency")
                         .WithMany()
-                        .HasForeignKey("Competency_Id");
+                        .HasForeignKey("CompetencyId");
 
                     b.HasOne("Beosztasmester.Models.Data.Department", "Department")
                         .WithMany()
-                        .HasForeignKey("Department_Id")
+                        .HasForeignKey("DepartmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Beosztasmester.Models.Data.Shift_Type", "Shift_Type")
+                    b.HasOne("Beosztasmester.Models.Data.ShiftType", "ShiftType")
                         .WithMany()
-                        .HasForeignKey("Shift_Type_Id")
+                        .HasForeignKey("ShiftTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -515,24 +563,24 @@ namespace Beosztasmester.Migrations
 
                     b.Navigation("Department");
 
-                    b.Navigation("Shift_Type");
+                    b.Navigation("ShiftType");
                 });
 
-            modelBuilder.Entity("Beosztasmester.Models.Data.Demand_Template", b =>
+            modelBuilder.Entity("Beosztasmester.Models.Data.DemandTemplate", b =>
                 {
                     b.HasOne("Beosztasmester.Models.Data.Competency", "Competency")
                         .WithMany()
-                        .HasForeignKey("Competency_Id");
+                        .HasForeignKey("CompetencyId");
 
                     b.HasOne("Beosztasmester.Models.Data.Department", "Department")
                         .WithMany()
-                        .HasForeignKey("Department_Id")
+                        .HasForeignKey("DepartmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Beosztasmester.Models.Data.Shift_Type", "Shift_Type")
+                    b.HasOne("Beosztasmester.Models.Data.ShiftType", "ShiftType")
                         .WithMany()
-                        .HasForeignKey("Shift_Type_Id")
+                        .HasForeignKey("ShiftTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -540,40 +588,40 @@ namespace Beosztasmester.Migrations
 
                     b.Navigation("Department");
 
-                    b.Navigation("Shift_Type");
+                    b.Navigation("ShiftType");
                 });
 
             modelBuilder.Entity("Beosztasmester.Models.Data.Department", b =>
                 {
-                    b.HasOne("Beosztasmester.Models.Data.Department", "Parent_Unit")
-                        .WithMany("Child_Units")
-                        .HasForeignKey("Parent_Id");
+                    b.HasOne("Beosztasmester.Models.Data.Department", "ParentUnit")
+                        .WithMany("ChildUnits")
+                        .HasForeignKey("ParentId");
 
-                    b.Navigation("Parent_Unit");
+                    b.Navigation("ParentUnit");
                 });
 
             modelBuilder.Entity("Beosztasmester.Models.Data.Employee", b =>
                 {
                     b.HasOne("Beosztasmester.Models.Data.Department", "Department")
                         .WithMany("Employees")
-                        .HasForeignKey("Department_Id")
+                        .HasForeignKey("DepartmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Department");
                 });
 
-            modelBuilder.Entity("Beosztasmester.Models.Data.Employee_Competency", b =>
+            modelBuilder.Entity("Beosztasmester.Models.Data.EmployeeCompetency", b =>
                 {
                     b.HasOne("Beosztasmester.Models.Data.Competency", "Competency")
-                        .WithMany("Employee_Competencies")
-                        .HasForeignKey("Competency_Id")
+                        .WithMany("EmployeeCompetencies")
+                        .HasForeignKey("CompetencyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Beosztasmester.Models.Data.Employee", "Employee")
-                        .WithMany("Employee_Competencies")
-                        .HasForeignKey("Employee_Id")
+                        .WithMany("EmployeeCompetencies")
+                        .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -586,7 +634,7 @@ namespace Beosztasmester.Migrations
                 {
                     b.HasOne("Beosztasmester.Models.Data.Department", "Department")
                         .WithMany()
-                        .HasForeignKey("Department_Id")
+                        .HasForeignKey("DepartmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -597,24 +645,24 @@ namespace Beosztasmester.Migrations
                 {
                     b.HasOne("Beosztasmester.Models.Data.Employee", "Employee")
                         .WithMany("Requests")
-                        .HasForeignKey("Employee_Id")
+                        .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Beosztasmester.Models.Data.Shift_Type", "Shift_Type")
+                    b.HasOne("Beosztasmester.Models.Data.ShiftType", "ShiftType")
                         .WithMany()
-                        .HasForeignKey("Shift_Type_Id");
+                        .HasForeignKey("ShiftTypeId");
 
                     b.Navigation("Employee");
 
-                    b.Navigation("Shift_Type");
+                    b.Navigation("ShiftType");
                 });
 
-            modelBuilder.Entity("Beosztasmester.Models.Data.Roster_Version", b =>
+            modelBuilder.Entity("Beosztasmester.Models.Data.RosterVersion", b =>
                 {
                     b.HasOne("Beosztasmester.Models.Data.Horizon", "Horizon")
-                        .WithMany("Roster_Versions")
-                        .HasForeignKey("Horizon_Id")
+                        .WithMany("RosterVersions")
+                        .HasForeignKey("HorizonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -625,18 +673,18 @@ namespace Beosztasmester.Migrations
                 {
                     b.HasOne("Beosztasmester.Models.Data.Department", "Department")
                         .WithMany()
-                        .HasForeignKey("Department_Id")
+                        .HasForeignKey("DepartmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Department");
                 });
 
-            modelBuilder.Entity("Beosztasmester.Models.Data.Shift_Type", b =>
+            modelBuilder.Entity("Beosztasmester.Models.Data.ShiftType", b =>
                 {
                     b.HasOne("Beosztasmester.Models.Data.Department", "Department")
                         .WithMany()
-                        .HasForeignKey("Department_Id")
+                        .HasForeignKey("DepartmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -647,7 +695,7 @@ namespace Beosztasmester.Migrations
                 {
                     b.HasOne("Beosztasmester.Models.Data.Employee", "Employee")
                         .WithMany("Unavailabilities")
-                        .HasForeignKey("Employee_Id")
+                        .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -656,12 +704,12 @@ namespace Beosztasmester.Migrations
 
             modelBuilder.Entity("Beosztasmester.Models.Data.Competency", b =>
                 {
-                    b.Navigation("Employee_Competencies");
+                    b.Navigation("EmployeeCompetencies");
                 });
 
             modelBuilder.Entity("Beosztasmester.Models.Data.Department", b =>
                 {
-                    b.Navigation("Child_Units");
+                    b.Navigation("ChildUnits");
 
                     b.Navigation("Employees");
                 });
@@ -670,7 +718,7 @@ namespace Beosztasmester.Migrations
                 {
                     b.Navigation("Assignments");
 
-                    b.Navigation("Employee_Competencies");
+                    b.Navigation("EmployeeCompetencies");
 
                     b.Navigation("Requests");
 
@@ -679,10 +727,10 @@ namespace Beosztasmester.Migrations
 
             modelBuilder.Entity("Beosztasmester.Models.Data.Horizon", b =>
                 {
-                    b.Navigation("Roster_Versions");
+                    b.Navigation("RosterVersions");
                 });
 
-            modelBuilder.Entity("Beosztasmester.Models.Data.Roster_Version", b =>
+            modelBuilder.Entity("Beosztasmester.Models.Data.RosterVersion", b =>
                 {
                     b.Navigation("Assignments");
                 });

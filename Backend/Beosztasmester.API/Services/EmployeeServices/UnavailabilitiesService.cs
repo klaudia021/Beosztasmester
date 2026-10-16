@@ -7,10 +7,10 @@ namespace Beosztasmester.Services;
 
 public interface IUnavailabilitiesService
 {
-    Task<IEnumerable<UnavailabilityDto>> GetUnavailabilitiesAsync(Guid? employeeId, DateTime? fromDate, DateTime? toDate);
-    Task<UnavailabilityDto?> GetUnavailabilityByIdAsync(Guid id);
+    Task<IEnumerable<UnavailabilityDto>> GetUnavailabilitiesAsync(int? employeeId, DateTime? fromDate, DateTime? toDate);
+    Task<UnavailabilityDto?> GetUnavailabilityByIdAsync(int id);
     Task<UnavailabilityDto> CreateUnavailabilityAsync(CreateUnavailabilityDto dto);
-    Task<bool> DeleteUnavailabilityAsync(Guid id);
+    Task<bool> DeleteUnavailabilityAsync(int id);
 }
 public class UnavailabilitiesService : IUnavailabilitiesService
 {
@@ -21,37 +21,37 @@ public class UnavailabilitiesService : IUnavailabilitiesService
         _dataContext = dataContext;
     }
 
-    public async Task<IEnumerable<UnavailabilityDto>> GetUnavailabilitiesAsync(Guid? employeeId, DateTime? fromDate, DateTime? toDate)
+    public async Task<IEnumerable<UnavailabilityDto>> GetUnavailabilitiesAsync(int? employeeId, DateTime? fromDate, DateTime? toDate)
     {
         var query = _dataContext.Unavailabilities.AsQueryable();
 
         if (employeeId.HasValue)
         {
-            query = query.Where(u => u.Employee_Id == employeeId.Value);
+            query = query.Where(u => u.EmployeeId == employeeId.Value);
         }
 
         if (fromDate.HasValue)
         {
-            query = query.Where(u => u.End_Date >= DateTime.SpecifyKind(fromDate.Value, DateTimeKind.Utc));
+            query = query.Where(u => u.EndDate >= DateTime.SpecifyKind(fromDate.Value, DateTimeKind.Utc));
         }
 
         if (toDate.HasValue)
         {
-            query = query.Where(u => u.Start_Date <= DateTime.SpecifyKind(toDate.Value, DateTimeKind.Utc));
+            query = query.Where(u => u.StartDate <= DateTime.SpecifyKind(toDate.Value, DateTimeKind.Utc));
         }
 
         return await query.Select(u => new UnavailabilityDto
         {
             Id = u.Id,
-            EmployeeId = u.Employee_Id,
+            EmployeeId = u.EmployeeId,
             Type = u.Type,
-            StartDate = u.Start_Date,
-            EndDate = u.End_Date,
+            StartDate = u.StartDate,
+            EndDate = u.EndDate,
             Reason = u.Reason ?? string.Empty
         }).ToListAsync();
     }
 
-    public async Task<UnavailabilityDto?> GetUnavailabilityByIdAsync(Guid id)
+    public async Task<UnavailabilityDto?> GetUnavailabilityByIdAsync(int id)
     {
         var u = await _dataContext.Unavailabilities.FindAsync(id);
         if (u == null) return null;
@@ -59,10 +59,10 @@ public class UnavailabilitiesService : IUnavailabilitiesService
         return new UnavailabilityDto
         {
             Id = u.Id,
-            EmployeeId = u.Employee_Id,
+            EmployeeId = u.EmployeeId,
             Type = u.Type,
-            StartDate = u.Start_Date,
-            EndDate = u.End_Date,
+            StartDate = u.StartDate,
+            EndDate = u.EndDate,
             Reason = u.Reason ?? string.Empty
         };
     }
@@ -71,11 +71,10 @@ public class UnavailabilitiesService : IUnavailabilitiesService
     {
         var unavailability = new Unavailability
         {
-            Id = Guid.NewGuid(),
-            Employee_Id = dto.EmployeeId,
+            EmployeeId = dto.EmployeeId,
             Type = dto.Type, // e.g. "Vacation", "Sick", "Training"
-            Start_Date = DateTime.SpecifyKind(dto.StartDate, DateTimeKind.Utc),
-            End_Date = DateTime.SpecifyKind(dto.EndDate, DateTimeKind.Utc),
+            StartDate = DateTime.SpecifyKind(dto.StartDate, DateTimeKind.Utc),
+            EndDate = DateTime.SpecifyKind(dto.EndDate, DateTimeKind.Utc),
             Reason = dto.Reason
         };
 
@@ -85,15 +84,15 @@ public class UnavailabilitiesService : IUnavailabilitiesService
         return new UnavailabilityDto
         {
             Id = unavailability.Id,
-            EmployeeId = unavailability.Employee_Id,
+            EmployeeId = unavailability.EmployeeId,
             Type = unavailability.Type,
-            StartDate = unavailability.Start_Date,
-            EndDate = unavailability.End_Date,
+            StartDate = unavailability.StartDate,
+            EndDate = unavailability.EndDate,
             Reason = unavailability.Reason ?? string.Empty
         };
     }
 
-    public async Task<bool> DeleteUnavailabilityAsync(Guid id)
+    public async Task<bool> DeleteUnavailabilityAsync(int id)
     {
         var u = await _dataContext.Unavailabilities.FindAsync(id);
         if (u == null) return false;

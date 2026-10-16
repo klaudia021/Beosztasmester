@@ -21,10 +21,10 @@ namespace Beosztasmester.Controllers.Admin
         /// </summary>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<RuleDto>>> GetRules(
-            [FromQuery] Guid departmentId,
+            [FromQuery] int departmentId,
             [FromQuery] bool? isActiveOnly)
         {
-            if (departmentId == Guid.Empty)
+            if (departmentId == 0)
             {
                 return BadRequest(new { message = "DepartmentId kötelező paraméter!" });
             }
@@ -36,8 +36,8 @@ namespace Beosztasmester.Controllers.Admin
         /// <summary>
         /// Egy konkret szabály lekérdezése ID alapján
         /// </summary>
-        [HttpGet("{id:guid}")]
-        public async Task<ActionResult<RuleDto>> GetRule(Guid id)
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<RuleDto>> GetRule(int id)
         {
             var rule = await _rulesService.GetRuleByIdAsync(id);
             if (rule == null) return NotFound();
@@ -65,8 +65,8 @@ namespace Beosztasmester.Controllers.Admin
         /// <summary>
         /// Meglévő szabály módosítása
         /// </summary>
-        [HttpPut("{id:guid}")]
-        public async Task<IActionResult> UpdateRule(Guid id, [FromBody] CreateRuleDto dto)
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> UpdateRule(int id, [FromBody] CreateRuleDto dto)
         {
             try
             {
@@ -84,8 +84,8 @@ namespace Beosztasmester.Controllers.Admin
         /// <summary>
         /// Szabály ki- vagy bekapcsolása (Aktiválás / Inaktiválás)
         /// </summary>
-        [HttpPatch("{id:guid}/toggle")]
-        public async Task<IActionResult> ToggleRuleStatus(Guid id, [FromQuery] bool isActive)
+        [HttpPatch("{id:int}/toggle")]
+        public async Task<IActionResult> ToggleRuleStatus(int id, [FromQuery] bool isActive)
         {
             var updated = await _rulesService.ToggleRuleStatusAsync(id, isActive);
             if (!updated) return NotFound();
@@ -96,8 +96,8 @@ namespace Beosztasmester.Controllers.Admin
         /// <summary>
         /// Szabály törlése
         /// </summary>
-        [HttpDelete("{id:guid}")]
-        public async Task<IActionResult> DeleteRule(Guid id)
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> DeleteRule(int id)
         {
             var deleted = await _rulesService.DeleteRuleAsync(id);
             if (!deleted) return NotFound();

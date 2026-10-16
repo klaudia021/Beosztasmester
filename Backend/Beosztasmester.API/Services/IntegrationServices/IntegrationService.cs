@@ -12,7 +12,7 @@ public interface IIntegrationService
     Task<string?> GenerateICalFeedAsync(string userToken);
 
     // I3: CSV Export (Roster matrix formátumban)
-    Task<string?> ExportRosterToCsvAsync(Guid versionId);
+    Task<string?> ExportRosterToCsvAsync(int versionId);
 
     // I1: Dolgozói import előnézet és validáció
     Task<EmployeeImportPreviewDto> PreviewEmployeeImportAsync(IFormFile file);
@@ -39,9 +39,9 @@ public class IntegrationService : IIntegrationService
 
         // Csak a PUBLIKÁLT beosztásverziók hozzárendeléseit kérjük le
         var assignments = await _dataContext.Assignments
-            .Include(a => a.Roster_Version)
-            .Include(a => a.Shift_Type)
-            .Where(a => a.Employee_Id == employee.Id && a.Roster_Version.Status == "Published")
+            .Include(a => a.RosterVersion)
+            .Include(a => a.ShiftType)
+            .Where(a => a.EmployeeId == employee.Id && a.RosterVersion.Status == "Published")
             .ToListAsync();
 
         var sb = new StringBuilder();
@@ -54,15 +54,15 @@ public class IntegrationService : IIntegrationService
         foreach (var assignment in assignments)
         {
             var dateStr = assignment.Date.ToString("yyyyMMdd");
-            var startTime = assignment.Shift_Type?.Start_Time.ToString(@"hhmmss") ?? "080000";
-            var endTime = assignment.Shift_Type?.End_Time.ToString(@"hhmmss") ?? "160000";
+            var startTime = assignment.ShiftType?.StartTime.ToString(@"hhmmss") ?? "080000";
+            var endTime = assignment.ShiftType?.EndTime.ToString(@"hhmmss") ?? "160000";
 
             sb.AppendLine("BEGIN:VEVENT");
             sb.AppendLine($"UID:{assignment.Id}@beosztasmester");
             sb.AppendLine($"DTSTAMP:{DateTime.UtcNow:yyyyMMddTHHmmssZ}");
             sb.AppendLine($"DTSTART:{dateStr}T{startTime}");
             sb.AppendLine($"DTEND:{dateStr}T{endTime}");
-            sb.AppendLine($"SUMMARY:Műszak: {assignment.Shift_Type?.Code ?? "Beosztás"}");
+            sb.AppendLine($"SUMMARY:Műszak: {assignment.ShiftType?.Code ?? "Beosztás"}");
             sb.AppendLine($"DESCRIPTION:Beosztásmester műszak hozzárendelés");
             sb.AppendLine("END:VEVENT");
         }
@@ -74,17 +74,17 @@ public class IntegrationService : IIntegrationService
     /// <summary>
     /// I3: Beosztás exportálása CSV mátrixként (Dolgozó x Napok)
     /// </summary>
-    public async Task<string?> ExportRosterToCsvAsync(Guid versionId)
+    public async Task<string?> ExportRosterToCsvAsync(int versionId)
     {
-        var version = await _dataContext.Roster_Versions
+        var version = await _dataContext.RosterVersions
             .FirstOrDefaultAsync(v => v.Id == versionId);
 
         if (version == null) return null;
 
         var assignments = await _dataContext.Assignments
             .Include(a => a.Employee)
-            .Include(a => a.Shift_Type)
-            .Where(a => a.Roster_Version_Id == versionId)
+            .Include(a => a.ShiftType)
+            .Where(a => a.RosterVersionId == versionId)
             .ToListAsync();
 
         var sb = new StringBuilder();
@@ -92,7 +92,7 @@ public class IntegrationService : IIntegrationService
 
         foreach (var a in assignments)
         {
-            sb.AppendLine($"{a.Employee?.Name};{a.Date:yyyy-MM-dd};{a.Shift_Type?.Code};{a.Shift_Type?.Start_Time};{a.Shift_Type?.End_Time}");
+            sb.AppendLine($"{a.Employee?.Name};{a.Date:yyyy-MM-dd};{a.ShiftType?.Code};{a.ShiftType?.StartTime};{a.ShiftType?.EndTime}");
         }
 
         return sb.ToString();

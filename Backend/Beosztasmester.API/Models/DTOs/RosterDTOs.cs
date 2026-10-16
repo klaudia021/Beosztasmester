@@ -1,27 +1,27 @@
-﻿namespace Beosztasmester.Models.DTOs;
+namespace Beosztasmester.Models.DTOs;
 
 public class RosterVersionDto
 {
-    public Guid Id { get; set; }
-    public Guid Horizon_Id { get; set; }
-    public int Version_Number { get; set; }
+    public int Id { get; set; }
+    public int HorizonId { get; set; }
+    public int VersionNumber { get; set; }
     public string Status { get; set; } = "Draft"; // Draft, Pending, Published, Archived
-    public DateTime Created_At { get; set; }
-    public string Created_By { get; set; } = string.Empty;
-    public int? Objective_Value { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public string CreatedBy { get; set; } = string.Empty;
+    public int? ObjectiveValue { get; set; }
     public List<AssignmentDto> Assignments { get; set; } = new();
 }
 
 public class RosterDiffDto
 {
-    public Guid Version_A_Id { get; set; }
-    public Guid Version_B_Id { get; set; }
+    public int VersionAId { get; set; }
+    public int VersionBId { get; set; }
     public List<AssignmentChangeDto> Changes { get; set; } = new();
 }
 
 public class RosterItemDto
 {
-    public string EmployeeId { get; set; } = string.Empty;
-    public DateTime Date { get; set; }
+    public int EmployeeId { get; set; }
+    public DateOnly Date { get; set; }
     public string ShiftType { get; set; } = string.Empty;
 }

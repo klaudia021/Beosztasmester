@@ -9,17 +9,17 @@ public interface IMasterDataService
 {
     // Departments
     Task<IEnumerable<DepartmentDto>> GetDepartmentsAsync();
-    Task<DepartmentDto?> GetDepartmentByIdAsync(Guid id);
+    Task<DepartmentDto?> GetDepartmentByIdAsync(int id);
     Task<DepartmentDto> CreateDepartmentAsync(CreateDepartmentDto dto);
 
     // Skills
     Task<IEnumerable<SkillDto>> GetSkillsAsync();
-    Task<SkillDto?> GetSkillByIdAsync(Guid id);
+    Task<SkillDto?> GetSkillByIdAsync(int id);
     Task<SkillDto> CreateSkillAsync(CreateSkillDto dto);
 
     // ShiftTypes
-    Task<IEnumerable<ShiftTypeDto>> GetShiftTypesAsync(Guid? departmentId);
-    Task<ShiftTypeDto?> GetShiftTypeByIdAsync(Guid id);
+    Task<IEnumerable<ShiftTypeDto>> GetShiftTypesAsync(int? departmentId);
+    Task<ShiftTypeDto?> GetShiftTypeByIdAsync(int id);
     Task<ShiftTypeDto> CreateShiftTypeAsync(CreateShiftTypeDto dto);
 }
 
@@ -38,10 +38,10 @@ public class MasterDataService : IMasterDataService
             {
                 Id = d.Id,
                 Name = d.Name,
-                ParentId = d.Parent_Id
+                ParentId = d.ParentId
             }).ToListAsync();
     }
-    public async Task<DepartmentDto?> GetDepartmentByIdAsync(Guid id)
+    public async Task<DepartmentDto?> GetDepartmentByIdAsync(int id)
     {
         var dept = await _dataContext.Department.FindAsync(id);
         if (dept == null) return null;
@@ -50,7 +50,7 @@ public class MasterDataService : IMasterDataService
         {
             Id = dept.Id,
             Name = dept.Name,
-            ParentId = dept.Parent_Id
+            ParentId = dept.ParentId
         };
     }
 
@@ -58,9 +58,8 @@ public class MasterDataService : IMasterDataService
     {
         var department = new Department
         {
-            Id = Guid.NewGuid(),
             Name = dto.Name,
-            Parent_Id = dto.ParentId
+            ParentId = dto.ParentId
         };
 
         _dataContext.Department.Add(department);
@@ -70,7 +69,7 @@ public class MasterDataService : IMasterDataService
         {
             Id = department.Id,
             Name = department.Name,
-            ParentId = department.Parent_Id
+            ParentId = department.ParentId
         };
     }
 
@@ -86,7 +85,7 @@ public class MasterDataService : IMasterDataService
             }).ToListAsync();
     }
 
-    public async Task<SkillDto?> GetSkillByIdAsync(Guid id)
+    public async Task<SkillDto?> GetSkillByIdAsync(int id)
     {
         var skill = await _dataContext.Competencies.FindAsync(id);
         if (skill == null) return null;
@@ -103,7 +102,6 @@ public class MasterDataService : IMasterDataService
     {
         var skill = new Competency
         {
-            Id = Guid.NewGuid(),
             Code = dto.Code,
             Name = dto.Name
         };
@@ -120,69 +118,68 @@ public class MasterDataService : IMasterDataService
     }
 
     // --- ShiftTypes ---
-    public async Task<IEnumerable<ShiftTypeDto>> GetShiftTypesAsync(Guid? departmentId)
+    public async Task<IEnumerable<ShiftTypeDto>> GetShiftTypesAsync(int? departmentId)
     {
-        var query = _dataContext.Shift_Types.AsQueryable();
+        var query = _dataContext.ShiftTypes.AsQueryable();
 
         if (departmentId.HasValue)
         {
-            query = query.Where(st => st.Department_Id == departmentId.Value);
+            query = query.Where(st => st.DepartmentId == departmentId.Value);
         }
 
         return await query.Select(st => new ShiftTypeDto
         {
             Id = st.Id,
-            DepartmentId = st.Department_Id,
+            DepartmentId = st.DepartmentId,
             Code = st.Code,
-            StartTime = st.Start_Time.ToString(@"hh\:mm"),
-            EndTime = st.End_Time.ToString(@"hh\:mm"),
-            DurationMinutes = st.Duration_Minutes,
-            IsNight = st.Is_Night_Shift
+            StartTime = st.StartTime.ToString(@"hh\:mm"),
+            EndTime = st.EndTime.ToString(@"hh\:mm"),
+            DurationMinutes = st.DurationMinutes,
+            IsNight = st.IsNightShift
         }).ToListAsync();
     }
 
-    public async Task<ShiftTypeDto?> GetShiftTypeByIdAsync(Guid id)
+    public async Task<ShiftTypeDto?> GetShiftTypeByIdAsync(int id)
     {
-        var st = await _dataContext.Shift_Types.FindAsync(id);
+        var st = await _dataContext.ShiftTypes.FindAsync(id);
         if (st == null) return null;
 
         return new ShiftTypeDto
         {
             Id = st.Id,
-            DepartmentId = st.Department_Id,
+            DepartmentId = st.DepartmentId,
             Code = st.Code,
-            StartTime = st.Start_Time.ToString(@"hh\:mm"),
-            EndTime = st.End_Time.ToString(@"hh\:mm"),
-            DurationMinutes = st.Duration_Minutes,
-            IsNight = st.Is_Night_Shift
+            StartTime = st.StartTime.ToString(@"hh\:mm"),
+            EndTime = st.EndTime.ToString(@"hh\:mm"),
+            DurationMinutes = st.DurationMinutes,
+            IsNight = st.IsNightShift
         };
     }
 
     public async Task<ShiftTypeDto> CreateShiftTypeAsync(CreateShiftTypeDto dto)
     {
-        var shiftType = new Shift_Type
+        var shiftType = new ShiftType
         {
-            Id = Guid.NewGuid(),
-            Department_Id = dto.DepartmentId,
+            DepartmentId = dto.DepartmentId,
             Code = dto.Code,
-            Start_Time = TimeSpan.Parse(dto.StartTime),
-            End_Time = TimeSpan.Parse(dto.EndTime),
-            Duration_Minutes = dto.DurationMinutes,
-            Is_Night_Shift = dto.IsNight
+            StartTime = TimeSpan.Parse(dto.StartTime),
+            EndTime = TimeSpan.Parse(dto.EndTime),
+            DurationMinutes = dto.DurationMinutes,
+            IsNightShift = dto.IsNight
         };
 
-        _dataContext.Shift_Types.Add(shiftType);
+        _dataContext.ShiftTypes.Add(shiftType);
         await _dataContext.SaveChangesAsync();
 
         return new ShiftTypeDto
         {
             Id = shiftType.Id,
-            DepartmentId = shiftType.Department_Id,
+            DepartmentId = shiftType.DepartmentId,
             Code = shiftType.Code,
-            StartTime = shiftType.Start_Time.ToString(@"hh\:mm"),
-            EndTime = shiftType.End_Time.ToString(@"hh\:mm"),
-            DurationMinutes = shiftType.Duration_Minutes,
-            IsNight = shiftType.Is_Night_Shift
+            StartTime = shiftType.StartTime.ToString(@"hh\:mm"),
+            EndTime = shiftType.EndTime.ToString(@"hh\:mm"),
+            DurationMinutes = shiftType.DurationMinutes,
+            IsNight = shiftType.IsNightShift
         };
     }
 

@@ -1,4 +1,4 @@
-﻿using Beosztasmester.Models;
+using Beosztasmester.Models;
 using Beosztasmester.Models.DTOs;
 using Beosztasmester.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -21,11 +21,11 @@ public class DemandsController : ControllerBase
     /// </summary>
     [HttpGet]
     public async Task<ActionResult<IEnumerable<DemandDto>>> GetDemands(
-        [FromQuery] Guid departmentId,
+        [FromQuery] int departmentId,
         [FromQuery] DateTime? fromDate,
         [FromQuery] DateTime? toDate)
     {
-        if (departmentId == Guid.Empty)
+        if (departmentId == 0)
         {
             return BadRequest(new { message = "DepartmentId megadása kötelező!" });
         }
@@ -37,8 +37,8 @@ public class DemandsController : ControllerBase
     /// <summary>
     /// Egy konkrét kapacitásigény lekérdezése ID alapján
     /// </summary>
-    [HttpGet("{id:guid}")]
-    public async Task<ActionResult<DemandDto>> GetDemand(Guid id)
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<DemandDto>> GetDemand(int id)
     {
         var demand = await _demandsService.GetDemandByIdAsync(id);
         if (demand == null) return NotFound(new { error = "not found" });
@@ -61,10 +61,10 @@ public class DemandsController : ControllerBase
     /// </summary>
     [HttpPost("bulk")]
     public async Task<ActionResult<IEnumerable<DemandDto>>> BulkUpsertDemands(
-        [FromQuery] Guid departmentId,
+        [FromQuery] int departmentId,
         [FromBody] List<CreateDemandDto> dtos)
     {
-        if (departmentId == Guid.Empty)
+        if (departmentId == 0)
         {
             return BadRequest(new { message = "DepartmentId megadása kötelező!" });
         }
@@ -76,8 +76,8 @@ public class DemandsController : ControllerBase
     /// <summary>
     /// Kapacitásigény törlése
     /// </summary>
-    [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> DeleteDemand(Guid id)
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> DeleteDemand(int id)
     {
         var deleted = await _demandsService.DeleteDemandAsync(id);
         if (!deleted) return NotFound(new { error = "not found" });

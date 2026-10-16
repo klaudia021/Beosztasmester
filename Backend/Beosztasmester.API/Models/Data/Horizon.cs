@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Beosztasmester.Models.Data
@@ -6,13 +6,13 @@ namespace Beosztasmester.Models.Data
     public class Horizon
     {
         [Key]
-        public Guid Id { get; set; }
-        public Guid Department_Id { get; set; }
-        [ForeignKey(nameof(Department_Id))]
+        public int Id { get; set; }
+        public int DepartmentId { get; set; }
+        [ForeignKey(nameof(DepartmentId))]
         public Department Department { get; set; } = null!;
-        public DateTime Start_Date { get; set; }
-        public DateTime End_Date { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
         public string Status { get; set; } = "DRAFT";
-        public ICollection<Roster_Version> Roster_Versions { get; set; } = new List<Roster_Version>(); //for the one to many 
+        public ICollection<RosterVersion> RosterVersions { get; set; } = new List<RosterVersion>(); //for the one to many
     }
 }

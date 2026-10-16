@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Beosztasmester.Models.Data
@@ -6,11 +6,11 @@ namespace Beosztasmester.Models.Data
     public class Employee
     {
         [Key]
-        public Guid Id { get; set; }
+        public int Id { get; set; }
 
-        public Guid Department_Id { get; set; }
+        public int DepartmentId { get; set; }
 
-        [ForeignKey(nameof(Department_Id))]
+        [ForeignKey(nameof(DepartmentId))]
         public Department Department { get; set; } = null!;
 
         [Required]
@@ -21,14 +21,14 @@ namespace Beosztasmester.Models.Data
         [StringLength(50)]
         public string Status { get; set; } = "Active";
 
-        public int Contract_Hours_Per_Week { get; set; }
+        public int ContractHoursPerWeek { get; set; }
 
-        public DateTime Entry_Date { get; set; }
+        public DateTime EntryDate { get; set; }
 
-        public DateTime? Exit_Date { get; set; }
+        public DateTime? ExitDate { get; set; }
 
         // Navigation properties
-        public ICollection<Employee_Competency> Employee_Competencies { get; set; } = new List<Employee_Competency>();
+        public ICollection<EmployeeCompetency> EmployeeCompetencies { get; set; } = new List<EmployeeCompetency>();
         public ICollection<Unavailability> Unavailabilities { get; set; } = new List<Unavailability>();
         public ICollection<Request> Requests { get; set; } = new List<Request>();
         public ICollection<Assignment> Assignments { get; set; } = new List<Assignment>();

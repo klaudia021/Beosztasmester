@@ -1,4 +1,4 @@
-﻿namespace Beosztasmester.Models.DTOs;
+namespace Beosztasmester.Models.DTOs;
 
 public class StartSolveRequestDto
 {
@@ -8,8 +8,8 @@ public class StartSolveRequestDto
 
 public class SolverRunStatusDto
 {
-    public Guid RunId { get; set; }
-    public Guid HorizonId { get; set; }
+    public int RunId { get; set; }
+    public int HorizonId { get; set; }
     public string Status { get; set; } = "Running"; // Running, Completed, Infeasible, Cancelled
     public double RuntimeSeconds { get; set; }
     public int? BestObjectiveValue { get; set; }
@@ -19,7 +19,7 @@ public class SolverRunStatusDto
 
 public class SolverProgressDto
 {
-    public Guid RunId { get; set; }
+    public int RunId { get; set; }
     public double ElapsedSeconds { get; set; }
     public int CurrentObjective { get; set; }
     public int BestBound { get; set; }
@@ -27,7 +27,7 @@ public class SolverProgressDto
 
 public class InfeasibilityExplanationDto
 {
-    public Guid RunId { get; set; }
+    public int RunId { get; set; }
     public List<string> ConflictingRuleCodes { get; set; } = new();
     public List<string> HumanReadableReasons { get; set; } = new();
     public List<string> SuggestedFixes { get; set; } = new();
@@ -36,11 +36,11 @@ public class InfeasibilityExplanationDto
 public class SolverStatusResponseDto
 {
     public string Status { get; set; } = string.Empty; // "RUNNING", "DONE", "FAILED"
-    public string? HorizonId { get; set; }
+    public int? HorizonId { get; set; }
     public List<RosterItemDto>? Roster { get; set; }
 }
 
 public class StartSolveResponseDto
 {
-    public string RunId { get; set; } = string.Empty;
+    public int RunId { get; set; }
 }

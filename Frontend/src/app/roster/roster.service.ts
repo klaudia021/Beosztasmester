@@ -39,13 +39,13 @@ export class RosterService {
             });
     }
 
-    createHorizon(orgUnitId: string, start: string, end: string) {
-        return this.http.post<{ id: string }>(`${ environment.apiUrl }/api/horizons`, {
+    createHorizon(orgUnitId: number, start: string, end: string) {
+        return this.http.post<{ id: number }>(`${ environment.apiUrl }/api/horizons`, {
             orgUnitId, start, end
         });
     }
 
-    solve(horizonId: string) {
+    solve(horizonId: number) {
         return this.http.post<{ runId: string }>(`${environment.apiUrl}/api/horizons/${horizonId}/solve`, {});
     }
 }

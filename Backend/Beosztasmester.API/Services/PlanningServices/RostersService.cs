@@ -7,13 +7,13 @@ namespace Beosztasmester.Services;
 
 public interface IRostersService
 {
-    Task<RosterVersionDto?> GetRosterVersionByIdAsync(Guid versionId);
-    Task<IEnumerable<RosterVersionDto>> GetRostersByHorizonAsync(Guid horizonId);
-    Task<RosterVersionDto> CreateRosterVersionAsync(Guid horizonId, string createdBy);
-    Task<ValidationResultDto> PatchAssignmentsAsync(Guid versionId, List<PatchAssignmentDto> patchDtos);
-    Task<ValidationResultDto> ValidateRosterVersionAsync(Guid versionId);
-    Task<RosterDiffDto?> CompareRosterVersionsAsync(Guid versionAId, Guid versionBId);
-    Task<bool> PublishRosterVersionAsync(Guid versionId);
+    Task<RosterVersionDto?> GetRosterVersionByIdAsync(int versionId);
+    Task<IEnumerable<RosterVersionDto>> GetRostersByHorizonAsync(int horizonId);
+    Task<RosterVersionDto> CreateRosterVersionAsync(int horizonId, string createdBy);
+    Task<ValidationResultDto> PatchAssignmentsAsync(int versionId, List<PatchAssignmentDto> patchDtos);
+    Task<ValidationResultDto> ValidateRosterVersionAsync(int versionId);
+    Task<RosterDiffDto?> CompareRosterVersionsAsync(int versionAId, int versionBId);
+    Task<bool> PublishRosterVersionAsync(int versionId);
 }
 public class RostersService: IRostersService
 {
@@ -24,9 +24,9 @@ public class RostersService: IRostersService
         _dataContext = dataContext;
     }
 
-    public async Task<RosterVersionDto?> GetRosterVersionByIdAsync(Guid versionId)
+    public async Task<RosterVersionDto?> GetRosterVersionByIdAsync(int versionId)
     {
-        var version = await _dataContext.Roster_Versions
+        var version = await _dataContext.RosterVersions
             .Include(v => v.Assignments)
             .FirstOrDefaultAsync(v => v.Id == versionId);
 
@@ -35,69 +35,68 @@ public class RostersService: IRostersService
         return new RosterVersionDto
         {
             Id = version.Id,
-            Horizon_Id = version.Horizon_Id,
-            Version_Number = version.Version_Number,
+            HorizonId = version.HorizonId,
+            VersionNumber = version.VersionNumber,
             Status = version.Status,
-            Created_At = version.Created_Date,
-            Created_By = version.Created_By,
+            CreatedAt = version.CreatedDate,
+            CreatedBy = version.CreatedBy,
             Assignments = version.Assignments.Select(a => new AssignmentDto
             {
                 Id = a.Id,
-                Roster_Version_Id = a.Roster_Version_Id,
-                Employee_Id = a.Employee_Id,
+                RosterVersionId = a.RosterVersionId,
+                EmployeeId = a.EmployeeId,
                 Date = a.Date,
-                Shift_Type_Id = a.Shift_Type_Id,
+                ShiftTypeId = a.ShiftTypeId,
                 IsLocked = a.IsLocked
             }).ToList()
         };
     }
 
-    public async Task<IEnumerable<RosterVersionDto>> GetRostersByHorizonAsync(Guid horizonId)
+    public async Task<IEnumerable<RosterVersionDto>> GetRostersByHorizonAsync(int horizonId)
     {
-        var versions = await _dataContext.Roster_Versions
-            .Where(v => v.Horizon_Id == horizonId)
-            .OrderByDescending(v => v.Version_Number)
+        var versions = await _dataContext.RosterVersions
+            .Where(v => v.HorizonId == horizonId)
+            .OrderByDescending(v => v.VersionNumber)
             .ToListAsync();
 
         return versions.Select(v => new RosterVersionDto
         {
             Id = v.Id,
-            Horizon_Id = v.Horizon_Id,
-            Version_Number = v.Version_Number,
+            HorizonId = v.HorizonId,
+            VersionNumber = v.VersionNumber,
             Status = v.Status,
-            Created_At = v.Created_Date,
-            Created_By = v.Created_By
+            CreatedAt = v.CreatedDate,
+            CreatedBy = v.CreatedBy
         });
     }
 
-    public async Task<RosterVersionDto> CreateRosterVersionAsync(Guid horizonId, string createdBy)
+    public async Task<RosterVersionDto> CreateRosterVersionAsync(int horizonId, string createdBy)
     {
         // Kiszámoljuk a következő verziószámot az adott horizonton belül
-        var maxVersionNumber = await _dataContext.Roster_Versions
-            .Where(v => v.Horizon_Id == horizonId)
-            .MaxAsync(v => (int?)v.Version_Number) ?? 0;
+        var maxVersionNumber = await _dataContext.RosterVersions
+            .Where(v => v.HorizonId == horizonId)
+            .MaxAsync(v => (int?)v.VersionNumber) ?? 0;
 
-        var newVersion = new Roster_Version
+        var newVersion = new RosterVersion
         {
-            Id = Guid.NewGuid(),
-            Horizon_Id = horizonId,
-            Version_Number = maxVersionNumber + 1,
+            HorizonId = horizonId,
+            VersionNumber = maxVersionNumber + 1,
             Status = "Draft",
-            Created_Date = DateTime.UtcNow,
-            Created_By = createdBy
+            CreatedDate = DateTime.UtcNow,
+            CreatedBy = createdBy
         };
 
-        _dataContext.Roster_Versions.Add(newVersion);
+        _dataContext.RosterVersions.Add(newVersion);
         await _dataContext.SaveChangesAsync();
 
         return new RosterVersionDto
         {
             Id = newVersion.Id,
-            Horizon_Id = newVersion.Horizon_Id,
-            Version_Number = newVersion.Version_Number,
+            HorizonId = newVersion.HorizonId,
+            VersionNumber = newVersion.VersionNumber,
             Status = newVersion.Status,
-            Created_At = newVersion.Created_Date,
-            Created_By = newVersion.Created_By,
+            CreatedAt = newVersion.CreatedDate,
+            CreatedBy = newVersion.CreatedBy,
             Assignments = new List<AssignmentDto>()
         };
     }
@@ -105,9 +104,9 @@ public class RostersService: IRostersService
     /// <summary>
     /// F5: Kézi módosítások végrehajtása (zárolás/feloldás, műszak törlés/hozzáadás)
     /// </summary>
-    public async Task<ValidationResultDto> PatchAssignmentsAsync(Guid versionId, List<PatchAssignmentDto> patchDtos)
+    public async Task<ValidationResultDto> PatchAssignmentsAsync(int versionId, List<PatchAssignmentDto> patchDtos)
     {
-        var version = await _dataContext.Roster_Versions
+        var version = await _dataContext.RosterVersions
             .Include(v => v.Assignments)
             .FirstOrDefaultAsync(v => v.Id == versionId);
 
@@ -120,9 +119,9 @@ public class RostersService: IRostersService
         {
             var dateUtc = DateTime.SpecifyKind(dto.Date, DateTimeKind.Utc);
             var existingAssignment = version.Assignments
-                .FirstOrDefault(a => a.Employee_Id == dto.Employee_Id && a.Date.Date == dateUtc.Date);
+                .FirstOrDefault(a => a.EmployeeId == dto.EmployeeId && a.Date.Date == dateUtc.Date);
 
-            if (dto.Shift_Type_Id == null || dto.Shift_Type_Id == Guid.Empty)
+            if (dto.ShiftTypeId == null || dto.ShiftTypeId == 0)
             {
                 // Műszak törlése
                 if (existingAssignment != null)
@@ -135,7 +134,7 @@ public class RostersService: IRostersService
                 if (existingAssignment != null)
                 {
                     // Módosítás
-                    existingAssignment.Shift_Type_Id = dto.Shift_Type_Id.Value;
+                    existingAssignment.ShiftTypeId = dto.ShiftTypeId.Value;
                     existingAssignment.IsLocked = dto.IsLocked;
                     existingAssignment.Source = "Manual";
                 }
@@ -144,11 +143,10 @@ public class RostersService: IRostersService
                     // Új hozzárendelés kézzel
                     var newAssignment = new Assignment
                     {
-                        Id = Guid.NewGuid(),
-                        Roster_Version_Id = versionId,
-                        Employee_Id = dto.Employee_Id,
+                        RosterVersionId = versionId,
+                        EmployeeId = dto.EmployeeId,
                         Date = dateUtc,
-                        Shift_Type_Id = dto.Shift_Type_Id.Value,
+                        ShiftTypeId = dto.ShiftTypeId.Value,
                         IsLocked = dto.IsLocked,
                         Source = "Manual"
                     };
@@ -166,7 +164,7 @@ public class RostersService: IRostersService
     /// <summary>
     /// F5: Beosztás érvényességének ellenőrzése (Hard és Soft szabályok vizsgálata)
     /// </summary>
-    public async Task<ValidationResultDto> ValidateRosterVersionAsync(Guid versionId)
+    public async Task<ValidationResultDto> ValidateRosterVersionAsync(int versionId)
     {
         var result = new ValidationResultDto
         {
@@ -177,12 +175,12 @@ public class RostersService: IRostersService
         };
 
         var assignments = await _dataContext.Assignments
-            .Where(a => a.Roster_Version_Id == versionId)
+            .Where(a => a.RosterVersionId == versionId)
             .ToListAsync();
 
         // Példa ellenőrzés: Dupla műszak ugyanazon a napon egy dolgozónak
         var duplicateShifts = assignments
-            .GroupBy(a => new { a.Employee_Id, a.Date.Date })
+            .GroupBy(a => new { a.EmployeeId, a.Date.Date })
             .Where(g => g.Count() > 1);
 
         foreach (var dup in duplicateShifts)
@@ -192,7 +190,7 @@ public class RostersService: IRostersService
             {
                 RuleTypeCode = "NO_DOUBLE_SHIFT",
                 Message = "Egy dolgozónak nem lehet egynél több műszakja ugyanazon a napon!",
-                AffectedEmployeeId = dup.Key.Employee_Id,
+                AffectedEmployeeId = dup.Key.EmployeeId,
                 AffectedDate = dup.Key.Date
             });
         }
@@ -203,63 +201,63 @@ public class RostersService: IRostersService
     /// <summary>
     /// F7: Két beosztásverzió közötti eltérések (Diff) kiszámítása
     /// </summary>
-    public async Task<RosterDiffDto?> CompareRosterVersionsAsync(Guid versionAId, Guid versionBId)
+    public async Task<RosterDiffDto?> CompareRosterVersionsAsync(int versionAId, int versionBId)
     {
         var assignmentsA = await _dataContext.Assignments
-            .Where(a => a.Roster_Version_Id == versionAId)
+            .Where(a => a.RosterVersionId == versionAId)
             .ToListAsync();
 
         var assignmentsB = await _dataContext.Assignments
-            .Where(a => a.Roster_Version_Id == versionBId)
+            .Where(a => a.RosterVersionId == versionBId)
             .ToListAsync();
 
         var diff = new RosterDiffDto
         {
-            Version_A_Id = versionAId,
-            Version_B_Id = versionBId,
+            VersionAId = versionAId,
+            VersionBId = versionBId,
             Changes = new List<AssignmentChangeDto>()
         };
 
-        var allKeys = assignmentsA.Select(a => new { a.Employee_Id, Date = a.Date.Date })
-            .Union(assignmentsB.Select(b => new { b.Employee_Id, Date = b.Date.Date }))
+        var allKeys = assignmentsA.Select(a => new { a.EmployeeId, Date = a.Date.Date })
+            .Union(assignmentsB.Select(b => new { b.EmployeeId, Date = b.Date.Date }))
             .Distinct();
 
         foreach (var key in allKeys)
         {
-            var assignA = assignmentsA.FirstOrDefault(a => a.Employee_Id == key.Employee_Id && a.Date.Date == key.Date);
-            var assignB = assignmentsB.FirstOrDefault(b => b.Employee_Id == key.Employee_Id && b.Date.Date == key.Date);
+            var assignA = assignmentsA.FirstOrDefault(a => a.EmployeeId == key.EmployeeId && a.Date.Date == key.Date);
+            var assignB = assignmentsB.FirstOrDefault(b => b.EmployeeId == key.EmployeeId && b.Date.Date == key.Date);
 
             if (assignA == null && assignB != null)
             {
                 diff.Changes.Add(new AssignmentChangeDto
                 {
-                    Employee_Id = key.Employee_Id,
+                    EmployeeId = key.EmployeeId,
                     Date = key.Date,
-                    Old_Shift_Type_Id = null,
-                    New_Shift_Type_Id = assignB.Shift_Type_Id,
-                    Change_Type = "Added"
+                    OldShiftTypeId = null,
+                    NewShiftTypeId = assignB.ShiftTypeId,
+                    ChangeType = "Added"
                 });
             }
             else if (assignA != null && assignB == null)
             {
                 diff.Changes.Add(new AssignmentChangeDto
                 {
-                    Employee_Id = key.Employee_Id,
+                    EmployeeId = key.EmployeeId,
                     Date = key.Date,
-                    Old_Shift_Type_Id = assignA.Shift_Type_Id,
-                    New_Shift_Type_Id = null,
-                    Change_Type = "Removed"
+                    OldShiftTypeId = assignA.ShiftTypeId,
+                    NewShiftTypeId = null,
+                    ChangeType = "Removed"
                 });
             }
-            else if (assignA != null && assignB != null && assignA.Shift_Type_Id != assignB.Shift_Type_Id)
+            else if (assignA != null && assignB != null && assignA.ShiftTypeId != assignB.ShiftTypeId)
             {
                 diff.Changes.Add(new AssignmentChangeDto
                 {
-                    Employee_Id = key.Employee_Id,
+                    EmployeeId = key.EmployeeId,
                     Date = key.Date,
-                    Old_Shift_Type_Id = assignA.Shift_Type_Id,
-                    New_Shift_Type_Id = assignB.Shift_Type_Id,
-                    Change_Type = "Modified"
+                    OldShiftTypeId = assignA.ShiftTypeId,
+                    NewShiftTypeId = assignB.ShiftTypeId,
+                    ChangeType = "Modified"
                 });
             }
         }
@@ -267,9 +265,9 @@ public class RostersService: IRostersService
         return diff;
     }
 
-    public async Task<bool> PublishRosterVersionAsync(Guid versionId)
+    public async Task<bool> PublishRosterVersionAsync(int versionId)
     {
-        var version = await _dataContext.Roster_Versions.FindAsync(versionId);
+        var version = await _dataContext.RosterVersions.FindAsync(versionId);
         if (version == null) return false;
 
         version.Status = "Published";

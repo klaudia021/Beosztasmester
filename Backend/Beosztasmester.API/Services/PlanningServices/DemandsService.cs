@@ -7,11 +7,11 @@ namespace Beosztasmester.Services;
 
 public interface IDemandsService
 {
-    Task<IEnumerable<DemandDto>> GetDemandsAsync(Guid departmentId, DateTime? fromDate, DateTime? toDate);
-    Task<DemandDto?> GetDemandByIdAsync(Guid id);
+    Task<IEnumerable<DemandDto>> GetDemandsAsync(int departmentId, DateTime? fromDate, DateTime? toDate);
+    Task<DemandDto?> GetDemandByIdAsync(int id);
     Task<DemandDto> CreateDemandAsync(CreateDemandDto dto);
-    Task<IEnumerable<DemandDto>> BulkUpsertDemandsAsync(Guid departmentId, List<CreateDemandDto> dtos);
-    Task<bool> DeleteDemandAsync(Guid id);
+    Task<IEnumerable<DemandDto>> BulkUpsertDemandsAsync(int departmentId, List<CreateDemandDto> dtos);
+    Task<bool> DeleteDemandAsync(int id);
 }
 
 public class DemandsService : IDemandsService
@@ -23,9 +23,9 @@ public class DemandsService : IDemandsService
         _dataContext = dataContext;
     }
 
-    public async Task<IEnumerable<DemandDto>> GetDemandsAsync(Guid departmentId, DateTime? fromDate, DateTime? toDate)
+    public async Task<IEnumerable<DemandDto>> GetDemandsAsync(int departmentId, DateTime? fromDate, DateTime? toDate)
     {
-        var query = _dataContext.Demands.Where(d => d.Department_Id == departmentId);
+        var query = _dataContext.Demands.Where(d => d.DepartmentId == departmentId);
 
         if (fromDate.HasValue)
         {
@@ -40,16 +40,16 @@ public class DemandsService : IDemandsService
         return await query.Select(d => new DemandDto
         {
             Id = d.Id,
-            DepartmentId = d.Department_Id,
+            DepartmentId = d.DepartmentId,
             Date = d.Date,
-            ShiftTypeId = d.Shift_Type_Id,
-            RequiredSkillId = d.Competency_Id,
-            MinEmployees = d.Min_Headcount,
-            MaxEmployees = d.Max_Headcount
+            ShiftTypeId = d.ShiftTypeId,
+            RequiredSkillId = d.CompetencyId,
+            MinEmployees = d.MinHeadcount,
+            MaxEmployees = d.MaxHeadcount
         }).ToListAsync();
     }
 
-    public async Task<DemandDto?> GetDemandByIdAsync(Guid id)
+    public async Task<DemandDto?> GetDemandByIdAsync(int id)
     {
         var d = await _dataContext.Demands.FindAsync(id);
         if (d == null) return null;
@@ -57,12 +57,12 @@ public class DemandsService : IDemandsService
         return new DemandDto
         {
             Id = d.Id,
-            DepartmentId = d.Department_Id,
+            DepartmentId = d.DepartmentId,
             Date = d.Date,
-            ShiftTypeId = d.Shift_Type_Id,
-            RequiredSkillId = d.Competency_Id,
-            MinEmployees = d.Min_Headcount,
-            MaxEmployees = d.Max_Headcount
+            ShiftTypeId = d.ShiftTypeId,
+            RequiredSkillId = d.CompetencyId,
+            MinEmployees = d.MinHeadcount,
+            MaxEmployees = d.MaxHeadcount
         };
     }
 
@@ -70,13 +70,12 @@ public class DemandsService : IDemandsService
     {
         var demand = new Demand
         {
-            Id = Guid.NewGuid(),
-            Department_Id = dto.DepartmentId,
+            DepartmentId = dto.DepartmentId,
             Date = DateTime.SpecifyKind(dto.Date, DateTimeKind.Utc),
-            Shift_Type_Id = dto.ShiftTypeId,
-            Competency_Id = dto.RequiredSkillId,
-            Min_Headcount = dto.MinEmployees,
-            Max_Headcount = dto.MaxEmployees
+            ShiftTypeId = dto.ShiftTypeId,
+            CompetencyId = dto.RequiredSkillId,
+            MinHeadcount = dto.MinEmployees,
+            MaxHeadcount = dto.MaxEmployees
         };
 
         _dataContext.Demands.Add(demand);
@@ -85,19 +84,19 @@ public class DemandsService : IDemandsService
         return new DemandDto
         {
             Id = demand.Id,
-            DepartmentId = demand.Department_Id,
+            DepartmentId = demand.DepartmentId,
             Date = demand.Date,
-            ShiftTypeId = demand.Shift_Type_Id,
-            RequiredSkillId = demand.Competency_Id,
-            MinEmployees = demand.Min_Headcount,
-            MaxEmployees = demand.Max_Headcount
+            ShiftTypeId = demand.ShiftTypeId,
+            RequiredSkillId = demand.CompetencyId,
+            MinEmployees = demand.MinHeadcount,
+            MaxEmployees = demand.MaxHeadcount
         };
     }
 
     /// <summary>
     /// Tömeges igényfrissítés/hozzáadás (pénztáros/műszak mátrixos tervezőfelülethez)
     /// </summary>
-    public async Task<IEnumerable<DemandDto>> BulkUpsertDemandsAsync(Guid departmentId, List<CreateDemandDto> dtos)
+    public async Task<IEnumerable<DemandDto>> BulkUpsertDemandsAsync(int departmentId, List<CreateDemandDto> dtos)
     {
         var resultList = new List<DemandDto>();
 
@@ -106,50 +105,49 @@ public class DemandsService : IDemandsService
             var dateUtc = DateTime.SpecifyKind(dto.Date, DateTimeKind.Utc);
 
             var existing = await _dataContext.Demands
-                .FirstOrDefaultAsync(d => d.Department_Id == departmentId
+                .FirstOrDefaultAsync(d => d.DepartmentId == departmentId
                                        && d.Date.Date == dateUtc.Date
-                                       && d.Shift_Type_Id == dto.ShiftTypeId
-                                       && d.Competency_Id == dto.RequiredSkillId);
+                                       && d.ShiftTypeId == dto.ShiftTypeId
+                                       && d.CompetencyId == dto.RequiredSkillId);
 
             if (existing != null)
             {
-                existing.Min_Headcount = dto.MinEmployees;
-                existing.Max_Headcount = dto.MaxEmployees;
+                existing.MinHeadcount = dto.MinEmployees;
+                existing.MaxHeadcount = dto.MaxEmployees;
 
                 resultList.Add(new DemandDto
                 {
                     Id = existing.Id,
-                    DepartmentId = existing.Department_Id,
+                    DepartmentId = existing.DepartmentId,
                     Date = existing.Date,
-                    ShiftTypeId = existing.Shift_Type_Id,
-                    RequiredSkillId = existing.Competency_Id,
-                    MinEmployees = existing.Min_Headcount,
-                    MaxEmployees = existing.Max_Headcount
+                    ShiftTypeId = existing.ShiftTypeId,
+                    RequiredSkillId = existing.CompetencyId,
+                    MinEmployees = existing.MinHeadcount,
+                    MaxEmployees = existing.MaxHeadcount
                 });
             }
             else
             {
                 var newDemand = new Demand
                 {
-                    Id = Guid.NewGuid(),
-                    Department_Id = departmentId,
+                    DepartmentId = departmentId,
                     Date = dateUtc,
-                    Shift_Type_Id = dto.ShiftTypeId,
-                    Competency_Id = dto.RequiredSkillId,
-                    Min_Headcount = dto.MinEmployees,
-                    Max_Headcount = dto.MaxEmployees
+                    ShiftTypeId = dto.ShiftTypeId,
+                    CompetencyId = dto.RequiredSkillId,
+                    MinHeadcount = dto.MinEmployees,
+                    MaxHeadcount = dto.MaxEmployees
                 };
 
                 _dataContext.Demands.Add(newDemand);
                 resultList.Add(new DemandDto
                 {
                     Id = newDemand.Id,
-                    DepartmentId = newDemand.Department_Id,
+                    DepartmentId = newDemand.DepartmentId,
                     Date = newDemand.Date,
-                    ShiftTypeId = newDemand.Shift_Type_Id,
-                    RequiredSkillId = newDemand.Competency_Id,
-                    MinEmployees = newDemand.Min_Headcount,
-                    MaxEmployees = newDemand.Max_Headcount
+                    ShiftTypeId = newDemand.ShiftTypeId,
+                    RequiredSkillId = newDemand.CompetencyId,
+                    MinEmployees = newDemand.MinHeadcount,
+                    MaxEmployees = newDemand.MaxHeadcount
                 });
             }
         }
@@ -158,7 +156,7 @@ public class DemandsService : IDemandsService
         return resultList;
     }
 
-    public async Task<bool> DeleteDemandAsync(Guid id)
+    public async Task<bool> DeleteDemandAsync(int id)
     {
         var demand = await _dataContext.Demands.FindAsync(id);
         if (demand == null) return false;
