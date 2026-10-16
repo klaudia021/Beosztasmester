@@ -3,26 +3,26 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Beosztasmester.Models.Data
 {
-    public class Shift_Type
+    public class ShiftType
     {
         [Key]
         public int Id { get; set; }
 
-        public int Department_Id { get; set; }
+        public int DepartmentId { get; set; }
 
-        [ForeignKey(nameof(Department_Id))]
+        [ForeignKey(nameof(DepartmentId))]
         public Department Department { get; set; } = null!;
 
         [Required]
         [StringLength(10)]
         public string Code { get; set; } = string.Empty;
 
-        public TimeSpan Start_Time { get; set; }
+        public TimeSpan StartTime { get; set; }
 
-        public TimeSpan End_Time { get; set; }
+        public TimeSpan EndTime { get; set; }
 
-        public int Duration_Minutes { get; set; }
+        public int DurationMinutes { get; set; }
 
-        public bool Is_Night_Shift { get; set; }
+        public bool IsNightShift { get; set; }
     }
 }

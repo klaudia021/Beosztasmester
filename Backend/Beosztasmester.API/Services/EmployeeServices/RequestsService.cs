@@ -29,7 +29,7 @@ public class RequestsService: IRequestsService
 
         if (employeeId.HasValue)
         {
-            query = query.Where(r => r.Employee_Id == employeeId.Value);
+            query = query.Where(r => r.EmployeeId == employeeId.Value);
         }
 
         if (!string.IsNullOrWhiteSpace(status))
@@ -40,10 +40,10 @@ public class RequestsService: IRequestsService
         return await query.Select(r => new EmployeeRequestDto
         {
             Id = r.Id,
-            Employee_Id = r.Employee_Id,
+            EmployeeId = r.EmployeeId,
             Date = r.Date,
             Type = r.Type,
-            Preferred_Shift_Type_Id = r.Shift_Type_Id,
+            PreferredShiftTypeId = r.ShiftTypeId,
             Priority = r.Priority,
             Status = r.Status
         }).ToListAsync();
@@ -57,10 +57,10 @@ public class RequestsService: IRequestsService
         return new EmployeeRequestDto
         {
             Id = request.Id,
-            Employee_Id = request.Employee_Id,
+            EmployeeId = request.EmployeeId,
             Date = request.Date,
             Type = request.Type,
-            Preferred_Shift_Type_Id = request.Shift_Type_Id,
+            PreferredShiftTypeId = request.ShiftTypeId,
             Priority = request.Priority,
             Status = request.Status
         };
@@ -70,10 +70,10 @@ public class RequestsService: IRequestsService
     {
         var request = new Request
         {
-            Employee_Id = dto.Employee_Id,
+            EmployeeId = dto.EmployeeId,
             Date = DateTime.SpecifyKind(dto.Date, DateTimeKind.Utc),
             Type = dto.Type, // e.g. "DAY_OFF", "SHIFT_PREFERENCE"
-            Shift_Type_Id = dto.Preferred_Shift_Type_Id,
+            ShiftTypeId = dto.PreferredShiftTypeId,
             Priority = dto.Priority,
             Status = "Pending"
         };
@@ -84,10 +84,10 @@ public class RequestsService: IRequestsService
         return new EmployeeRequestDto
         {
             Id = request.Id,
-            Employee_Id = request.Employee_Id,
+            EmployeeId = request.EmployeeId,
             Date = request.Date,
             Type = request.Type,
-            Preferred_Shift_Type_Id = request.Shift_Type_Id,
+            PreferredShiftTypeId = request.ShiftTypeId,
             Priority = request.Priority,
             Status = request.Status
         };

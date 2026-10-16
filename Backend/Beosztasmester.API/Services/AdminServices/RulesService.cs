@@ -28,24 +28,24 @@ public class RulesService : IRulesService
     }
     public async Task<IEnumerable<RuleDto>> GetRulesAsync(int departmentId, bool? isActiveOnly)
     {
-        var query = _dataContext.Rules.Where(r => r.Department_Id == departmentId);
+        var query = _dataContext.Rules.Where(r => r.DepartmentId == departmentId);
 
         if (isActiveOnly.HasValue && isActiveOnly.Value)
         {
-            query = query.Where(r => r.Is_Active);
+            query = query.Where(r => r.IsActive);
         }
 
         return await query.Select(r => new RuleDto
         {
             Id = r.Id,
-            DepartmentId = r.Department_Id,
-            TypeCode = r.Type_Code,
+            DepartmentId = r.DepartmentId,
+            TypeCode = r.TypeCode,
             Scope = r.Scope,
-            ScopeRefId = r.Scope_Ref_Id,
-            IsHard = r.Is_Hard,
+            ScopeRefId = r.ScopeRefId,
+            IsHard = r.IsHard,
             Weight = r.Weight,
-            ParametersJson = r.Parameters_Json,
-            IsActive = r.Is_Active
+            ParametersJson = r.ParametersJson,
+            IsActive = r.IsActive
         }).ToListAsync();
     }
 
@@ -57,14 +57,14 @@ public class RulesService : IRulesService
         return new RuleDto
         {
             Id = rule.Id,
-            DepartmentId = rule.Department_Id,
-            TypeCode = rule.Type_Code,
+            DepartmentId = rule.DepartmentId,
+            TypeCode = rule.TypeCode,
             Scope = rule.Scope,
-            ScopeRefId = rule.Scope_Ref_Id,
-            IsHard = rule.Is_Hard,
+            ScopeRefId = rule.ScopeRefId,
+            IsHard = rule.IsHard,
             Weight = rule.Weight,
-            ParametersJson = rule.Parameters_Json,
-            IsActive = rule.Is_Active
+            ParametersJson = rule.ParametersJson,
+            IsActive = rule.IsActive
         };
     }
 
@@ -78,14 +78,14 @@ public class RulesService : IRulesService
 
         var rule = new Rule
         {
-            Department_Id = dto.DepartmentId,
-            Type_Code = dto.TypeCode,
+            DepartmentId = dto.DepartmentId,
+            TypeCode = dto.TypeCode,
             Scope = dto.Scope,
-            Scope_Ref_Id = dto.ScopeRefId,
-            Is_Hard = dto.IsHard,
+            ScopeRefId = dto.ScopeRefId,
+            IsHard = dto.IsHard,
             Weight = dto.Weight,
-            Parameters_Json = dto.ParametersJson,
-            Is_Active = true
+            ParametersJson = dto.ParametersJson,
+            IsActive = true
         };
 
         _dataContext.Rules.Add(rule);
@@ -94,14 +94,14 @@ public class RulesService : IRulesService
         return new RuleDto
         {
             Id = rule.Id,
-            DepartmentId = rule.Department_Id,
-            TypeCode = rule.Type_Code,
+            DepartmentId = rule.DepartmentId,
+            TypeCode = rule.TypeCode,
             Scope = rule.Scope,
-            ScopeRefId = rule.Scope_Ref_Id,
-            IsHard = rule.Is_Hard,
+            ScopeRefId = rule.ScopeRefId,
+            IsHard = rule.IsHard,
             Weight = rule.Weight,
-            ParametersJson = rule.Parameters_Json,
-            IsActive = rule.Is_Active
+            ParametersJson = rule.ParametersJson,
+            IsActive = rule.IsActive
         };
     }
 
@@ -115,12 +115,12 @@ public class RulesService : IRulesService
             throw new ArgumentException("A megadott ParametersJson érvénytelen JSON formátum!");
         }
 
-        rule.Type_Code = dto.TypeCode;
+        rule.TypeCode = dto.TypeCode;
         rule.Scope = dto.Scope;
-        rule.Scope_Ref_Id = dto.ScopeRefId;
-        rule.Is_Hard = dto.IsHard;
+        rule.ScopeRefId = dto.ScopeRefId;
+        rule.IsHard = dto.IsHard;
         rule.Weight = dto.Weight;
-        rule.Parameters_Json = dto.ParametersJson;
+        rule.ParametersJson = dto.ParametersJson;
 
         await _dataContext.SaveChangesAsync();
         return true;
@@ -131,7 +131,7 @@ public class RulesService : IRulesService
         var rule = await _dataContext.Rules.FindAsync(id);
         if (rule == null) return false;
 
-        rule.Is_Active = isActive;
+        rule.IsActive = isActive;
         await _dataContext.SaveChangesAsync();
         return true;
     }

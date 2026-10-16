@@ -6,7 +6,7 @@ namespace Beosztasmester;
 
 public class Program
 {
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
 
@@ -39,6 +39,13 @@ public class Program
         builder.Services.AddSwaggerGen();
 
         var app = builder.Build();
+
+        if (app.Environment.IsDevelopment())
+        {
+            await using var scope = app.Services.CreateAsyncScope();
+            var dataContext = scope.ServiceProvider.GetRequiredService<DataContext>();
+            await DatabaseSeeder.SeedAsync(dataContext);
+        }
 
         app.UseExceptionHandler();
 

@@ -26,11 +26,11 @@ public class EmployeeService : IEmployeeService
     public async Task<IEnumerable<EmployeeDto>> GetEmployeesAsync(int? departmentId, string? status, string? search)
     {
         var query = _dataContext.Employees
-            .Include(e => e.Employee_Competencies)
+            .Include(e => e.EmployeeCompetencies)
             .AsQueryable();
 
         if (departmentId.HasValue)
-            query = query.Where(e => e.Department_Id == departmentId.Value);
+            query = query.Where(e => e.DepartmentId == departmentId.Value);
 
         if (!string.IsNullOrWhiteSpace(status))
             query = query.Where(e => e.Status.ToLower() == status.ToLower());
@@ -41,20 +41,20 @@ public class EmployeeService : IEmployeeService
         return await query.Select(e => new EmployeeDto
         {
             Id = e.Id,
-            Department_Id = e.Department_Id,
+            DepartmentId = e.DepartmentId,
             Name = e.Name,
             Status = e.Status,
-            Contract_Hours_Per_Week = e.Contract_Hours_Per_Week,
-            Entry_Date = e.Entry_Date,
-            Exit_Date = e.Exit_Date,
-            SkillIds = e.Employee_Competencies.Select(s => s.Competency_Id).ToList()
+            ContractHoursPerWeek = e.ContractHoursPerWeek,
+            EntryDate = e.EntryDate,
+            ExitDate = e.ExitDate,
+            SkillIds = e.EmployeeCompetencies.Select(s => s.CompetencyId).ToList()
         }).ToListAsync();
     }
 
     public async Task<EmployeeDto?> GetEmployeeByIdAsync(int id)
     {
         var employee = await _dataContext.Employees
-            .Include(e => e.Employee_Competencies)
+            .Include(e => e.EmployeeCompetencies)
             .FirstOrDefaultAsync(e => e.Id == id);
 
         if (employee == null) return null;
@@ -62,13 +62,13 @@ public class EmployeeService : IEmployeeService
         return new EmployeeDto
         {
             Id = employee.Id,
-            Department_Id = employee.Department_Id,
+            DepartmentId = employee.DepartmentId,
             Name = employee.Name,
             Status = employee.Status,
-            Contract_Hours_Per_Week = employee.Contract_Hours_Per_Week,
-            Entry_Date = employee.Entry_Date,
-            Exit_Date = employee.Exit_Date,
-            SkillIds = employee.Employee_Competencies.Select(s => s.Competency_Id).ToList()
+            ContractHoursPerWeek = employee.ContractHoursPerWeek,
+            EntryDate = employee.EntryDate,
+            ExitDate = employee.ExitDate,
+            SkillIds = employee.EmployeeCompetencies.Select(s => s.CompetencyId).ToList()
         };
     }
 
@@ -76,10 +76,10 @@ public class EmployeeService : IEmployeeService
     {
         var employee = new Employee
         {
-            Department_Id = dto.Department_Id,
+            DepartmentId = dto.DepartmentId,
             Name = dto.Name,
-            Contract_Hours_Per_Week = dto.Contract_Hours_Per_Week,
-            Entry_Date = dto.Entry_Date,
+            ContractHoursPerWeek = dto.ContractHoursPerWeek,
+            EntryDate = dto.EntryDate,
             Status = "Active"
         };
 
@@ -87,11 +87,11 @@ public class EmployeeService : IEmployeeService
         {
             foreach (var skillId in dto.SkillIds)
             {
-                employee.Employee_Competencies.Add(new Employee_Competency
+                employee.EmployeeCompetencies.Add(new EmployeeCompetency
                 {
-                    Employee_Id = employee.Id,
-                    Competency_Id = skillId,
-                    Valid_From = DateTime.UtcNow
+                    EmployeeId = employee.Id,
+                    CompetencyId = skillId,
+                    ValidFrom = DateTime.UtcNow
                 });
             }
         }
@@ -102,11 +102,11 @@ public class EmployeeService : IEmployeeService
         return new EmployeeDto
         {
             Id = employee.Id,
-            Department_Id = employee.Department_Id,
+            DepartmentId = employee.DepartmentId,
             Name = employee.Name,
             Status = employee.Status,
-            Contract_Hours_Per_Week = employee.Contract_Hours_Per_Week,
-            Entry_Date = employee.Entry_Date,
+            ContractHoursPerWeek = employee.ContractHoursPerWeek,
+            EntryDate = employee.EntryDate,
             SkillIds = dto.SkillIds ?? new List<int>()
         };
     }
@@ -114,26 +114,26 @@ public class EmployeeService : IEmployeeService
     public async Task<bool> UpdateEmployeeAsync(int id, UpdateEmployeeDto dto)
     {
         var employee = await _dataContext.Employees
-            .Include(e => e.Employee_Competencies)
+            .Include(e => e.EmployeeCompetencies)
             .FirstOrDefaultAsync(e => e.Id == id);
 
         if (employee == null) return false;
 
         employee.Name = dto.Name;
         employee.Status = dto.Status;
-        employee.Contract_Hours_Per_Week = dto.Contract_Hours_Per_Week;
-        employee.Exit_Date = dto.Exit_Date;
+        employee.ContractHoursPerWeek = dto.ContractHoursPerWeek;
+        employee.ExitDate = dto.ExitDate;
 
-        _dataContext.Employee_Competencies.RemoveRange(employee.Employee_Competencies);
+        _dataContext.EmployeeCompetencies.RemoveRange(employee.EmployeeCompetencies);
         if (dto.SkillIds != null)
         {
             foreach (var skillId in dto.SkillIds)
             {
-                employee.Employee_Competencies.Add(new Employee_Competency
+                employee.EmployeeCompetencies.Add(new EmployeeCompetency
                 {
-                    Employee_Id = employee.Id,
-                    Competency_Id = skillId,
-                    Valid_From = DateTime.UtcNow
+                    EmployeeId = employee.Id,
+                    CompetencyId = skillId,
+                    ValidFrom = DateTime.UtcNow
                 });
             }
         }
@@ -148,7 +148,7 @@ public class EmployeeService : IEmployeeService
         if (employee == null) return false;
 
         employee.Status = "Inactive";
-        employee.Exit_Date = DateTime.UtcNow;
+        employee.ExitDate = DateTime.UtcNow;
 
         await _dataContext.SaveChangesAsync();
         return true;

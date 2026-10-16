@@ -8,25 +8,25 @@ namespace Beosztasmester.Models.Data
         [Key]
         public int Id { get; set; }
 
-        public int Department_Id { get; set; }
+        public int DepartmentId { get; set; }
 
-        [ForeignKey(nameof(Department_Id))]
+        [ForeignKey(nameof(DepartmentId))]
         public Department Department { get; set; } = null!;
 
         public DateTime Date { get; set; }
 
-        public int Shift_Type_Id { get; set; }
+        public int ShiftTypeId { get; set; }
 
-        [ForeignKey(nameof(Shift_Type_Id))]
-        public Shift_Type Shift_Type { get; set; } = null!;
+        [ForeignKey(nameof(ShiftTypeId))]
+        public ShiftType ShiftType { get; set; } = null!;
 
-        public int? Competency_Id { get; set; }
+        public int? CompetencyId { get; set; }
 
-        [ForeignKey(nameof(Competency_Id))]
+        [ForeignKey(nameof(CompetencyId))]
         public Competency? Competency { get; set; }
 
-        public int Min_Headcount { get; set; }
+        public int MinHeadcount { get; set; }
 
-        public int? Max_Headcount { get; set; }
+        public int? MaxHeadcount { get; set; }
     }
 }

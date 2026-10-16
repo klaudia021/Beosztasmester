@@ -8,18 +8,18 @@ namespace Beosztasmester.Models.Data
         [Key]
         public int Id { get; set; }
 
-        public int Employee_Id { get; set; }
+        public int EmployeeId { get; set; }
 
-        [ForeignKey(nameof(Employee_Id))]
+        [ForeignKey(nameof(EmployeeId))]
         public Employee Employee { get; set; } = null!;
 
         [Required]
         [StringLength(50)]
         public string Type { get; set; } = string.Empty; // e.g., Vacation, Illness
 
-        public DateTime Start_Date { get; set; }
+        public DateTime StartDate { get; set; }
 
-        public DateTime End_Date { get; set; }
+        public DateTime EndDate { get; set; }
 
         public string? Reason { get; set; }
     }

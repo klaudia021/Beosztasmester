@@ -12,7 +12,7 @@ export class JobTrigger {
   status = this.rosterService.status;
 
   start() {
-    const horizonId = '23f45e89-8b5a-5c55-9df7-240d78a3ce15';
+    const horizonId = 1;
     console.log('Sending solve request...');
 
     this.rosterService.solve(horizonId).subscribe({

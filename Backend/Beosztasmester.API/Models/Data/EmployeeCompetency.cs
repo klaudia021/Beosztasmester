@@ -3,22 +3,22 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Beosztasmester.Models.Data
 {
-    public class Employee_Competency
+    public class EmployeeCompetency
     {
         [Key]
         public int Id { get; set; }
-        public int Employee_Id { get; set; }
+        public int EmployeeId { get; set; }
 
-        [ForeignKey(nameof(Employee_Id))]
+        [ForeignKey(nameof(EmployeeId))]
         public Employee Employee { get; set; } = null!;
 
-        public int Competency_Id { get; set; }
+        public int CompetencyId { get; set; }
 
-        [ForeignKey(nameof(Competency_Id))]
+        [ForeignKey(nameof(CompetencyId))]
         public Competency Competency { get; set; } = null!;
 
-        public DateTime Valid_From { get; set; }
+        public DateTime ValidFrom { get; set; }
 
-        public DateTime? Valid_To { get; set; }
+        public DateTime? ValidTo { get; set; }
     }
 }

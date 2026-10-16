@@ -1,8 +1,7 @@
 using Beosztasmester.Models;
 using Beosztasmester.Models.Data;
 using Beosztasmester.Models.DTOs;
-using System.Collections.Concurrent;
-using System.Globalization;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 
 namespace Beosztasmester.Services;
@@ -10,15 +9,12 @@ namespace Beosztasmester.Services;
 public interface IHorizonsService
 {
     Task<HorizonResponseDto> CreateHorizonAsync(CreateHorizonRequestDto dto);
-    Task<StartSolveResponseDto> StartSolveAsync(int horizonId);
+    Task<StartSolveResponseDto?> StartSolveAsync(int horizonId);
     Task<SolverStatusResponseDto?> GetSolverStatusAsync(int runId);
 }
 
 public class HorizonsService : IHorizonsService
 {
-    private static readonly ConcurrentDictionary<int, string> SolverRunIds = new();
-    private static int nextSolverRunId;
-
     private readonly DataContext _dataContext;
     private readonly HttpClient _httpClient;
 
@@ -32,68 +28,66 @@ public class HorizonsService : IHorizonsService
     {
         var horizon = new Horizon
         {
-            Department_Id = dto.OrgUnitId,
-            Start_Date = dto.Start,
-            End_Date = dto.End,
+            DepartmentId = dto.OrgUnitId,
+            StartDate = dto.Start,
+            EndDate = dto.End,
             Status = "DRAFT"
         };
 
         _dataContext.Horizons.Add(horizon);
-        await _dataContext.SaveChangesAsync();
+        await _dataContext.SaveChangesAsync();   // PostgreSQL generates horizon.Id here
 
         return new HorizonResponseDto
         {
             Id = horizon.Id,
-            OrgUnitId = horizon.Department_Id,
+            OrgUnitId = horizon.DepartmentId,
             Start = dto.Start,
             End = dto.End,
             Status = horizon.Status
         };
     }
 
-    public async Task<StartSolveResponseDto> StartSolveAsync(int horizonId)
+    public async Task<StartSolveResponseDto?> StartSolveAsync(int horizonId)
     {
-        var runId = Interlocked.Increment(ref nextSolverRunId);
-        var solvePayload = new
-        {
-            horizonId = horizonId.ToString(CultureInfo.InvariantCulture),
-            engineType = "dummy",
-            instance = new
-            {
-                instanceId = runId.ToString(CultureInfo.InvariantCulture)
-            }
-        };
-
-        using var response = await _httpClient.PostAsJsonAsync("/solve", solvePayload);
-        response.EnsureSuccessStatusCode();
-
-        var solverResponse = await response.Content.ReadFromJsonAsync<JsonElement>();
-        if (solverResponse.ValueKind != JsonValueKind.Object)
-        {
-            throw new InvalidDataException("The solver returned an invalid solve response.");
-        }
-
-        var solverRunId = GetRequiredString(solverResponse, "runId");
-
-        if (!SolverRunIds.TryAdd(runId, solverRunId))
-        {
-            throw new InvalidOperationException($"The generated run ID '{runId}' is already registered.");
-        }
-
-        return new StartSolveResponseDto
-        {
-            RunId = runId
-        };
-    }
-
-    public async Task<SolverStatusResponseDto?> GetSolverStatusAsync(int runId)
-    {
-        if (!SolverRunIds.TryGetValue(runId, out var solverRunId))
+        if (!await _dataContext.Horizons.AnyAsync(h => h.Id == horizonId))
         {
             return null;
         }
 
-        using var stateResponse = await _httpClient.GetAsync($"/solver-runs/{solverRunId}");
+        var run = new SolverRun { HorizonId = horizonId, Status = "RUNNING" };
+        _dataContext.SolverRuns.Add(run);
+        await _dataContext.SaveChangesAsync();   // PostgreSQL generates run.Id here
+
+        try
+        {
+            await SendToSolverAsync(horizonId, run.Id);
+        }
+        catch
+        {
+            run.Status = "FAILED";
+            await _dataContext.SaveChangesAsync();
+            throw;
+        }
+
+        return new StartSolveResponseDto { RunId = run.Id };
+    }
+
+    private async Task SendToSolverAsync(int horizonId, int runId)
+    {
+        var payload = new
+        {
+            horizonId,
+            engineType = "dummy",
+            instance = new { instanceId = runId }
+        };
+
+        using var response = await _httpClient.PostAsJsonAsync("/solve", payload);
+        response.EnsureSuccessStatusCode();
+    }
+
+    public async Task<SolverStatusResponseDto?> GetSolverStatusAsync(int runId)
+    {
+        using var stateResponse = await _httpClient.GetAsync($"/solver-runs/{runId}");
         if (!stateResponse.IsSuccessStatusCode)
         {
             if (stateResponse.StatusCode == System.Net.HttpStatusCode.NotFound)
@@ -111,7 +105,7 @@ public class HorizonsService : IHorizonsService
         }
 
         var status = GetRequiredString(state, "status");
-        var horizonId = GetOptionalInt32(state, "horizonId");
+        var horizonId = GetOptionalInt(state, "horizonId");
         if (!IsCompleted(status))
         {
             return new SolverStatusResponseDto
@@ -122,7 +116,7 @@ public class HorizonsService : IHorizonsService
             };
         }
 
-        using var resultResponse = await _httpClient.GetAsync($"/solver-runs/{solverRunId}/result");
+        using var resultResponse = await _httpClient.GetAsync($"/solver-runs/{runId}/result");
         if (resultResponse.StatusCode == System.Net.HttpStatusCode.NotFound)
         {
             return null;
@@ -139,7 +133,7 @@ public class HorizonsService : IHorizonsService
         var statusDto = new SolverStatusResponseDto
         {
             Status = "DONE",
-            HorizonId = GetOptionalInt32(solverResult, "horizonId") ?? horizonId,
+            HorizonId = GetOptionalInt(solverResult, "horizonId") ?? horizonId,
             Roster = new List<RosterItemDto>()
         };
 
@@ -158,7 +152,7 @@ public class HorizonsService : IHorizonsService
             {
                 statusDto.Roster.Add(new RosterItemDto
                 {
-                    EmployeeId = GetRequiredInt32(item, "employeeId"),
+                    EmployeeId = Int32.Parse(GetRequiredString(item, "employeeId")),
                     Date = DateOnly.Parse(GetRequiredString(item, "date")),
                     ShiftType = GetRequiredString(item, "shiftType")
                 });
@@ -226,58 +220,10 @@ public class HorizonsService : IHorizonsService
             ?? throw new InvalidDataException($"The solver response did not include a valid '{propertyName}'.");
     }
 
-    private static string? GetOptionalString(JsonElement element, string propertyName) =>
+    private static int? GetOptionalInt(JsonElement element, string propertyName) =>
         element.TryGetProperty(propertyName, out var property) &&
-        property.ValueKind == JsonValueKind.String
-            ? property.GetString()
+        property.ValueKind == JsonValueKind.Number &&
+        property.TryGetInt32(out var value)
+            ? value
             : null;
-
-    private static int GetRequiredInt32(JsonElement element, string propertyName)
-    {
-        if (element.ValueKind != JsonValueKind.Object ||
-            !element.TryGetProperty(propertyName, out var property))
-        {
-            throw new InvalidDataException($"The solver response did not include a valid '{propertyName}'.");
-        }
-
-        return ParseInt32(property, propertyName);
-    }
-
-    private static int? GetOptionalInt32(JsonElement element, string propertyName)
-    {
-        if (element.ValueKind != JsonValueKind.Object ||
-            !element.TryGetProperty(propertyName, out var property) ||
-            property.ValueKind == JsonValueKind.Null)
-        {
-            return null;
-        }
-
-        return ParseInt32(property, propertyName);
-    }
-
-    private static int ParseInt32(JsonElement property, string propertyName)
-    {
-        if (property.ValueKind == JsonValueKind.Number && property.TryGetInt32(out var number))
-        {
-            return number;
-        }
-
-        if (property.ValueKind == JsonValueKind.String)
-        {
-            var value = property.GetString();
-            if (int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out number))
-            {
-                return number;
-            }
-
-            if (value is { Length: > 1 } &&
-                (value[0] == 'E' || value[0] == 'e') &&
-                int.TryParse(value.AsSpan(1), NumberStyles.None, CultureInfo.InvariantCulture, out number))
-            {
-                return number;
-            }
-        }
-
-        throw new InvalidDataException($"The solver response included an invalid '{propertyName}'.");
-    }
 }
