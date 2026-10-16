@@ -51,8 +51,8 @@ public class HorizonsService : IHorizonsService
 
     public async Task<StartSolveResponseDto?> StartSolveAsync(string horizonId)
     {
-        if (!Guid.TryParse(horizonId, out var id) ||
-            !await _dataContext.Horizons.AnyAsync(horizon => horizon.Id == id))
+        if (!Guid.TryParse(horizonId, out var id) /* ||
+            !await _dataContext.Horizons.AnyAsync(horizon => horizon.Id == id)*/)
         {
             return null;
         }
