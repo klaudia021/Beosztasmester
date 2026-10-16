@@ -1,4 +1,4 @@
-﻿using Beosztasmester.Models;
+using Beosztasmester.Models;
 using Beosztasmester.Models.DTOs;
 using Beosztasmester.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -33,8 +33,8 @@ public class IntegrationController : ControllerBase
     /// <summary>
     /// I3: Egy beosztásverzió exportálása CSV fájlként
     /// </summary>
-    [HttpGet("rosters/{versionId:guid}/export/csv")]
-    public async Task<IActionResult> ExportRosterCsv(Guid versionId)
+    [HttpGet("rosters/{versionId:int}/export/csv")]
+    public async Task<IActionResult> ExportRosterCsv(int versionId)
     {
         var csvContent = await _integrationService.ExportRosterToCsvAsync(versionId);
         if (csvContent == null) return NotFound();

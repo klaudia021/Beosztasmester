@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Beosztasmester.Models.Data;
 using Beosztasmester.Models.DTOs;
 using Beosztasmester.Models;
@@ -7,11 +7,11 @@ namespace Beosztasmester.Services;
 
 public interface IEmployeeService
 {
-    Task<IEnumerable<EmployeeDto>> GetEmployeesAsync(Guid? departmentId, string? status, string? search);
-    Task<EmployeeDto?> GetEmployeeByIdAsync(Guid id);
+    Task<IEnumerable<EmployeeDto>> GetEmployeesAsync(int? departmentId, string? status, string? search);
+    Task<EmployeeDto?> GetEmployeeByIdAsync(int id);
     Task<EmployeeDto> CreateEmployeeAsync(CreateEmployeeDto dto);
-    Task<bool> UpdateEmployeeAsync(Guid id, UpdateEmployeeDto dto);
-    Task<bool> DeleteEmployeeAsync(Guid id);
+    Task<bool> UpdateEmployeeAsync(int id, UpdateEmployeeDto dto);
+    Task<bool> DeleteEmployeeAsync(int id);
 }
 
 public class EmployeeService : IEmployeeService
@@ -23,7 +23,7 @@ public class EmployeeService : IEmployeeService
         _dataContext = dataContext;
     }
 
-    public async Task<IEnumerable<EmployeeDto>> GetEmployeesAsync(Guid? departmentId, string? status, string? search)
+    public async Task<IEnumerable<EmployeeDto>> GetEmployeesAsync(int? departmentId, string? status, string? search)
     {
         var query = _dataContext.Employees
             .Include(e => e.Employee_Competencies)
@@ -51,7 +51,7 @@ public class EmployeeService : IEmployeeService
         }).ToListAsync();
     }
 
-    public async Task<EmployeeDto?> GetEmployeeByIdAsync(Guid id)
+    public async Task<EmployeeDto?> GetEmployeeByIdAsync(int id)
     {
         var employee = await _dataContext.Employees
             .Include(e => e.Employee_Competencies)
@@ -76,7 +76,6 @@ public class EmployeeService : IEmployeeService
     {
         var employee = new Employee
         {
-            Id = Guid.NewGuid(),
             Department_Id = dto.Department_Id,
             Name = dto.Name,
             Contract_Hours_Per_Week = dto.Contract_Hours_Per_Week,
@@ -108,11 +107,11 @@ public class EmployeeService : IEmployeeService
             Status = employee.Status,
             Contract_Hours_Per_Week = employee.Contract_Hours_Per_Week,
             Entry_Date = employee.Entry_Date,
-            SkillIds = dto.SkillIds ?? new List<Guid>()
+            SkillIds = dto.SkillIds ?? new List<int>()
         };
     }
 
-    public async Task<bool> UpdateEmployeeAsync(Guid id, UpdateEmployeeDto dto)
+    public async Task<bool> UpdateEmployeeAsync(int id, UpdateEmployeeDto dto)
     {
         var employee = await _dataContext.Employees
             .Include(e => e.Employee_Competencies)
@@ -143,7 +142,7 @@ public class EmployeeService : IEmployeeService
         return true;
     }
 
-    public async Task<bool> DeleteEmployeeAsync(Guid id)
+    public async Task<bool> DeleteEmployeeAsync(int id)
     {
         var employee = await _dataContext.Employees.FindAsync(id);
         if (employee == null) return false;

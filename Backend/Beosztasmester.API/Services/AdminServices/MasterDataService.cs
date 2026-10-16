@@ -9,17 +9,17 @@ public interface IMasterDataService
 {
     // Departments
     Task<IEnumerable<DepartmentDto>> GetDepartmentsAsync();
-    Task<DepartmentDto?> GetDepartmentByIdAsync(Guid id);
+    Task<DepartmentDto?> GetDepartmentByIdAsync(int id);
     Task<DepartmentDto> CreateDepartmentAsync(CreateDepartmentDto dto);
 
     // Skills
     Task<IEnumerable<SkillDto>> GetSkillsAsync();
-    Task<SkillDto?> GetSkillByIdAsync(Guid id);
+    Task<SkillDto?> GetSkillByIdAsync(int id);
     Task<SkillDto> CreateSkillAsync(CreateSkillDto dto);
 
     // ShiftTypes
-    Task<IEnumerable<ShiftTypeDto>> GetShiftTypesAsync(Guid? departmentId);
-    Task<ShiftTypeDto?> GetShiftTypeByIdAsync(Guid id);
+    Task<IEnumerable<ShiftTypeDto>> GetShiftTypesAsync(int? departmentId);
+    Task<ShiftTypeDto?> GetShiftTypeByIdAsync(int id);
     Task<ShiftTypeDto> CreateShiftTypeAsync(CreateShiftTypeDto dto);
 }
 
@@ -41,7 +41,7 @@ public class MasterDataService : IMasterDataService
                 ParentId = d.Parent_Id
             }).ToListAsync();
     }
-    public async Task<DepartmentDto?> GetDepartmentByIdAsync(Guid id)
+    public async Task<DepartmentDto?> GetDepartmentByIdAsync(int id)
     {
         var dept = await _dataContext.Department.FindAsync(id);
         if (dept == null) return null;
@@ -58,7 +58,6 @@ public class MasterDataService : IMasterDataService
     {
         var department = new Department
         {
-            Id = Guid.NewGuid(),
             Name = dto.Name,
             Parent_Id = dto.ParentId
         };
@@ -86,7 +85,7 @@ public class MasterDataService : IMasterDataService
             }).ToListAsync();
     }
 
-    public async Task<SkillDto?> GetSkillByIdAsync(Guid id)
+    public async Task<SkillDto?> GetSkillByIdAsync(int id)
     {
         var skill = await _dataContext.Competencies.FindAsync(id);
         if (skill == null) return null;
@@ -103,7 +102,6 @@ public class MasterDataService : IMasterDataService
     {
         var skill = new Competency
         {
-            Id = Guid.NewGuid(),
             Code = dto.Code,
             Name = dto.Name
         };
@@ -120,7 +118,7 @@ public class MasterDataService : IMasterDataService
     }
 
     // --- ShiftTypes ---
-    public async Task<IEnumerable<ShiftTypeDto>> GetShiftTypesAsync(Guid? departmentId)
+    public async Task<IEnumerable<ShiftTypeDto>> GetShiftTypesAsync(int? departmentId)
     {
         var query = _dataContext.Shift_Types.AsQueryable();
 
@@ -141,7 +139,7 @@ public class MasterDataService : IMasterDataService
         }).ToListAsync();
     }
 
-    public async Task<ShiftTypeDto?> GetShiftTypeByIdAsync(Guid id)
+    public async Task<ShiftTypeDto?> GetShiftTypeByIdAsync(int id)
     {
         var st = await _dataContext.Shift_Types.FindAsync(id);
         if (st == null) return null;
@@ -162,7 +160,6 @@ public class MasterDataService : IMasterDataService
     {
         var shiftType = new Shift_Type
         {
-            Id = Guid.NewGuid(),
             Department_Id = dto.DepartmentId,
             Code = dto.Code,
             Start_Time = TimeSpan.Parse(dto.StartTime),

@@ -7,10 +7,10 @@ namespace Beosztasmester.Services;
 
 public interface IUnavailabilitiesService
 {
-    Task<IEnumerable<UnavailabilityDto>> GetUnavailabilitiesAsync(Guid? employeeId, DateTime? fromDate, DateTime? toDate);
-    Task<UnavailabilityDto?> GetUnavailabilityByIdAsync(Guid id);
+    Task<IEnumerable<UnavailabilityDto>> GetUnavailabilitiesAsync(int? employeeId, DateTime? fromDate, DateTime? toDate);
+    Task<UnavailabilityDto?> GetUnavailabilityByIdAsync(int id);
     Task<UnavailabilityDto> CreateUnavailabilityAsync(CreateUnavailabilityDto dto);
-    Task<bool> DeleteUnavailabilityAsync(Guid id);
+    Task<bool> DeleteUnavailabilityAsync(int id);
 }
 public class UnavailabilitiesService : IUnavailabilitiesService
 {
@@ -21,7 +21,7 @@ public class UnavailabilitiesService : IUnavailabilitiesService
         _dataContext = dataContext;
     }
 
-    public async Task<IEnumerable<UnavailabilityDto>> GetUnavailabilitiesAsync(Guid? employeeId, DateTime? fromDate, DateTime? toDate)
+    public async Task<IEnumerable<UnavailabilityDto>> GetUnavailabilitiesAsync(int? employeeId, DateTime? fromDate, DateTime? toDate)
     {
         var query = _dataContext.Unavailabilities.AsQueryable();
 
@@ -51,7 +51,7 @@ public class UnavailabilitiesService : IUnavailabilitiesService
         }).ToListAsync();
     }
 
-    public async Task<UnavailabilityDto?> GetUnavailabilityByIdAsync(Guid id)
+    public async Task<UnavailabilityDto?> GetUnavailabilityByIdAsync(int id)
     {
         var u = await _dataContext.Unavailabilities.FindAsync(id);
         if (u == null) return null;
@@ -71,7 +71,6 @@ public class UnavailabilitiesService : IUnavailabilitiesService
     {
         var unavailability = new Unavailability
         {
-            Id = Guid.NewGuid(),
             Employee_Id = dto.EmployeeId,
             Type = dto.Type, // e.g. "Vacation", "Sick", "Training"
             Start_Date = DateTime.SpecifyKind(dto.StartDate, DateTimeKind.Utc),
@@ -93,7 +92,7 @@ public class UnavailabilitiesService : IUnavailabilitiesService
         };
     }
 
-    public async Task<bool> DeleteUnavailabilityAsync(Guid id)
+    public async Task<bool> DeleteUnavailabilityAsync(int id)
     {
         var u = await _dataContext.Unavailabilities.FindAsync(id);
         if (u == null) return false;

@@ -7,11 +7,11 @@ namespace Beosztasmester.Services;
 
 public interface IDemandsService
 {
-    Task<IEnumerable<DemandDto>> GetDemandsAsync(Guid departmentId, DateTime? fromDate, DateTime? toDate);
-    Task<DemandDto?> GetDemandByIdAsync(Guid id);
+    Task<IEnumerable<DemandDto>> GetDemandsAsync(int departmentId, DateTime? fromDate, DateTime? toDate);
+    Task<DemandDto?> GetDemandByIdAsync(int id);
     Task<DemandDto> CreateDemandAsync(CreateDemandDto dto);
-    Task<IEnumerable<DemandDto>> BulkUpsertDemandsAsync(Guid departmentId, List<CreateDemandDto> dtos);
-    Task<bool> DeleteDemandAsync(Guid id);
+    Task<IEnumerable<DemandDto>> BulkUpsertDemandsAsync(int departmentId, List<CreateDemandDto> dtos);
+    Task<bool> DeleteDemandAsync(int id);
 }
 
 public class DemandsService : IDemandsService
@@ -23,7 +23,7 @@ public class DemandsService : IDemandsService
         _dataContext = dataContext;
     }
 
-    public async Task<IEnumerable<DemandDto>> GetDemandsAsync(Guid departmentId, DateTime? fromDate, DateTime? toDate)
+    public async Task<IEnumerable<DemandDto>> GetDemandsAsync(int departmentId, DateTime? fromDate, DateTime? toDate)
     {
         var query = _dataContext.Demands.Where(d => d.Department_Id == departmentId);
 
@@ -49,7 +49,7 @@ public class DemandsService : IDemandsService
         }).ToListAsync();
     }
 
-    public async Task<DemandDto?> GetDemandByIdAsync(Guid id)
+    public async Task<DemandDto?> GetDemandByIdAsync(int id)
     {
         var d = await _dataContext.Demands.FindAsync(id);
         if (d == null) return null;
@@ -70,7 +70,6 @@ public class DemandsService : IDemandsService
     {
         var demand = new Demand
         {
-            Id = Guid.NewGuid(),
             Department_Id = dto.DepartmentId,
             Date = DateTime.SpecifyKind(dto.Date, DateTimeKind.Utc),
             Shift_Type_Id = dto.ShiftTypeId,
@@ -97,7 +96,7 @@ public class DemandsService : IDemandsService
     /// <summary>
     /// Tömeges igényfrissítés/hozzáadás (pénztáros/műszak mátrixos tervezőfelülethez)
     /// </summary>
-    public async Task<IEnumerable<DemandDto>> BulkUpsertDemandsAsync(Guid departmentId, List<CreateDemandDto> dtos)
+    public async Task<IEnumerable<DemandDto>> BulkUpsertDemandsAsync(int departmentId, List<CreateDemandDto> dtos)
     {
         var resultList = new List<DemandDto>();
 
@@ -131,7 +130,6 @@ public class DemandsService : IDemandsService
             {
                 var newDemand = new Demand
                 {
-                    Id = Guid.NewGuid(),
                     Department_Id = departmentId,
                     Date = dateUtc,
                     Shift_Type_Id = dto.ShiftTypeId,
@@ -158,7 +156,7 @@ public class DemandsService : IDemandsService
         return resultList;
     }
 
-    public async Task<bool> DeleteDemandAsync(Guid id)
+    public async Task<bool> DeleteDemandAsync(int id)
     {
         var demand = await _dataContext.Demands.FindAsync(id);
         if (demand == null) return false;

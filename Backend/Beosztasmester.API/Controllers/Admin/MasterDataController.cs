@@ -1,4 +1,4 @@
-﻿using Beosztasmester.Models.DTOs;
+using Beosztasmester.Models.DTOs;
 using Beosztasmester.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,8 +25,8 @@ namespace Beosztasmester.Controllers.Admin
             return Ok(departments);
         }
 
-        [HttpGet("departments/{id:guid}")]
-        public async Task<ActionResult<DepartmentDto>> GetDepartment(Guid id)
+        [HttpGet("departments/{id:int}")]
+        public async Task<ActionResult<DepartmentDto>> GetDepartment(int id)
         {
             var department = await _masterDataService.GetDepartmentByIdAsync(id);
             if (department == null) return NotFound();
@@ -51,8 +51,8 @@ namespace Beosztasmester.Controllers.Admin
             return Ok(skills);
         }
 
-        [HttpGet("skills/{id:guid}")]
-        public async Task<ActionResult<SkillDto>> GetSkill(Guid id)
+        [HttpGet("skills/{id:int}")]
+        public async Task<ActionResult<SkillDto>> GetSkill(int id)
         {
             var skill = await _masterDataService.GetSkillByIdAsync(id);
             if (skill == null) return NotFound();
@@ -71,14 +71,14 @@ namespace Beosztasmester.Controllers.Admin
         // SHIFT TYPES (Műszaktípusok)
         // ==========================================
         [HttpGet("shift-types")]
-        public async Task<ActionResult<IEnumerable<ShiftTypeDto>>> GetShiftTypes([FromQuery] Guid? departmentId)
+        public async Task<ActionResult<IEnumerable<ShiftTypeDto>>> GetShiftTypes([FromQuery] int? departmentId)
         {
             var shiftTypes = await _masterDataService.GetShiftTypesAsync(departmentId);
             return Ok(shiftTypes);
         }
 
-        [HttpGet("shift-types/{id:guid}")]
-        public async Task<ActionResult<ShiftTypeDto>> GetShiftType(Guid id)
+        [HttpGet("shift-types/{id:int}")]
+        public async Task<ActionResult<ShiftTypeDto>> GetShiftType(int id)
         {
             var shiftType = await _masterDataService.GetShiftTypeByIdAsync(id);
             if (shiftType == null) return NotFound();

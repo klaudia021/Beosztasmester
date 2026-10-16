@@ -12,7 +12,7 @@ public interface IIntegrationService
     Task<string?> GenerateICalFeedAsync(string userToken);
 
     // I3: CSV Export (Roster matrix formátumban)
-    Task<string?> ExportRosterToCsvAsync(Guid versionId);
+    Task<string?> ExportRosterToCsvAsync(int versionId);
 
     // I1: Dolgozói import előnézet és validáció
     Task<EmployeeImportPreviewDto> PreviewEmployeeImportAsync(IFormFile file);
@@ -74,7 +74,7 @@ public class IntegrationService : IIntegrationService
     /// <summary>
     /// I3: Beosztás exportálása CSV mátrixként (Dolgozó x Napok)
     /// </summary>
-    public async Task<string?> ExportRosterToCsvAsync(Guid versionId)
+    public async Task<string?> ExportRosterToCsvAsync(int versionId)
     {
         var version = await _dataContext.Roster_Versions
             .FirstOrDefaultAsync(v => v.Id == versionId);

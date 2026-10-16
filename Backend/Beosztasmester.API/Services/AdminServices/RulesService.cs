@@ -8,12 +8,12 @@ namespace Beosztasmester.Services;
 
 public interface IRulesService
 {
-    Task<IEnumerable<RuleDto>> GetRulesAsync(Guid departmentId, bool? isActiveOnly);
-    Task<RuleDto?> GetRuleByIdAsync(Guid id);
+    Task<IEnumerable<RuleDto>> GetRulesAsync(int departmentId, bool? isActiveOnly);
+    Task<RuleDto?> GetRuleByIdAsync(int id);
     Task<RuleDto> CreateRuleAsync(CreateRuleDto dto);
-    Task<bool> UpdateRuleAsync(Guid id, CreateRuleDto dto);
-    Task<bool> ToggleRuleStatusAsync(Guid id, bool isActive);
-    Task<bool> DeleteRuleAsync(Guid id);
+    Task<bool> UpdateRuleAsync(int id, CreateRuleDto dto);
+    Task<bool> ToggleRuleStatusAsync(int id, bool isActive);
+    Task<bool> DeleteRuleAsync(int id);
 
     // F10: Természetes nyelvű szabály feldolgozása (AI / Mocked LLM)
     Task<ParseRuleResponseDto> ParseNaturalLanguageRuleAsync(ParseRuleRequestDto dto);
@@ -26,7 +26,7 @@ public class RulesService : IRulesService
     {
         _dataContext = c;
     }
-    public async Task<IEnumerable<RuleDto>> GetRulesAsync(Guid departmentId, bool? isActiveOnly)
+    public async Task<IEnumerable<RuleDto>> GetRulesAsync(int departmentId, bool? isActiveOnly)
     {
         var query = _dataContext.Rules.Where(r => r.Department_Id == departmentId);
 
@@ -49,7 +49,7 @@ public class RulesService : IRulesService
         }).ToListAsync();
     }
 
-    public async Task<RuleDto?> GetRuleByIdAsync(Guid id)
+    public async Task<RuleDto?> GetRuleByIdAsync(int id)
     {
         var rule = await _dataContext.Rules.FindAsync(id);
         if (rule == null) return null;
@@ -78,7 +78,6 @@ public class RulesService : IRulesService
 
         var rule = new Rule
         {
-            Id = Guid.NewGuid(),
             Department_Id = dto.DepartmentId,
             Type_Code = dto.TypeCode,
             Scope = dto.Scope,
@@ -106,7 +105,7 @@ public class RulesService : IRulesService
         };
     }
 
-    public async Task<bool> UpdateRuleAsync(Guid id, CreateRuleDto dto)
+    public async Task<bool> UpdateRuleAsync(int id, CreateRuleDto dto)
     {
         var rule = await _dataContext.Rules.FindAsync(id);
         if (rule == null) return false;
@@ -127,7 +126,7 @@ public class RulesService : IRulesService
         return true;
     }
 
-    public async Task<bool> ToggleRuleStatusAsync(Guid id, bool isActive)
+    public async Task<bool> ToggleRuleStatusAsync(int id, bool isActive)
     {
         var rule = await _dataContext.Rules.FindAsync(id);
         if (rule == null) return false;
@@ -137,7 +136,7 @@ public class RulesService : IRulesService
         return true;
     }
 
-    public async Task<bool> DeleteRuleAsync(Guid id)
+    public async Task<bool> DeleteRuleAsync(int id)
     {
         var rule = await _dataContext.Rules.FindAsync(id);
         if (rule == null) return false;

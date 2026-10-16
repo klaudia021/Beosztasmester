@@ -20,7 +20,7 @@ public class RequestsController : ControllerBase
     /// </summary>
     [HttpGet]
     public async Task<ActionResult<IEnumerable<EmployeeRequestDto>>> GetRequests(
-        [FromQuery] Guid? employeeId,
+        [FromQuery] int? employeeId,
         [FromQuery] string? status)
     {
         var requests = await _requestsService.GetRequestsAsync(employeeId, status);
@@ -30,8 +30,8 @@ public class RequestsController : ControllerBase
     /// <summary>
     /// Konkrét kérés lekérdezése ID alapján
     /// </summary>
-    [HttpGet("{id:guid}")]
-    public async Task<ActionResult<EmployeeRequestDto>> GetRequest(Guid id)
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<EmployeeRequestDto>> GetRequest(int id)
     {
         var request = await _requestsService.GetRequestByIdAsync(id);
         if (request == null) return NotFound();
@@ -52,8 +52,8 @@ public class RequestsController : ControllerBase
     /// <summary>
     /// Kérés állapotának módosítása tervező által (Approved / Rejected)
     /// </summary>
-    [HttpPatch("{id:guid}/status")]
-    public async Task<IActionResult> UpdateRequestStatus(Guid id, [FromBody] UpdateRequestStatusDto dto)
+    [HttpPatch("{id:int}/status")]
+    public async Task<IActionResult> UpdateRequestStatus(int id, [FromBody] UpdateRequestStatusDto dto)
     {
         var updated = await _requestsService.UpdateRequestStatusAsync(id, dto);
         if (!updated) return NotFound();
@@ -64,8 +64,8 @@ public class RequestsController : ControllerBase
     /// <summary>
     /// Kérés visszavonása / törlése
     /// </summary>
-    [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> DeleteRequest(Guid id)
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> DeleteRequest(int id)
     {
         var deleted = await _requestsService.DeleteRequestAsync(id);
         if (!deleted) return NotFound();

@@ -1,8 +1,8 @@
-﻿namespace Beosztasmester.Models.DTOs;
+namespace Beosztasmester.Models.DTOs;
 
 public class ParseRuleRequestDto
 {
-    public Guid DepartmentId { get; set; }
+    public int DepartmentId { get; set; }
     public string NaturalText { get; set; } = string.Empty;
 }
 

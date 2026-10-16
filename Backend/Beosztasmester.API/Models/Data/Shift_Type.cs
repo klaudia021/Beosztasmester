@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Beosztasmester.Models.Data
@@ -6,9 +6,9 @@ namespace Beosztasmester.Models.Data
     public class Shift_Type
     {
         [Key]
-        public Guid Id { get; set; }
+        public int Id { get; set; }
 
-        public Guid Department_Id { get; set; }
+        public int Department_Id { get; set; }
 
         [ForeignKey(nameof(Department_Id))]
         public Department Department { get; set; } = null!;

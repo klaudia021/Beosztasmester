@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace Beosztasmester.Models.Data
 {
@@ -6,7 +6,7 @@ namespace Beosztasmester.Models.Data
 
     {
         [Key]
-        public Guid Id { get; set; }
+        public int Id { get; set; }
 
         [Required]
         [StringLength(50)]

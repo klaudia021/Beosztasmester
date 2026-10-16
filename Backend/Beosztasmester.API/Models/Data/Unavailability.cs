@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Beosztasmester.Models.Data
@@ -6,9 +6,9 @@ namespace Beosztasmester.Models.Data
     public class Unavailability
     {
         [Key]
-        public Guid Id { get; set; }
+        public int Id { get; set; }
 
-        public Guid Employee_Id { get; set; }
+        public int Employee_Id { get; set; }
 
         [ForeignKey(nameof(Employee_Id))]
         public Employee Employee { get; set; } = null!;
