@@ -1,3 +1,4 @@
+using Beosztasmester.Exceptions;
 using Beosztasmester.Models;
 using Beosztasmester.Services;
 using Microsoft.EntityFrameworkCore;
@@ -38,7 +39,11 @@ public class Program
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
+        builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+
         var app = builder.Build();
+
+        app.UseExceptionHandler(_ => { });
 
         if (app.Environment.IsDevelopment())
         {
