@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Beosztasmester.Models.Data;
 using Beosztasmester.Models.DTOs;
-using Beosztasmester.Model;
+using Beosztasmester.Models;
 
 namespace Beosztasmester.Services;
 
@@ -14,14 +14,13 @@ public interface IEmployeeService
     Task<bool> DeleteEmployeeAsync(Guid id);
 }
 
-public class EmployeesService : IEmployeeService
+public class EmployeeService : IEmployeeService
 {
-   
     private readonly DataContext _dataContext;
 
-    public EmployeesService(DataContext c)
+    public EmployeeService(DataContext dataContext)
     {
-        _dataContext = c; 
+        _dataContext = dataContext;
     }
 
     public async Task<IEnumerable<EmployeeDto>> GetEmployeesAsync(Guid? departmentId, string? status, string? search)

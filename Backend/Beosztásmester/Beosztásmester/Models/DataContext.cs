@@ -1,27 +1,27 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Beosztasmester.Models.Data;
 
-namespace Beosztasmester.Model
+namespace Beosztasmester.Models;
+
+public class DataContext : DbContext
 {
-    public class DataContext:DbContext
+    public DbSet<Assignment> Assignments { get; set; }
+    public DbSet<Audit_Entry> Audit_Entries { get; set; }
+    public DbSet<Competency> Competencies { get; set; }
+    public DbSet<Demand_Template> Demand_Templates { get; set; }
+    public DbSet<Demand> Demands { get; set; }
+    public DbSet<Employee> Employees { get; set; }
+    public DbSet<Employee_Competency> Employee_Competencies { get; set; }
+    public DbSet<Horizon> Horizons { get; set; }
+    public DbSet<Department> Department { get; set; }
+    public DbSet<Request> Requests { get; set; }
+    public DbSet<Roster_Version> Roster_Versions { get; set; }
+    public DbSet<Rule> Rules { get; set; }
+    public DbSet<Shift_Type> Shift_Types { get; set; }
+    public DbSet<Unavailability> Unavailabilities { get; set; }
+
+    public DataContext(DbContextOptions<DataContext> options) : base(options)
     {
-        public DbSet<Assignment> Assignments { get; set; }
-        public DbSet<Audit_Entry> Audit_Entries { get; set; }
-        public DbSet<Competency> Competencies { get; set; }
-        public DbSet<Demand_Template> Demand_Templates { get; set; }
-        public DbSet<Demand> Demands { get; set; }
-        public DbSet<Employee> Employees { get; set; }
-        public DbSet<Employee_Competency> Employee_Competencies { get; set; }
-        public DbSet<Horizon> Horizons { get; set; }
-        public DbSet<Department> Department { get; set; }
-        public DbSet<Request> Requests { get; set; }
-        public DbSet<Roster_Version> Roster_Versions { get; set; }
-        public DbSet<Rule> Rules { get; set; }
-        public DbSet<Shift_Type> Shift_Types { get; set; }
-        public DbSet<Unavailability> Unavailabilities { get; set; }
-
-
-        public DataContext(DbContextOptions options) : base(options) { }
     }
 }
 

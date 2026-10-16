@@ -9,10 +9,10 @@ namespace Beosztasmester.Models.Data
         public Guid Id { get; set; }
         public Guid Department_Id { get; set; }
         [ForeignKey(nameof(Department_Id))]
-        public Department Department { get; set; }
+        public Department Department { get; set; } = null!;
         public DateTime Start_Date { get; set; }
         public DateTime End_Date { get; set; }
-        public string Status { get; set; }
+        public string Status { get; set; } = "DRAFT";
         public ICollection<Roster_Version> Roster_Versions { get; set; } = new List<Roster_Version>(); //for the one to many 
     }
 }

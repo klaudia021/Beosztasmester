@@ -1,4 +1,3 @@
-﻿using Beosztasmester.Model;
 using Beosztasmester.Models;
 using Beosztasmester.Models.DTOs;
 using Microsoft.AspNetCore.Http;
@@ -113,9 +112,8 @@ public class IntegrationService : IIntegrationService
         using var reader = new StreamReader(file.OpenReadStream());
         int rowNum = 0;
 
-        while (!reader.EndOfStream)
+        while (await reader.ReadLineAsync() is { } line)
         {
-            var line = await reader.ReadLineAsync();
             rowNum++;
 
             if (rowNum == 1) continue; // Fejléc átugrása

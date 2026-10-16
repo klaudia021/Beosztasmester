@@ -21,18 +21,8 @@ public class HorizonsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<HorizonResponseDto>> CreateHorizon([FromBody] CreateHorizonRequestDto dto)
     {
-        try
-        {
-            var result = await _horizonsService.CreateHorizonAsync(dto);
-            return CreatedAtAction(nameof(CreateHorizon), new { id = result.Id }, result);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new
-            {
-                error = $"Failed to create Horizon - CreateHorizon function. Details: {ex.Message}"
-            });
-        }
+        var result = await _horizonsService.CreateHorizonAsync(dto);
+        return CreatedAtAction(nameof(CreateHorizon), new { id = result.Id }, result);
     }
 
     /// <summary>
@@ -41,26 +31,13 @@ public class HorizonsController : ControllerBase
     [HttpPost("{id}/solve")]
     public async Task<ActionResult<StartSolveResponseDto>> StartSolve(string id)
     {
-        try
+        var result = await _horizonsService.StartSolveAsync(id);
+        if (result == null)
         {
-            var result = await _horizonsService.StartSolveAsync(id);
-            if (result == null)
-            {
-                return NotFound(new
-                {
-                    error = $"Entity not found with id '{id}' - StartSolve function"
-                });
-            }
+            return NotFound(new { error = $"Entity not found with id '{id}' - StartSolve function" });
+        }
 
-            return StatusCode(202, result);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new
-            {
-                error = $"Internal server error while starting solver for horizon '{id}' - StartSolve function. Details: {ex.Message}"
-            });
-        }
+        return Accepted(result);
     }
 
     /// <summary>

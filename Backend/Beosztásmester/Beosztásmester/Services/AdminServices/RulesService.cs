@@ -1,9 +1,8 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Beosztasmester.Models;
 using Beosztasmester.Models.Data;
 using Beosztasmester.Models.DTOs;
-using Beosztasmester.Model;
 
 namespace Beosztasmester.Services;
 

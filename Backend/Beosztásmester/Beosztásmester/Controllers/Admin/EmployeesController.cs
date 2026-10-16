@@ -2,7 +2,7 @@
 using Beosztasmester.Services;
 using Beosztasmester.Models.DTOs;
 
-namespace Beosztasmester.Controllers
+namespace Beosztasmester.Controllers.Admin
 {
     [ApiController]
     [Route("api/[controller]")]

@@ -9,9 +9,9 @@ namespace Beosztasmester.Models.Data
         public Guid Id { get; set; }
         public Guid Department_Id { get; set; }
         [ForeignKey(nameof(Department_Id))]
-        public Department Department { get; set; }
-        public string Type_Code { get; set; }
-        public string Scope { get; set; }
+        public Department Department { get; set; } = null!;
+        public string Type_Code { get; set; } = string.Empty;
+        public string Scope { get; set; } = "Global";
         public Guid? Scope_Ref_Id { get; set; }
         public bool Is_Hard { get; set; }
         public int Weight { get; set; }

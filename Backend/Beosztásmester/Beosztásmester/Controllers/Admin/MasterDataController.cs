@@ -2,7 +2,7 @@
 using Beosztasmester.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Beosztasmester.Controllers
+namespace Beosztasmester.Controllers.Admin
 {
     [Route("api/[controller]")]
     [ApiController]

@@ -9,10 +9,10 @@ namespace Beosztasmester.Models.Data
         public Guid Id { get; set; }
         public Guid Horizon_Id { get; set; }
         [ForeignKey(nameof(Horizon_Id))]
-        public Horizon Horizon { get; set; }
+        public Horizon Horizon { get; set; } = null!;
         public int Version_Number { get; set; }
-        public string Status { get; set; }
-        public string Created_By { get; set; }
+        public string Status { get; set; } = "Draft";
+        public string Created_By { get; set; } = string.Empty;
         public DateTime Created_Date { get; set; }
         public double? Objective_Value { get; set; }
         [Column(TypeName = "jsonb")]

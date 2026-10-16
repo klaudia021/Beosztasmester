@@ -1,4 +1,3 @@
-﻿using Beosztasmester.Model;
 using Beosztasmester.Models;
 using Beosztasmester.Models.Data;
 using Beosztasmester.Models.DTOs;
@@ -278,4 +277,3 @@ public class RostersService: IRostersService
         return true;
     }
 }
-

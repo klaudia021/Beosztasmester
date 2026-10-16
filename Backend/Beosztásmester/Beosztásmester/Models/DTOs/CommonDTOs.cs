@@ -1,4 +1,4 @@
-﻿namespace Beosztasmester.DTOs;
+namespace Beosztasmester.Models.DTOs;
 
 public class PaginationFilterDto
 {

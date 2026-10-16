@@ -1,4 +1,3 @@
-﻿using Beosztasmester.Model;
 using Beosztasmester.Models;
 using Beosztasmester.Models.Data;
 using Beosztasmester.Models.DTOs;
@@ -48,7 +47,7 @@ public class UnavailabilitiesService : IUnavailabilitiesService
             Type = u.Type,
             StartDate = u.Start_Date,
             EndDate = u.End_Date,
-            Reason = u.Reason
+            Reason = u.Reason ?? string.Empty
         }).ToListAsync();
     }
 
@@ -64,7 +63,7 @@ public class UnavailabilitiesService : IUnavailabilitiesService
             Type = u.Type,
             StartDate = u.Start_Date,
             EndDate = u.End_Date,
-            Reason = u.Reason
+            Reason = u.Reason ?? string.Empty
         };
     }
 
@@ -90,7 +89,7 @@ public class UnavailabilitiesService : IUnavailabilitiesService
             Type = unavailability.Type,
             StartDate = unavailability.Start_Date,
             EndDate = unavailability.End_Date,
-            Reason = unavailability.Reason
+            Reason = unavailability.Reason ?? string.Empty
         };
     }
 
@@ -105,4 +104,3 @@ public class UnavailabilitiesService : IUnavailabilitiesService
         return true;
     }
 }
-

@@ -7,9 +7,9 @@ namespace Beosztasmester.Models.Data
     {
         [Key]
         public Guid Id { get; set; }
-        public string Entity {  get; set; }
+        public string Entity { get; set; } = string.Empty;
         public Guid Entity_Id { get; set; }
-        public string Operation {  get; set; }
+        public string Operation { get; set; } = string.Empty;
         public Guid User_Id { get; set; }
         public DateTime Timestamp { get; set; } = DateTime.UtcNow;
         [Column(TypeName = "jsonb")]
