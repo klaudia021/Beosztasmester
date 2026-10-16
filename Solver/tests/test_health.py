@@ -20,15 +20,15 @@ def test_health() -> None:
 
 def test_solve() -> None:
     payload = {
-        "horizonId": "H-01",
+        "horizonId": 1,
         "engineType": "dummy",
-        "instance": {"instanceId": "M-01"},
+        "instance": {"instanceId": 101},
     }
 
     engine_started = Event()
     release_engine = Event()
 
-    def controlled_engine() -> list[dict[str, str]]:
+    def controlled_engine() -> list[dict[str, int | str]]:
         engine_started.set()
         if not release_engine.wait(timeout=5):
             raise TimeoutError("Test engine was not released")
@@ -50,9 +50,10 @@ def test_solve() -> None:
                 snapshot = runner.get_run(run_id)
 
                 assert snapshot is not None
-                assert snapshot.horizon_id == "H-01"
+                assert snapshot.horizon_id == 1
                 assert snapshot.engine_type == "dummy"
-                assert snapshot.instance_id == "M-01"
+                assert snapshot.instance_id == 101
+                assert run_id == 101
                 assert snapshot.state is SolverRunState.RUNNING
             finally:
                 release_engine.set()
@@ -68,9 +69,9 @@ def test_solve() -> None:
 
 def test_solve_invalid_request() -> None:
     payload = {
-        "horizonId": "",
+        "horizonId": 0,
         "engineType": "dummy",
-        "instance": {"instanceId": "M-01"},
+        "instance": {"instanceId": 101},
     }
 
     with TestClient(app) as client:
@@ -81,9 +82,9 @@ def test_solve_invalid_request() -> None:
 
 def test_solve_unsupported_engine_type() -> None:
     payload = {
-        "horizonId": "H-01",
+        "horizonId": 1,
         "engineType": "cpsat",
-        "instance": {"instanceId": "M-01"},
+        "instance": {"instanceId": 101},
     }
 
     with patch.object(SolverRunner, "submit", autospec=True) as submit_mock:
@@ -99,15 +100,15 @@ def test_solve_unsupported_engine_type() -> None:
 
 def test_solve_duplicate_active_run() -> None:
     payload = {
-        "horizonId": "H-01",
+        "horizonId": 1,
         "engineType": "dummy",
-        "instance": {"instanceId": "M-01"},
+        "instance": {"instanceId": 101},
     }
 
     engine_started = Event()
     release_engine = Event()
 
-    def controlled_engine() -> list[dict[str, str]]:
+    def controlled_engine() -> list[dict[str, int | str]]:
         engine_started.set()
         if not release_engine.wait(timeout=5):
             raise TimeoutError("Test engine was not released")
@@ -158,7 +159,7 @@ def test_runner_lifecycle() -> None:
 
 def test_get_solver_run_unknown_id() -> None:
     with TestClient(app) as client:
-        response = client.get("/solver-runs/unknown")
+        response = client.get("/solver-runs/999")
 
     assert response.status_code == 404
     assert response.json() == {
@@ -169,7 +170,7 @@ def test_get_solver_run_unknown_id() -> None:
 def test_get_solver_run_accepted() -> None:
     with TestClient(app) as client:
         runner: SolverRunner = app.state.runner
-        run_id = runner.submit("horizon-1", "dummy", "instance-1")
+        run_id = runner.submit(1, "dummy", 101)
 
         response = client.get(f"/solver-runs/{run_id}")
 
@@ -178,8 +179,8 @@ def test_get_solver_run_accepted() -> None:
     body = response.json()
 
     assert body["runId"] == run_id
-    assert body["horizonId"] == "horizon-1"
-    assert body["instanceId"] == "instance-1"
+    assert body["horizonId"] == 1
+    assert body["instanceId"] == 101
     assert body["engineType"] == "dummy"
     assert body["status"] == "accepted"
     assert body["acceptedAt"] is not None
@@ -192,11 +193,11 @@ def test_get_solver_run_during_and_after_execution() -> None:
     engine_started = Event()
     release_engine = Event()
 
-    def controlled_engine() -> list[dict[str, str]]:
+    def controlled_engine() -> list[dict[str, int | str]]:
         engine_started.set()
         if not release_engine.wait(timeout=5):
             raise TimeoutError("Test engine was not released")
-        return [{"employeeId": "E001"}]
+        return [{"employeeId": 1}]
 
     with patch(
         "app.main.select_engine",
@@ -207,9 +208,9 @@ def test_get_solver_run_during_and_after_execution() -> None:
                 response = client.post(
                     "/solve",
                     json={
-                        "horizonId": "H-01",
+                        "horizonId": 1,
                         "engineType": "dummy",
-                        "instance": {"instanceId": "M-01"},
+                        "instance": {"instanceId": 101},
                     },
                 )
 

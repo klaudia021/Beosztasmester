@@ -2,7 +2,7 @@ from collections.abc import Callable
 
 from app.solver.engines.dummy import DummySolverEngine
 
-type EngineCallable = Callable[[], list[dict[str, str]]]
+type EngineCallable = Callable[[], list[dict[str, int | str]]]
 
 
 class UnsupportedEngineTypeError(ValueError):

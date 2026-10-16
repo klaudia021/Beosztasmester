@@ -4,8 +4,9 @@
 
 Csak a tickethez tartozó determinisztikus dummy roster provider készült el.
 Interfész: `app/solver/roster/dummy.py`,
-`get_dummy_assignments() -> list[dict[str, str]]`.
-Minden sor pontosan `employeeId`, `date`, `shiftType` szöveges mezőket tartalmaz.
+`get_dummy_assignments() -> list[dict[str, int | str]]`.
+Minden sor pontosan `employeeId` (egész szám), `date` és `shiftType` (szöveg)
+mezőket tartalmaz.
 A meglévő DummySolverEngine alapértelmezésben már ezt a függvényt hívja;
 az engine, Runner, HTTP API, frontend és backend működését nem módosítottuk.
 
@@ -14,7 +15,7 @@ az engine, Runner, HTTP API, frontend és backend működését nem módosított
 Klaudia hivatkozott `dummyroster.txt` fájlja és a teljes 7.2 specifikáció nem
 szerepel a kapott projektben. Emiatt nem állítjuk, hogy ezt a fájlt reprodukáljuk.
 A projekt `roster-mock-backend/dummy-data.js` mintájából vettük át a dolgozókat
-(E001–E005), dátumokat (2026-03-01–07) és műszakkódokat (D, A, N, OFF).
+(1–5), dátumokat (2026-03-01–07) és műszakkódokat (D, A, N, OFF).
 A véletlen választást determinisztikus forgás váltja fel:
 `shift_types[(employee_index + day - 1) % 4]`.
 Az eredmény 35 sor, dolgozónként és dátumonként egy bejegyzéssel.
@@ -65,9 +66,9 @@ docker compose up --build solver
 
 ```json
 {
-  "horizonId": "H-DEMO",
+  "horizonId": 1,
   "engineType": "dummy",
-  "instance": {"instanceId": "M-DEMO"}
+  "instance": {"instanceId": 101}
 }
 ```
 
@@ -75,9 +76,10 @@ docker compose up --build solver
 4. A `GET /solver-runs/{run_id}` hívásban használd ezt az azonosítót.
    Kb. 5 másodperc után `status: "completed"` várható; előtte accepted/running.
 5. A `GET /solver-runs/{run_id}/result` eredményében `result` egy 35 elemű lista.
-   Első sora: `{"employeeId":"E001","date":"2026-03-01","shiftType":"D"}`.
-   Utolsó sora: `{"employeeId":"E005","date":"2026-03-07","shiftType":"N"}`.
-6. Ismételd meg a POST-ot az első futás befejezése után: új runId mellett
+   Első sora: `{"employeeId":1,"date":"2026-03-01","shiftType":"D"}`.
+   Utolsó sora: `{"employeeId":5,"date":"2026-03-07","shiftType":"N"}`.
+6. Ismételd meg a POST-ot az első futás befejezése után új, backend által
+   kiosztott `instanceId`-val (ez a runId is):
    pontosan azonos result listát kell kapnod. A status endpoint továbbra sem
    tartalmaz result mezőt.
 

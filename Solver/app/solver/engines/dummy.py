@@ -3,7 +3,7 @@ from time import sleep
 
 from app.solver.roster.dummy import get_dummy_assignments
 
-type Assignments = list[dict[str, str]]
+type Assignments = list[dict[str, int | str]]
 type RosterProvider = Callable[[], Assignments]
 
 
