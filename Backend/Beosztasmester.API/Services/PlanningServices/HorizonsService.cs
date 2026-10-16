@@ -152,7 +152,7 @@ public class HorizonsService : IHorizonsService
             {
                 statusDto.Roster.Add(new RosterItemDto
                 {
-                    EmployeeId = Int32.Parse(GetRequiredString(item, "employeeId")),
+                    EmployeeId = GetRequiredInt(item, "employeeId"),
                     Date = DateOnly.Parse(GetRequiredString(item, "date")),
                     ShiftType = GetRequiredString(item, "shiftType")
                 });
@@ -218,6 +218,19 @@ public class HorizonsService : IHorizonsService
 
         return property.GetString()
             ?? throw new InvalidDataException($"The solver response did not include a valid '{propertyName}'.");
+    }
+
+    private static int GetRequiredInt(JsonElement element, string propertyName)
+    {
+        if (element.ValueKind != JsonValueKind.Object ||
+            !element.TryGetProperty(propertyName, out var property) ||
+            property.ValueKind != JsonValueKind.Number ||
+            !property.TryGetInt32(out var value))
+        {
+            throw new InvalidDataException($"The solver response did not include a valid integer '{propertyName}'.");
+        }
+
+        return value;
     }
 
     private static int? GetOptionalInt(JsonElement element, string propertyName) =>
