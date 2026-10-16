@@ -6,7 +6,7 @@ from fastapi.testclient import TestClient
 
 from app import main as main_module
 from app.main import app
-from app.solver.engines.dummy import DummySolverEngine
+from app.solver.engines.dummy import Assignments, DummySolverEngine
 from app.solver.runner import SolverRunner
 
 
@@ -60,7 +60,7 @@ def test_completed_run_returns_engine_result() -> None:
     The status endpoint must not include assignments.
     """
 
-    assignments = [
+    assignments: Assignments = [
         {
             "employeeId": 1,
             "date": "2026-03-02",
@@ -107,7 +107,7 @@ def test_http_solve_to_completed_result(
     of Dani's unfinished roster provider.
     """
 
-    assignments = [
+    assignments: Assignments = [
         {
             "employeeId": 1,
             "date": "2026-03-02",

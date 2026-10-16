@@ -5,6 +5,7 @@ from unittest.mock import patch
 
 import pytest
 
+from app.solver.engines.dummy import Assignments
 from app.solver.runner import DuplicateActiveRunError, SolverRunner
 from app.solver.states import SolverRunState
 
@@ -218,7 +219,7 @@ def test_get_run_with_result_returns_independent_copy() -> None:
     runner = SolverRunner()
     run_id = runner.submit(1, "dummy", 101)
 
-    expected = [{"employeeId": 1, "shiftType": "D"}]
+    expected: Assignments = [{"employeeId": 1, "shiftType": "D"}]
 
     runner.schedule(run_id, lambda: expected)
     runner.close()
@@ -251,7 +252,7 @@ def test_get_run_with_result_is_atomic_during_completion() -> None:
     snapshot_created = Event()
     release_snapshot = Event()
 
-    expected = [{"employeeId": 1}]
+    expected: Assignments = [{"employeeId": 1}]
 
     def controlled_engine() -> list[dict[str, int | str]]:
         engine_started.set()

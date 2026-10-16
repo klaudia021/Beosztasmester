@@ -22,10 +22,14 @@ class DummyRosterTests(unittest.TestCase):
         for row in assignments:
             self.assertEqual(set(row), {"employeeId", "date", "shiftType"})
             self.assertIsInstance(row["employeeId"], int)
-            self.assertIsInstance(row["date"], str)
+            assignment_date = row["date"]
+            assert isinstance(assignment_date, str)
             self.assertIsInstance(row["shiftType"], str)
             self.assertIn(row["shiftType"], {"D", "A", "N", "OFF"})
-            self.assertEqual(date.fromisoformat(row["date"]).isoformat(), row["date"])
+            self.assertEqual(
+                date.fromisoformat(assignment_date).isoformat(),
+                assignment_date,
+            )
 
     def test_deterministic_and_independent_results(self) -> None:
         first = get_dummy_assignments()

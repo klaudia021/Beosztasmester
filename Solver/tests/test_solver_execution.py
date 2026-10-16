@@ -1,7 +1,7 @@
 
 from threading import Event
 
-from app.solver.engines.dummy import DummySolverEngine
+from app.solver.engines.dummy import Assignments, DummySolverEngine
 from app.solver.roster.dummy import get_dummy_assignments
 from app.solver.runner import SolverRunner
 from app.solver.states import SolverRunState
@@ -25,7 +25,7 @@ def test_default_dummy_provider_completes_run() -> None:
 
 
 def test_dummy_engine_returns_provider_result() -> None:
-    assignments = [
+    assignments: Assignments = [
         {
             "employeeId": 1,
             "date": "2026-10-12",
@@ -44,7 +44,7 @@ def test_dummy_engine_returns_provider_result() -> None:
 def test_scheduled_run_completes_and_stores_result() -> None:
     runner = SolverRunner()
     run_id = runner.submit(1, "dummy", 101)
-    assignments = [{"employeeId": 1}]
+    assignments: Assignments = [{"employeeId": 1}]
 
     try:
         runner.schedule(run_id, lambda: assignments)
