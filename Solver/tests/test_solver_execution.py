@@ -9,7 +9,7 @@ from app.solver.states import SolverRunState
 
 def test_default_dummy_provider_completes_run() -> None:
     runner = SolverRunner()
-    run_id = runner.submit("horizon-demo", "dummy", "instance-demo")
+    run_id = runner.submit(1, "dummy", 101)
     engine = DummySolverEngine(delay_seconds=0)
 
     try:
@@ -27,7 +27,7 @@ def test_default_dummy_provider_completes_run() -> None:
 def test_dummy_engine_returns_provider_result() -> None:
     assignments = [
         {
-            "employeeId": "employee-1",
+            "employeeId": 1,
             "date": "2026-10-12",
             "shiftType": "D",
         }
@@ -43,8 +43,8 @@ def test_dummy_engine_returns_provider_result() -> None:
 
 def test_scheduled_run_completes_and_stores_result() -> None:
     runner = SolverRunner()
-    run_id = runner.submit("horizon-1", "dummy", "instance-1")
-    assignments = [{"employeeId": "employee-1"}]
+    run_id = runner.submit(1, "dummy", 101)
+    assignments = [{"employeeId": 1}]
 
     try:
         runner.schedule(run_id, lambda: assignments)
@@ -64,9 +64,9 @@ def test_scheduled_run_completes_and_stores_result() -> None:
 
 def test_engine_failure_marks_run_failed() -> None:
     runner = SolverRunner()
-    run_id = runner.submit("horizon-1", "dummy", "instance-1")
+    run_id = runner.submit(1, "dummy", 101)
 
-    def failing_engine() -> list[dict[str, str]]:
+    def failing_engine() -> list[dict[str, int | str]]:
         raise ValueError("Simulated engine failure")
 
     try:
@@ -88,14 +88,14 @@ def test_second_run_waits_for_available_worker() -> None:
     first_started = Event()
     release_first = Event()
 
-    def blocking_engine() -> list[dict[str, str]]:
+    def blocking_engine() -> list[dict[str, int | str]]:
         first_started.set()
         if not release_first.wait(timeout=5):
             raise TimeoutError("Test worker was not released")
         return []
 
-    first_id = runner.submit("horizon-1", "dummy", "instance-1")
-    second_id = runner.submit("horizon-2", "dummy", "instance-1")
+    first_id = runner.submit(1, "dummy", 101)
+    second_id = runner.submit(2, "dummy", 102)
 
     try:
         runner.schedule(first_id, blocking_engine)
@@ -126,12 +126,12 @@ def test_second_run_waits_for_available_worker() -> None:
 
 def test_get_run_with_result_returns_independent_copy() -> None:
     runner = SolverRunner()
-    run_id = runner.submit("horizon-1", "dummy", "instance-1")
+    run_id = runner.submit(1, "dummy", 101)
 
     try:
         runner.schedule(
             run_id,
-            lambda: [{"employeeId": "employee-1"}],
+            lambda: [{"employeeId": 1}],
         )
     finally:
         runner.close()
@@ -144,28 +144,28 @@ def test_get_run_with_result_returns_independent_copy() -> None:
     assert snapshot.state is SolverRunState.COMPLETED
     assert result is not None
 
-    result[0]["employeeId"] = "modified"
+    result[0]["employeeId"] = -1
 
     second_retrieval = runner.get_run_with_result(run_id)
 
     assert second_retrieval is not None
     _, stored_result = second_retrieval
 
-    assert stored_result == [{"employeeId": "employee-1"}]
+    assert stored_result == [{"employeeId": 1}]
 
 
 def test_dummy_engine_uses_injected_provider() -> None:
     calls = 0
 
-    def fake_provider() -> list[dict[str, str]]:
+    def fake_provider() -> list[dict[str, int | str]]:
         nonlocal calls
         calls += 1
-        return [{"employeeId": "employee-42"}]
+        return [{"employeeId": 42}]
 
     engine = DummySolverEngine(
         roster_provider=fake_provider,
         delay_seconds=0,
     )
 
-    assert engine.run() == [{"employeeId": "employee-42"}]
+    assert engine.run() == [{"employeeId": 42}]
     assert calls == 1

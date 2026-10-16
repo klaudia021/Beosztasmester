@@ -1,10 +1,10 @@
-def get_dummy_assignments() -> list[dict[str, str]]:
+def get_dummy_assignments() -> list[dict[str, int | str]]:
     """Return a fresh, deterministic demo roster in assignment JSON format.
 
     Uses the mock backend's five employees, seven dates and four shift codes.
     This fixed fixture does not solve or validate the supplied problem instance.
     """
-    employees = ("E001", "E002", "E003", "E004", "E005")
+    employees = (1, 2, 3, 4, 5)
     shift_types = ("D", "A", "N", "OFF")
 
     return [

@@ -16,7 +16,7 @@ def test_result_unknown_run_returns_404() -> None:
     The API must not invent or implicitly create a missing run.
     """
     with TestClient(app) as client:
-        response = client.get("/solver-runs/unknown/result")
+        response = client.get("/solver-runs/999/result")
 
     assert response.status_code == 404
     assert response.json()["detail"] == "Solver run not found"
@@ -33,9 +33,9 @@ def test_result_accepted_run_has_no_result() -> None:
         runner: SolverRunner = app.state.runner
 
         run_id = runner.submit(
-            horizon_id="H-001",
+            horizon_id=1,
             engine_type="dummy",
-            instance_id="M-001",
+            instance_id=101,
         )
 
         response = client.get(f"/solver-runs/{run_id}/result")
@@ -45,8 +45,8 @@ def test_result_accepted_run_has_no_result() -> None:
     body = response.json()
 
     assert body["runId"] == run_id
-    assert body["horizonId"] == "H-001"
-    assert body["instanceId"] == "M-001"
+    assert body["horizonId"] == 1
+    assert body["instanceId"] == 101
     assert body["engineType"] == "dummy"
     assert body["status"] == "accepted"
     assert body["result"] is None
@@ -62,7 +62,7 @@ def test_completed_run_returns_engine_result() -> None:
 
     assignments = [
         {
-            "employeeId": "E001",
+            "employeeId": 1,
             "date": "2026-03-02",
             "shiftType": "D",
         }
@@ -72,9 +72,9 @@ def test_completed_run_returns_engine_result() -> None:
         runner: SolverRunner = app.state.runner
 
         run_id = runner.submit(
-            horizon_id="H-002",
+            horizon_id=2,
             engine_type="dummy",
-            instance_id="M-002",
+            instance_id=102,
         )
 
         runner.schedule(run_id, lambda: assignments)
@@ -109,7 +109,7 @@ def test_http_solve_to_completed_result(
 
     assignments = [
         {
-            "employeeId": "E001",
+            "employeeId": 1,
             "date": "2026-03-02",
             "shiftType": "D",
         }
@@ -127,10 +127,10 @@ def test_http_solve_to_completed_result(
     )
 
     payload = {
-        "horizonId": "H-INTEGRATION-001",
+        "horizonId": 9001,
         "engineType": "dummy",
         "instance": {
-            "instanceId": "M-INTEGRATION-001",
+            "instanceId": 9002,
             "horizon": {
                 "start": "2026-03-02",
                 "days": 7,

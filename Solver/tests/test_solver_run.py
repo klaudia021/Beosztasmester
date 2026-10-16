@@ -8,14 +8,14 @@ from app.solver.states import SolverRunState
 
 
 def test_new_run_is_accepted() -> None:
-    run = SolverRun("run-001")
+    run = SolverRun(101)
 
-    assert run.run_id == "run-001"
+    assert run.run_id == 101
     assert run.state is SolverRunState.ACCEPTED
 
 
 def test_run_can_start() -> None:
-    run = SolverRun("run-001")
+    run = SolverRun(101)
     before = datetime.now(timezone.utc)
 
     run.start()
@@ -28,7 +28,7 @@ def test_run_can_start() -> None:
 
 
 def test_new_run_has_accepted_timestamp() -> None:
-    run = SolverRun("run-001")
+    run = SolverRun(101)
 
     assert isinstance(run.accepted_at, datetime)
     assert run.accepted_at.tzinfo is not None
@@ -38,7 +38,7 @@ def test_new_run_has_accepted_timestamp() -> None:
 def test_accepted_timestamp_is_set_at_creation() -> None:
     before = datetime.now(timezone.utc)
 
-    run = SolverRun("run-001")
+    run = SolverRun(101)
 
     after = datetime.now(timezone.utc)
 
@@ -46,13 +46,13 @@ def test_accepted_timestamp_is_set_at_creation() -> None:
 
 
 def test_new_run_has_no_start_timestamp() -> None:
-    run = SolverRun("run-001")
+    run = SolverRun(101)
 
     assert run.started_at is None
 
 
 def test_solver_run_cannot_start_twice() -> None:
-    run = SolverRun("run-001")
+    run = SolverRun(101)
     run.start()
 
     original_started_at = run.started_at
@@ -65,7 +65,7 @@ def test_solver_run_cannot_start_twice() -> None:
 
 
 def test_complete_records_finished_at() -> None:
-    run = SolverRun("run-001")
+    run = SolverRun(101)
     assert run.finished_at is None
 
     run.start()
@@ -79,7 +79,7 @@ def test_complete_records_finished_at() -> None:
 
 
 def test_complete_twice_preserves_finished_at() -> None:
-    run = SolverRun("run-001")
+    run = SolverRun(101)
     run.start()
     run.complete()
 
@@ -93,7 +93,7 @@ def test_complete_twice_preserves_finished_at() -> None:
 
 
 def test_accepted_run_cannot_complete() -> None:
-    run = SolverRun("run-001")
+    run = SolverRun(101)
 
     with pytest.raises(InvalidStateTransitionError):
         run.complete()
@@ -115,7 +115,7 @@ def test_terminal_transition_records_finished_at(
     method_name: str,
     expected_state: SolverRunState,
 ) -> None:
-    run = SolverRun("run-001")
+    run = SolverRun(101)
     run.start()
 
     getattr(run, method_name)()
@@ -136,7 +136,7 @@ def test_terminal_transition_records_finished_at(
     ],
 )
 def test_accepted_run_cannot_finish(method_name: str) -> None:
-    run = SolverRun("run-001")
+    run = SolverRun(101)
 
     with pytest.raises(InvalidStateTransitionError):
         getattr(run, method_name)()

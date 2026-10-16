@@ -2,7 +2,6 @@ from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
 from copy import deepcopy
 from threading import RLock
-from uuid import uuid4
 
 from app.solver.run import SolverRun
 from app.solver.snapshot import SolverRunSnapshot
@@ -26,25 +25,25 @@ class DuplicateActiveRunError(RuntimeError):
 class SolverRunner:
     def __init__(self) -> None:
         self._lock = RLock()
-        self._runs: dict[str, SolverRun] = {}
-        self._run_context: dict[str, tuple[str, str, str]] = {}
+        self._runs: dict[int, SolverRun] = {}
+        self._run_context: dict[int, tuple[int, str, int]] = {}
         self._executor = ThreadPoolExecutor(max_workers=1)
-        self._scheduled: set[str] = set()
-        self._results: dict[str, list[dict[str, str]]] = {}
+        self._scheduled: set[int] = set()
+        self._results: dict[int, list[dict[str, int | str]]] = {}
 
 
     def submit(
-        self, horizon_id: str, engine_type: str, instance_id: str,
-    ) -> str:
+        self, horizon_id: int, engine_type: str, instance_id: int,
+    ) -> int:
 
-        if not horizon_id:
-            raise ValueError("horizon_id must not be empty")
+        if horizon_id <= 0:
+            raise ValueError("horizon_id must be positive")
 
         if not engine_type:
             raise ValueError("engine_type must not be empty")
 
-        if not instance_id:
-            raise ValueError("instance_id must not be empty")
+        if instance_id <= 0:
+            raise ValueError("instance_id must be positive")
 
         with self._lock:
             for run_id, (registered_horizon, registered_engine, _) in (
@@ -59,10 +58,10 @@ class SolverRunner:
                         f"Active run already exists: {run_id}"
                     )
 
-            run_id = str(uuid4())
+            run_id = instance_id
 
             if run_id in self._runs:
-                raise RuntimeError(f"Duplicate run ID: {run_id}")
+                raise RuntimeError(f"Duplicate backend run ID: {run_id}")
 
             run = SolverRun(run_id)
 
@@ -75,7 +74,7 @@ class SolverRunner:
 
             return run_id
 
-    def _make_snapshot(self, run_id: str) -> SolverRunSnapshot:
+    def _make_snapshot(self, run_id: int) -> SolverRunSnapshot:
         run = self._runs[run_id]
         horizon_id, engine_type, instance_id = self._run_context[run_id]
 
@@ -90,7 +89,7 @@ class SolverRunner:
             finished_at=run.finished_at,
         )
 
-    def get_run(self, run_id: str) -> SolverRunSnapshot | None:
+    def get_run(self, run_id: int) -> SolverRunSnapshot | None:
         with self._lock:
             if run_id not in self._runs:
                 return None
@@ -99,8 +98,8 @@ class SolverRunner:
 
     def get_run_with_result(
         self,
-        run_id: str,
-    ) -> tuple[SolverRunSnapshot, list[dict[str, str]] | None] | None:
+        run_id: int,
+    ) -> tuple[SolverRunSnapshot, list[dict[str, int | str]] | None] | None:
         with self._lock:
             if run_id not in self._runs:
                 return None
@@ -115,8 +114,8 @@ class SolverRunner:
 
     def schedule(
         self,
-        run_id: str,
-        engine: Callable[[], list[dict[str, str]]],
+        run_id: int,
+        engine: Callable[[], list[dict[str, int | str]]],
     ) -> None:
         with self._lock:
             if run_id not in self._runs:
@@ -138,8 +137,8 @@ class SolverRunner:
 
     def _execute(
         self,
-        run_id: str,
-        engine: Callable[[], list[dict[str, str]]],
+        run_id: int,
+        engine: Callable[[], list[dict[str, int | str]]],
     ) -> None:
         with self._lock:
             self._runs[run_id].start()

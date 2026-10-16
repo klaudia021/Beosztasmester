@@ -11,7 +11,7 @@ class DummyRosterTests(unittest.TestCase):
         self.assertEqual(len(assignments), 35)
         self.assertEqual(json.loads(json.dumps(assignments)), assignments)
         expected_pairs = {
-            (f"E{employee:03d}", f"2026-03-{day:02d}")
+            (employee, f"2026-03-{day:02d}")
             for employee in range(1, 6)
             for day in range(1, 8)
         }
@@ -21,7 +21,9 @@ class DummyRosterTests(unittest.TestCase):
         )
         for row in assignments:
             self.assertEqual(set(row), {"employeeId", "date", "shiftType"})
-            self.assertTrue(all(isinstance(value, str) for value in row.values()))
+            self.assertIsInstance(row["employeeId"], int)
+            self.assertIsInstance(row["date"], str)
+            self.assertIsInstance(row["shiftType"], str)
             self.assertIn(row["shiftType"], {"D", "A", "N", "OFF"})
             self.assertEqual(date.fromisoformat(row["date"]).isoformat(), row["date"])
 
@@ -29,7 +31,7 @@ class DummyRosterTests(unittest.TestCase):
         first = get_dummy_assignments()
         second = get_dummy_assignments()
         self.assertEqual(first, second)
-        first[0]["employeeId"] = "changed"
+        first[0]["employeeId"] = -1
         first.pop()
         self.assertEqual(get_dummy_assignments(), second)
 
@@ -37,13 +39,13 @@ class DummyRosterTests(unittest.TestCase):
         assignments = get_dummy_assignments()
         self.assertEqual(
             assignments[0],
-            {"employeeId": "E001", "date": "2026-03-01", "shiftType": "D"},
+            {"employeeId": 1, "date": "2026-03-01", "shiftType": "D"},
         )
         self.assertEqual(
             assignments[7],
-            {"employeeId": "E002", "date": "2026-03-01", "shiftType": "A"},
+            {"employeeId": 2, "date": "2026-03-01", "shiftType": "A"},
         )
         self.assertEqual(
             assignments[-1],
-            {"employeeId": "E005", "date": "2026-03-07", "shiftType": "N"},
+            {"employeeId": 5, "date": "2026-03-07", "shiftType": "N"},
         )

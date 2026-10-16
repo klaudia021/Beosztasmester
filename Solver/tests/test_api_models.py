@@ -6,10 +6,10 @@ from app.api.models import SolveRequest, SolverInstance
 
 def test_solve_request_valid() -> None:
     payload = {
-        "horizonId": "H-01",
+        "horizonId": 1,
         "engineType": "dummy",
         "instance": {
-            "instanceId": "M-01",
+            "instanceId": 101,
             "employees": [],
             "demand": [],
         },
@@ -20,9 +20,9 @@ def test_solve_request_valid() -> None:
     assert isinstance(request, SolveRequest)
     assert isinstance(request.instance, SolverInstance)
 
-    assert request.horizonId == "H-01"
+    assert request.horizonId == 1
     assert request.engineType == "dummy"
-    assert request.instance.instanceId == "M-01"
+    assert request.instance.instanceId == 101
 
     assert request.instance.model_extra == {
         "employees": [],
@@ -34,19 +34,24 @@ def test_solve_request_valid() -> None:
     "payload",
     [
         {
-            "horizonId": "",
+            "horizonId": 0,
             "engineType": "dummy",
-            "instance": {"instanceId": "M-01"},
+            "instance": {"instanceId": 101},
         },
         {
-            "horizonId": "H-01",
+            "horizonId": 1,
             "engineType": "dummy",
             "instance": {},
         },
         {
-            "horizonId": "H-01",
+            "horizonId": 1,
             "engineType": "dummy",
             "instance": "invalid",
+        },
+        {
+            "horizonId": 1,
+            "engineType": "dummy",
+            "instance": {"instanceId": 0},
         },
     ],
 )
