@@ -34,7 +34,11 @@ The interface uses the system specification's common JSON formats:
 |---|---|
 | `horizonId` | Backend planning horizon; run admission/correlation |
 | `instanceId` | Ch 7.1 problem instance; reproducibility and comparison |
-| `runId` | Unique execution; status and result polling |
+| `runId` | Backend-assigned execution ID; status and result polling |
+
+All three identifiers are integers. The current Backend sends the persisted
+Solver run ID as `instance.instanceId`; the Solver uses that value as `runId`
+so the Backend can poll the run it created.
 
 `runId` is the only HTTP run-lookup key. One instance may have multiple runs, including different Solver Engines.
 
@@ -50,10 +54,10 @@ Starts one asynchronous Solver execution.
 
 ```json
 {
-  "horizonId": "73d9882a-5b2e-4c4e-ae0b-65b1c6bdbaf8",
+  "horizonId": 73,
   "engineType": "dummy",
   "instance": {
-    "instanceId": "M-01",
+    "instanceId": 1001,
     "horizon": {
       "start": "2026-03-01",
       "days": 28
@@ -78,7 +82,7 @@ The outer envelope supplies execution metadata; it does not modify the Ch 7.1 fo
 
 ```json
 {
-  "runId": "0fbd20fb-4b16-40ef-936e-f81a7f07f5aa"
+  "runId": 1001
 }
 ```
 
@@ -104,9 +108,9 @@ Error bodies and failure recovery remain open.
 
 ```json
 {
-  "runId": "0fbd20fb-4b16-40ef-936e-f81a7f07f5aa",
-  "horizonId": "73d9882a-5b2e-4c4e-ae0b-65b1c6bdbaf8",
-  "instanceId": "M-01",
+  "runId": 1001,
+  "horizonId": 73,
+  "instanceId": 1001,
   "engineType": "dummy",
   "status": "running",
   "acceptedAt": "2026-10-12T06:30:00Z",
@@ -125,16 +129,16 @@ timed-out runs may retain a best-available solution.
 
 ```json
 {
-  "runId": "0fbd20fb-4b16-40ef-936e-f81a7f07f5aa",
-  "horizonId": "73d9882a-5b2e-4c4e-ae0b-65b1c6bdbaf8",
-  "instanceId": "M-01",
+  "runId": 1001,
+  "horizonId": 73,
+  "instanceId": 1001,
   "engineType": "cpsat",
   "status": "completed",
   "acceptedAt": "2026-10-12T06:30:00Z",
   "startedAt": "2026-10-12T06:30:01Z",
   "finishedAt": "2026-10-12T06:30:44Z",
   "result": {
-    "instanceId": "M-01",
+    "instanceId": 1001,
     "solverId": "cpsat-v3",
     "status": "FEASIBLE",
     "runtimeSec": 42.7,
@@ -151,7 +155,7 @@ timed-out runs may retain a best-available solution.
     },
     "assignments": [
       {
-        "employeeId": "E001",
+        "employeeId": 1,
         "date": "2026-03-01",
         "shiftType": "D"
       }
@@ -196,7 +200,7 @@ Ch 7.2 `runtimeSec` represents algorithm execution time, not necessarily the com
 **Implemented:**
 
 - FastAPI lifespan ownership of a single in-memory SolverRunner
-- Run registration, duplicate-active-run protection, UUIDs and immutable snapshots
+- Run registration using the Backend-provided run ID, duplicate-active-run protection and immutable snapshots
 - Serialized background execution, lifecycle timestamps and result retention
 - POST `/solve`: partial request-envelope validation, engine selection, run admission and scheduling
 - HTTP 202 for accepted runs; HTTP 409 for duplicate active runs; HTTP 422 for invalid requests or unsupported engines

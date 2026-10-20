@@ -31,7 +31,7 @@ def health() -> dict[str, str]:
 
 
 @app.post("/solve", status_code=202)
-def solve(payload: SolveRequest, request: Request) -> dict[str, str]:
+def solve(payload: SolveRequest, request: Request) -> dict[str, int]:
     runner: SolverRunner = request.app.state.runner
 
     try:
@@ -61,7 +61,10 @@ def solve(payload: SolveRequest, request: Request) -> dict[str, str]:
 
 
 @app.get("/solver-runs/{run_id}")
-def get_solver_run(run_id: str, request: Request) -> dict[str, str | None]:
+def get_solver_run(
+    run_id: int,
+    request: Request,
+) -> dict[str, int | str | None]:
     runner: SolverRunner = request.app.state.runner
     snapshot = runner.get_run(run_id)
 
@@ -93,7 +96,7 @@ def get_solver_run(run_id: str, request: Request) -> dict[str, str | None]:
 
 @app.get("/solver-runs/{run_id}/result")
 def get_solver_run_result(
-    run_id: str,
+    run_id: int,
     request: Request,
 ) -> dict[str, object]:
     runner: SolverRunner = request.app.state.runner

@@ -6,7 +6,7 @@ from app.solver.states import SolverRunState
 
 
 class SolverRun:
-    def __init__(self, run_id: str) -> None:
+    def __init__(self, run_id: int) -> None:
         self._run_id = run_id
         self._state_machine = SolverRunStateMachine()
         self._accepted_at = datetime.now(timezone.utc)
@@ -14,7 +14,7 @@ class SolverRun:
         self._finished_at: datetime | None = None
 
     @property
-    def run_id(self) -> str:
+    def run_id(self) -> int:
         return self._run_id
 
     @property

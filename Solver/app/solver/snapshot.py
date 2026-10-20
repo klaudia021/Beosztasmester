@@ -6,9 +6,9 @@ from app.solver.states import SolverRunState
 
 @dataclass(frozen=True)
 class SolverRunSnapshot:
-    run_id: str
-    horizon_id: str
-    instance_id: str
+    run_id: int
+    horizon_id: int
+    instance_id: int
     engine_type: str
     state: SolverRunState
     accepted_at: datetime
