@@ -1,0 +1,60 @@
+using System.ComponentModel.DataAnnotations;
+
+namespace Beosztasmester.Models.DTOs;
+
+    public class EmployeeDto
+    {
+        public int Id { get; set; }
+        public int DepartmentId { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Status { get; set; } = "Active"; // Active, Inactive, etc.
+        public int ContractHoursPerWeek { get; set; }
+        public DateTime EntryDate { get; set; }
+        public DateTime? ExitDate { get; set; }
+        public List<int> SkillIds { get; set; } = new();
+    }
+
+    public class CreateEmployeeDto
+    {
+        [Required]
+        public int DepartmentId { get; set; }
+
+        [Required]
+        [StringLength(100)]
+        public string Name { get; set; } = string.Empty;
+
+        [Range(1, 168)]
+        public int ContractHoursPerWeek { get; set; } = 40;
+
+        public DateTime EntryDate { get; set; } = DateTime.UtcNow;
+
+        public List<int> SkillIds { get; set; } = new();
+    }
+
+    public class UpdateEmployeeDto
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Status { get; set; } = "Active";
+        public int ContractHoursPerWeek { get; set; }
+        public DateTime? ExitDate { get; set; }
+        public List<int> SkillIds { get; set; } = new();
+    }
+
+//import
+public class EmployeeImportRowDto
+{
+    public int RowNumber { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public int ContractHours { get; set; }
+    public string SkillsCsv { get; set; } = string.Empty;
+    public bool IsValid { get; set; }
+    public List<string> ValidationErrors { get; set; } = new();
+}
+
+public class EmployeeImportPreviewDto
+{
+    public int TotalRows { get; set; }
+    public int ValidRowsCount { get; set; }
+    public int InvalidRowsCount { get; set; }
+    public List<EmployeeImportRowDto> Rows { get; set; } = new();
+}

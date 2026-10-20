@@ -17,11 +17,11 @@ jobs:
           dotnet-version: '10.0.x'
 
       - name: Restore
-        working-directory: ./Backend/Beosztásmester
+        working-directory: ./Backend/Beosztasmester.API
         run: dotnet restore
 
       - name: Build
-        working-directory: ./Backend/Beosztásmester
+        working-directory: ./Backend/Beosztasmester.API
         run: dotnet build --no-restore --configuration Release
 
   build-frontend:

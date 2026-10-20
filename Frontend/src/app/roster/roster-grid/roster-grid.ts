@@ -4,7 +4,7 @@ import { themeQuartz } from 'ag-grid-community';
 import type { ColDef } from 'ag-grid-community';
 
 interface Assignment {
-  employeeId: string;
+  employeeId: number;
   date: string;
   shiftType: string;
 }
