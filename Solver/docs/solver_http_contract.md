@@ -50,6 +50,7 @@ Starts one asynchronous Solver execution.
 
 ```json
 {
+  "runId": "0fbd20fb-4b16-40ef-936e-f81a7f07f5aa",
   "horizonId": "73d9882a-5b2e-4c4e-ae0b-65b1c6bdbaf8",
   "engineType": "dummy",
   "instance": {

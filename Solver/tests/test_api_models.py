@@ -6,6 +6,7 @@ from app.api.models import SolveRequest, SolverInstance
 
 def test_solve_request_valid() -> None:
     payload = {
+        "runId": "RUN-01",
         "horizonId": "H-01",
         "engineType": "dummy",
         "instance": {
@@ -20,6 +21,7 @@ def test_solve_request_valid() -> None:
     assert isinstance(request, SolveRequest)
     assert isinstance(request.instance, SolverInstance)
 
+    assert request.runId == "RUN-01"
     assert request.horizonId == "H-01"
     assert request.engineType == "dummy"
     assert request.instance.instanceId == "M-01"
@@ -34,16 +36,19 @@ def test_solve_request_valid() -> None:
     "payload",
     [
         {
+            "runId": "",
             "horizonId": "",
             "engineType": "dummy",
             "instance": {"instanceId": "M-01"},
         },
         {
+            "runId": "RUN-3",
             "horizonId": "H-01",
             "engineType": "dummy",
             "instance": {},
         },
         {
+            "runId": "RUN-4",
             "horizonId": "H-01",
             "engineType": "dummy",
             "instance": "invalid",

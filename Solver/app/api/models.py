@@ -8,6 +8,7 @@ class SolverInstance(BaseModel):
 
 
 class SolveRequest(BaseModel):
+    runId: str = Field(min_length=1)
     horizonId: str = Field(min_length=1)
     engineType: str = Field(min_length=1)
     instance: SolverInstance

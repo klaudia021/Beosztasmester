@@ -2,7 +2,6 @@ from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
 from copy import deepcopy
 from threading import RLock
-from uuid import uuid4
 
 from app.solver.run import SolverRun
 from app.solver.snapshot import SolverRunSnapshot
@@ -23,6 +22,10 @@ class DuplicateActiveRunError(RuntimeError):
     pass
 
 
+class DuplicateRunIdError(RuntimeError):
+    pass
+
+
 class SolverRunner:
     def __init__(self) -> None:
         self._lock = RLock()
@@ -34,8 +37,15 @@ class SolverRunner:
 
 
     def submit(
-        self, horizon_id: str, engine_type: str, instance_id: str,
+        self,
+        run_id: str,
+        horizon_id: str,
+        engine_type: str,
+        instance_id: str,
     ) -> str:
+
+        if not run_id:
+            raise ValueError("run_id must not be empty")
 
         if not horizon_id:
             raise ValueError("horizon_id must not be empty")
@@ -59,10 +69,8 @@ class SolverRunner:
                         f"Active run already exists: {run_id}"
                     )
 
-            run_id = str(uuid4())
-
             if run_id in self._runs:
-                raise RuntimeError(f"Duplicate run ID: {run_id}")
+                raise DuplicateRunIdError(f"Duplicate run ID: {run_id}")
 
             run = SolverRun(run_id)
 

@@ -65,6 +65,7 @@ docker compose up --build solver
 
 ```json
 {
+  "runId": "H-DEMO-RUN-001",
   "horizonId": "H-DEMO",
   "engineType": "dummy",
   "instance": {"instanceId": "M-DEMO"}
