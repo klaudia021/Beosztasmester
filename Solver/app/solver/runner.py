@@ -57,16 +57,16 @@ class SolverRunner:
             raise ValueError("instance_id must not be empty")
 
         with self._lock:
-            for run_id, (registered_horizon, registered_engine, _) in (
+            for registered_run_id, (registered_horizon, registered_engine, _) in (
                 self._run_context.items()
             ):
                 if (
                     registered_horizon == horizon_id
                     and registered_engine == engine_type
-                    and self._runs[run_id].state not in TERMINAL_STATES
+                    and self._runs[registered_run_id].state not in TERMINAL_STATES
                 ):
                     raise DuplicateActiveRunError(
-                        f"Active run already exists: {run_id}"
+                        f"Active run already exists: {registered_run_id}"
                     )
 
             if run_id in self._runs:
