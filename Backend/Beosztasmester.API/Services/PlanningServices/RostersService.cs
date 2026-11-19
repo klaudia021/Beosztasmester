@@ -7,13 +7,13 @@ namespace Beosztasmester.Services;
 
 public interface IRostersService
 {
-    Task<RosterVersionDto?> GetRosterVersionByIdAsync(int versionId);
-    Task<IEnumerable<RosterVersionDto>> GetRostersByHorizonAsync(int horizonId);
-    Task<RosterVersionDto> CreateRosterVersionAsync(int horizonId, string createdBy);
-    Task<ValidationResultDto> PatchAssignmentsAsync(int versionId, List<PatchAssignmentDto> patchDtos);
-    Task<ValidationResultDto> ValidateRosterVersionAsync(int versionId);
-    Task<RosterDiffDto?> CompareRosterVersionsAsync(int versionAId, int versionBId);
-    Task<bool> PublishRosterVersionAsync(int versionId);
+    Task<RosterVersionDto?> GetRosterVersionByIdAsync(Guid versionId);
+    Task<IEnumerable<RosterVersionDto>> GetRostersByHorizonAsync(Guid horizonId);
+    Task<RosterVersionDto> CreateRosterVersionAsync(Guid horizonId, string createdBy);
+    Task<ValidationResultDto> PatchAssignmentsAsync(Guid versionId, List<PatchAssignmentDto> patchDtos);
+    Task<ValidationResultDto> ValidateRosterVersionAsync(Guid versionId);
+    Task<RosterDiffDto?> CompareRosterVersionsAsync(Guid versionAId, Guid versionBId);
+    Task<bool> PublishRosterVersionAsync(Guid versionId);
 }
 public class RostersService: IRostersService
 {
@@ -24,7 +24,7 @@ public class RostersService: IRostersService
         _dataContext = dataContext;
     }
 
-    public async Task<RosterVersionDto?> GetRosterVersionByIdAsync(int versionId)
+    public async Task<RosterVersionDto?> GetRosterVersionByIdAsync(Guid versionId)
     {
         var version = await _dataContext.RosterVersions
             .Include(v => v.Assignments)
@@ -52,7 +52,7 @@ public class RostersService: IRostersService
         };
     }
 
-    public async Task<IEnumerable<RosterVersionDto>> GetRostersByHorizonAsync(int horizonId)
+    public async Task<IEnumerable<RosterVersionDto>> GetRostersByHorizonAsync(Guid horizonId)
     {
         var versions = await _dataContext.RosterVersions
             .Where(v => v.HorizonId == horizonId)
@@ -70,7 +70,7 @@ public class RostersService: IRostersService
         });
     }
 
-    public async Task<RosterVersionDto> CreateRosterVersionAsync(int horizonId, string createdBy)
+    public async Task<RosterVersionDto> CreateRosterVersionAsync(Guid horizonId, string createdBy)
     {
         // Kiszámoljuk a következő verziószámot az adott horizonton belül
         var maxVersionNumber = await _dataContext.RosterVersions
@@ -104,7 +104,7 @@ public class RostersService: IRostersService
     /// <summary>
     /// F5: Kézi módosítások végrehajtása (zárolás/feloldás, műszak törlés/hozzáadás)
     /// </summary>
-    public async Task<ValidationResultDto> PatchAssignmentsAsync(int versionId, List<PatchAssignmentDto> patchDtos)
+    public async Task<ValidationResultDto> PatchAssignmentsAsync(Guid versionId, List<PatchAssignmentDto> patchDtos)
     {
         var version = await _dataContext.RosterVersions
             .Include(v => v.Assignments)
@@ -121,7 +121,7 @@ public class RostersService: IRostersService
             var existingAssignment = version.Assignments
                 .FirstOrDefault(a => a.EmployeeId == dto.EmployeeId && a.Date.Date == dateUtc.Date);
 
-            if (dto.ShiftTypeId == null || dto.ShiftTypeId == 0)
+            if (dto.ShiftTypeId == null || dto.ShiftTypeId == Guid.Empty)
             {
                 // Műszak törlése
                 if (existingAssignment != null)
@@ -164,7 +164,7 @@ public class RostersService: IRostersService
     /// <summary>
     /// F5: Beosztás érvényességének ellenőrzése (Hard és Soft szabályok vizsgálata)
     /// </summary>
-    public async Task<ValidationResultDto> ValidateRosterVersionAsync(int versionId)
+    public async Task<ValidationResultDto> ValidateRosterVersionAsync(Guid versionId)
     {
         var result = new ValidationResultDto
         {
@@ -201,7 +201,7 @@ public class RostersService: IRostersService
     /// <summary>
     /// F7: Két beosztásverzió közötti eltérések (Diff) kiszámítása
     /// </summary>
-    public async Task<RosterDiffDto?> CompareRosterVersionsAsync(int versionAId, int versionBId)
+    public async Task<RosterDiffDto?> CompareRosterVersionsAsync(Guid versionAId, Guid versionBId)
     {
         var assignmentsA = await _dataContext.Assignments
             .Where(a => a.RosterVersionId == versionAId)
@@ -265,7 +265,7 @@ public class RostersService: IRostersService
         return diff;
     }
 
-    public async Task<bool> PublishRosterVersionAsync(int versionId)
+    public async Task<bool> PublishRosterVersionAsync(Guid versionId)
     {
         var version = await _dataContext.RosterVersions.FindAsync(versionId);
         if (version == null) return false;

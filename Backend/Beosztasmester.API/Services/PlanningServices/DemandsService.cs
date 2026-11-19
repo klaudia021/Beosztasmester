@@ -7,11 +7,11 @@ namespace Beosztasmester.Services;
 
 public interface IDemandsService
 {
-    Task<IEnumerable<DemandDto>> GetDemandsAsync(int departmentId, DateTime? fromDate, DateTime? toDate);
-    Task<DemandDto?> GetDemandByIdAsync(int id);
+    Task<IEnumerable<DemandDto>> GetDemandsAsync(Guid departmentId, DateTime? fromDate, DateTime? toDate);
+    Task<DemandDto?> GetDemandByIdAsync(Guid id);
     Task<DemandDto> CreateDemandAsync(CreateDemandDto dto);
-    Task<IEnumerable<DemandDto>> BulkUpsertDemandsAsync(int departmentId, List<CreateDemandDto> dtos);
-    Task<bool> DeleteDemandAsync(int id);
+    Task<IEnumerable<DemandDto>> BulkUpsertDemandsAsync(Guid departmentId, List<CreateDemandDto> dtos);
+    Task<bool> DeleteDemandAsync(Guid id);
 }
 
 public class DemandsService : IDemandsService
@@ -23,7 +23,7 @@ public class DemandsService : IDemandsService
         _dataContext = dataContext;
     }
 
-    public async Task<IEnumerable<DemandDto>> GetDemandsAsync(int departmentId, DateTime? fromDate, DateTime? toDate)
+    public async Task<IEnumerable<DemandDto>> GetDemandsAsync(Guid departmentId, DateTime? fromDate, DateTime? toDate)
     {
         var query = _dataContext.Demands.Where(d => d.DepartmentId == departmentId);
 
@@ -49,7 +49,7 @@ public class DemandsService : IDemandsService
         }).ToListAsync();
     }
 
-    public async Task<DemandDto?> GetDemandByIdAsync(int id)
+    public async Task<DemandDto?> GetDemandByIdAsync(Guid id)
     {
         var d = await _dataContext.Demands.FindAsync(id);
         if (d == null) return null;
@@ -96,7 +96,7 @@ public class DemandsService : IDemandsService
     /// <summary>
     /// Tömeges igényfrissítés/hozzáadás (pénztáros/műszak mátrixos tervezőfelülethez)
     /// </summary>
-    public async Task<IEnumerable<DemandDto>> BulkUpsertDemandsAsync(int departmentId, List<CreateDemandDto> dtos)
+    public async Task<IEnumerable<DemandDto>> BulkUpsertDemandsAsync(Guid departmentId, List<CreateDemandDto> dtos)
     {
         var resultList = new List<DemandDto>();
 
@@ -156,7 +156,7 @@ public class DemandsService : IDemandsService
         return resultList;
     }
 
-    public async Task<bool> DeleteDemandAsync(int id)
+    public async Task<bool> DeleteDemandAsync(Guid id)
     {
         var demand = await _dataContext.Demands.FindAsync(id);
         if (demand == null) return false;

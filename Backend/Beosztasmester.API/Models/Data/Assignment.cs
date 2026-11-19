@@ -6,15 +6,15 @@ namespace Beosztasmester.Models.Data
     public class Assignment
     {
         [Key]
-        public int Id { get; set; }
-        public int RosterVersionId { get; set; }
+        public Guid Id { get; set; }
+        public Guid RosterVersionId { get; set; }
         [ForeignKey(nameof(RosterVersionId))]
         public RosterVersion RosterVersion { get; set; } = null!;
-        public int EmployeeId { get; set; }
+        public Guid EmployeeId { get; set; }
         [ForeignKey(nameof(EmployeeId))]
         public Employee Employee { get; set; } = null!;
         public DateTime Date { get; set; }
-        public int ShiftTypeId { get; set; }
+        public Guid ShiftTypeId { get; set; }
         [ForeignKey(nameof(ShiftTypeId))]
         public ShiftType ShiftType { get; set; } = null!;
         public bool IsLocked { get; set; }

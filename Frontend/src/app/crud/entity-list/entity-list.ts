@@ -66,13 +66,13 @@ export class EntityList {
       case 'ref':
         return this.labelFor(field.key, value);
       case 'multiref':
-        return (value as (string | number)[]).map(v => this.labelFor(field.key, v)).join(', ') || '—';
+        return (value as string[]).map(v => this.labelFor(field.key, v)).join(', ') || '—';
       default:
         return String(value);
     }
   }
 
-  private labelFor(fieldKey: string, value: string | number): string {
+  private labelFor(fieldKey: string, value: string): string {
     const option = this.options()[fieldKey]?.find(o => o.value === value);
     return option ? option.label : String(value);
   }

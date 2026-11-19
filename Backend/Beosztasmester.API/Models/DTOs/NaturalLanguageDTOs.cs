@@ -2,7 +2,7 @@ namespace Beosztasmester.Models.DTOs;
 
 public class ParseRuleRequestDto
 {
-    public int DepartmentId { get; set; }
+    public Guid DepartmentId { get; set; }
     public string NaturalText { get; set; } = string.Empty;
 }
 

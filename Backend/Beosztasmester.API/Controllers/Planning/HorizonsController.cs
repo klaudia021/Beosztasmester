@@ -1,4 +1,4 @@
-﻿using Beosztasmester.Models.DTOs;
+using Beosztasmester.Models.DTOs;
 using Beosztasmester.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -28,8 +28,8 @@ public class HorizonsController : ControllerBase
     /// <summary>
     /// POST /api/horizons/{id}/solve — Solver indítása (202 Accepted)
     /// </summary>
-    [HttpPost("{id:int}/solve")]
-    public async Task<ActionResult<StartSolveResponseDto>> StartSolve(int id)
+    [HttpPost("{id:guid}/solve")]
+    public async Task<ActionResult<StartSolveResponseDto>> StartSolve(Guid id)
     {
         var result = await _horizonsService.StartSolveAsync(id);
         if (result == null)
@@ -43,8 +43,8 @@ public class HorizonsController : ControllerBase
     /// <summary>
     /// GET /api/horizons/{runId} — Solver állapot lekérdezése (Polling)
     /// </summary>
-    [HttpGet("{runId:int}")]
-    public async Task<ActionResult<SolverStatusResponseDto>> GetStatus(int runId)
+    [HttpGet("{runId:guid}")]
+    public async Task<ActionResult<SolverStatusResponseDto>> GetStatus(Guid runId)
     {
         var result = await _horizonsService.GetSolverStatusAsync(runId);
 

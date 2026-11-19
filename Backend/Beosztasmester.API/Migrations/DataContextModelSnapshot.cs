@@ -24,26 +24,24 @@ namespace Beosztasmester.Migrations
 
             modelBuilder.Entity("Beosztasmester.Models.Data.Assignment", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("uuid");
 
                     b.Property<bool>("IsLocked")
                         .HasColumnType("boolean");
 
-                    b.Property<int>("RosterVersionId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("RosterVersionId")
+                        .HasColumnType("uuid");
 
-                    b.Property<int>("ShiftTypeId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("ShiftTypeId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Source")
                         .IsRequired()
@@ -62,11 +60,9 @@ namespace Beosztasmester.Migrations
 
             modelBuilder.Entity("Beosztasmester.Models.Data.AuditEntry", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<string>("ChangesJson")
                         .IsRequired()
@@ -76,8 +72,8 @@ namespace Beosztasmester.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("EntityId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("EntityId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Operation")
                         .IsRequired()
@@ -86,8 +82,8 @@ namespace Beosztasmester.Migrations
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -96,11 +92,9 @@ namespace Beosztasmester.Migrations
 
             modelBuilder.Entity("Beosztasmester.Models.Data.Competency", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Code")
                         .IsRequired()
@@ -119,20 +113,18 @@ namespace Beosztasmester.Migrations
 
             modelBuilder.Entity("Beosztasmester.Models.Data.Demand", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("uuid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("CompetencyId")
-                        .HasColumnType("integer");
+                    b.Property<Guid?>("CompetencyId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("DepartmentId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("DepartmentId")
+                        .HasColumnType("uuid");
 
                     b.Property<int?>("MaxHeadcount")
                         .HasColumnType("integer");
@@ -140,8 +132,8 @@ namespace Beosztasmester.Migrations
                     b.Property<int>("MinHeadcount")
                         .HasColumnType("integer");
 
-                    b.Property<int>("ShiftTypeId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("ShiftTypeId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -156,20 +148,18 @@ namespace Beosztasmester.Migrations
 
             modelBuilder.Entity("Beosztasmester.Models.Data.DemandTemplate", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("uuid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("CompetencyId")
-                        .HasColumnType("integer");
+                    b.Property<Guid?>("CompetencyId")
+                        .HasColumnType("uuid");
 
                     b.Property<int>("DayOfWeek")
                         .HasColumnType("integer");
 
-                    b.Property<int>("DepartmentId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("DepartmentId")
+                        .HasColumnType("uuid");
 
                     b.Property<int?>("MaxHeadcount")
                         .HasColumnType("integer");
@@ -177,8 +167,8 @@ namespace Beosztasmester.Migrations
                     b.Property<int>("MinHeadcount")
                         .HasColumnType("integer");
 
-                    b.Property<int>("ShiftTypeId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("ShiftTypeId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -193,19 +183,17 @@ namespace Beosztasmester.Migrations
 
             modelBuilder.Entity("Beosztasmester.Models.Data.Department", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
-                    b.Property<int?>("ParentId")
-                        .HasColumnType("integer");
+                    b.Property<Guid?>("ParentId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -216,17 +204,15 @@ namespace Beosztasmester.Migrations
 
             modelBuilder.Entity("Beosztasmester.Models.Data.Employee", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<int>("ContractHoursPerWeek")
                         .HasColumnType("integer");
 
-                    b.Property<int>("DepartmentId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("DepartmentId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("EntryDate")
                         .HasColumnType("timestamp with time zone");
@@ -253,17 +239,15 @@ namespace Beosztasmester.Migrations
 
             modelBuilder.Entity("Beosztasmester.Models.Data.EmployeeCompetency", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("uuid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.Property<Guid>("CompetencyId")
+                        .HasColumnType("uuid");
 
-                    b.Property<int>("CompetencyId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("ValidFrom")
                         .HasColumnType("timestamp with time zone");
@@ -282,14 +266,12 @@ namespace Beosztasmester.Migrations
 
             modelBuilder.Entity("Beosztasmester.Models.Data.Horizon", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("uuid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("DepartmentId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("DepartmentId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("timestamp with time zone");
@@ -310,23 +292,21 @@ namespace Beosztasmester.Migrations
 
             modelBuilder.Entity("Beosztasmester.Models.Data.Request", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("uuid");
 
                     b.Property<int>("Priority")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("ShiftTypeId")
-                        .HasColumnType("integer");
+                    b.Property<Guid?>("ShiftTypeId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -349,11 +329,9 @@ namespace Beosztasmester.Migrations
 
             modelBuilder.Entity("Beosztasmester.Models.Data.RosterVersion", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -362,8 +340,8 @@ namespace Beosztasmester.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("HorizonId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("HorizonId")
+                        .HasColumnType("uuid");
 
                     b.Property<double?>("ObjectiveValue")
                         .HasColumnType("double precision");
@@ -387,14 +365,12 @@ namespace Beosztasmester.Migrations
 
             modelBuilder.Entity("Beosztasmester.Models.Data.Rule", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("uuid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("DepartmentId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("DepartmentId")
+                        .HasColumnType("uuid");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
@@ -410,8 +386,8 @@ namespace Beosztasmester.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int?>("ScopeRefId")
-                        .HasColumnType("integer");
+                    b.Property<Guid?>("ScopeRefId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("TypeCode")
                         .IsRequired()
@@ -429,19 +405,17 @@ namespace Beosztasmester.Migrations
 
             modelBuilder.Entity("Beosztasmester.Models.Data.ShiftType", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)");
 
-                    b.Property<int>("DepartmentId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("DepartmentId")
+                        .HasColumnType("uuid");
 
                     b.Property<int>("DurationMinutes")
                         .HasColumnType("integer");
@@ -464,14 +438,12 @@ namespace Beosztasmester.Migrations
 
             modelBuilder.Entity("Beosztasmester.Models.Data.SolverRun", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("uuid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("HorizonId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("HorizonId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -484,14 +456,12 @@ namespace Beosztasmester.Migrations
 
             modelBuilder.Entity("Beosztasmester.Models.Data.Unavailability", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("uuid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("timestamp with time zone");

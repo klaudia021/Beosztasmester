@@ -53,7 +53,7 @@ export class EntityForm {
       if (field.ref) {
         this.crud.options(field.ref).subscribe(opts => {
           // A record must not be chosen as its own parent
-          const visible = field.ref === config.key && id ? opts.filter(o => String(o.value) !== id) : opts;
+          const visible = field.ref === config.key && id ? opts.filter(o => o.value !== id) : opts;
           this.options.update(map => ({ ...map, [field.key]: visible }));
         });
       }
@@ -90,14 +90,14 @@ export class EntityForm {
     }
   }
 
-  isChecked(key: string, value: string | number): boolean {
-    const current: (string | number)[] = this.form.get(key)?.value ?? [];
+  isChecked(key: string, value: string): boolean {
+    const current: string[] = this.form.get(key)?.value ?? [];
     return current.includes(value);
   }
 
-  toggle(key: string, value: string | number, event: Event) {
+  toggle(key: string, value: string, event: Event) {
     const control = this.form.get(key)!;
-    const current: (string | number)[] = control.value ?? [];
+    const current: string[] = control.value ?? [];
     const checked = (event.target as HTMLInputElement).checked;
     control.setValue(checked ? [...current, value] : current.filter(v => v !== value));
   }

@@ -7,11 +7,11 @@ namespace Beosztasmester.Services;
 
 public interface IEmployeeService
 {
-    Task<IEnumerable<EmployeeDto>> GetEmployeesAsync(int? departmentId, string? status, string? search);
-    Task<EmployeeDto?> GetEmployeeByIdAsync(int id);
+    Task<IEnumerable<EmployeeDto>> GetEmployeesAsync(Guid? departmentId, string? status, string? search);
+    Task<EmployeeDto?> GetEmployeeByIdAsync(Guid id);
     Task<EmployeeDto> CreateEmployeeAsync(CreateEmployeeDto dto);
-    Task<bool> UpdateEmployeeAsync(int id, UpdateEmployeeDto dto);
-    Task<bool> DeleteEmployeeAsync(int id);
+    Task<bool> UpdateEmployeeAsync(Guid id, UpdateEmployeeDto dto);
+    Task<bool> DeleteEmployeeAsync(Guid id);
 }
 
 public class EmployeeService : IEmployeeService
@@ -23,7 +23,7 @@ public class EmployeeService : IEmployeeService
         _dataContext = dataContext;
     }
 
-    public async Task<IEnumerable<EmployeeDto>> GetEmployeesAsync(int? departmentId, string? status, string? search)
+    public async Task<IEnumerable<EmployeeDto>> GetEmployeesAsync(Guid? departmentId, string? status, string? search)
     {
         var query = _dataContext.Employees
             .Include(e => e.EmployeeCompetencies)
@@ -51,7 +51,7 @@ public class EmployeeService : IEmployeeService
         }).ToListAsync();
     }
 
-    public async Task<EmployeeDto?> GetEmployeeByIdAsync(int id)
+    public async Task<EmployeeDto?> GetEmployeeByIdAsync(Guid id)
     {
         var employee = await _dataContext.Employees
             .Include(e => e.EmployeeCompetencies)
@@ -107,11 +107,11 @@ public class EmployeeService : IEmployeeService
             Status = employee.Status,
             ContractHoursPerWeek = employee.ContractHoursPerWeek,
             EntryDate = employee.EntryDate,
-            SkillIds = dto.SkillIds ?? new List<int>()
+            SkillIds = dto.SkillIds ?? new List<Guid>()
         };
     }
 
-    public async Task<bool> UpdateEmployeeAsync(int id, UpdateEmployeeDto dto)
+    public async Task<bool> UpdateEmployeeAsync(Guid id, UpdateEmployeeDto dto)
     {
         var employee = await _dataContext.Employees
             .Include(e => e.EmployeeCompetencies)
@@ -142,7 +142,7 @@ public class EmployeeService : IEmployeeService
         return true;
     }
 
-    public async Task<bool> DeleteEmployeeAsync(int id)
+    public async Task<bool> DeleteEmployeeAsync(Guid id)
     {
         var employee = await _dataContext.Employees.FindAsync(id);
         if (employee == null) return false;

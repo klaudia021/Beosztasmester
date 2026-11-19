@@ -7,11 +7,11 @@ namespace Beosztasmester.Services;
 
 public interface IRequestsService
 {
-    Task<IEnumerable<EmployeeRequestDto>> GetRequestsAsync(int? employeeId, string? status);
-    Task<EmployeeRequestDto?> GetRequestByIdAsync(int id);
+    Task<IEnumerable<EmployeeRequestDto>> GetRequestsAsync(Guid? employeeId, string? status);
+    Task<EmployeeRequestDto?> GetRequestByIdAsync(Guid id);
     Task<EmployeeRequestDto> CreateRequestAsync(CreateEmployeeRequestDto dto);
-    Task<bool> UpdateRequestStatusAsync(int id, UpdateRequestStatusDto dto);
-    Task<bool> DeleteRequestAsync(int id);
+    Task<bool> UpdateRequestStatusAsync(Guid id, UpdateRequestStatusDto dto);
+    Task<bool> DeleteRequestAsync(Guid id);
 }
 
 public class RequestsService: IRequestsService
@@ -23,7 +23,7 @@ public class RequestsService: IRequestsService
         _dataContext = c;
     }
 
-    public async Task<IEnumerable<EmployeeRequestDto>> GetRequestsAsync(int? employeeId, string? status)
+    public async Task<IEnumerable<EmployeeRequestDto>> GetRequestsAsync(Guid? employeeId, string? status)
     {
         var query = _dataContext.Requests.AsQueryable();
 
@@ -49,7 +49,7 @@ public class RequestsService: IRequestsService
         }).ToListAsync();
     }
 
-    public async Task<EmployeeRequestDto?> GetRequestByIdAsync(int id)
+    public async Task<EmployeeRequestDto?> GetRequestByIdAsync(Guid id)
     {
         var request = await _dataContext.Requests.FindAsync(id);
         if (request == null) return null;
@@ -93,7 +93,7 @@ public class RequestsService: IRequestsService
         };
     }
 
-    public async Task<bool> UpdateRequestStatusAsync(int id, UpdateRequestStatusDto dto)
+    public async Task<bool> UpdateRequestStatusAsync(Guid id, UpdateRequestStatusDto dto)
     {
         var request = await _dataContext.Requests.FindAsync(id);
         if (request == null) return false;
@@ -104,7 +104,7 @@ public class RequestsService: IRequestsService
         return true;
     }
 
-    public async Task<bool> DeleteRequestAsync(int id)
+    public async Task<bool> DeleteRequestAsync(Guid id)
     {
         var request = await _dataContext.Requests.FindAsync(id);
         if (request == null) return false;

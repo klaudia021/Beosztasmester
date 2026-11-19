@@ -4,20 +4,20 @@ namespace Beosztasmester.Models.DTOs;
 
     public class EmployeeDto
     {
-        public int Id { get; set; }
-        public int DepartmentId { get; set; }
+        public Guid Id { get; set; }
+        public Guid DepartmentId { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Status { get; set; } = "Active"; // Active, Inactive, etc.
         public int ContractHoursPerWeek { get; set; }
         public DateTime EntryDate { get; set; }
         public DateTime? ExitDate { get; set; }
-        public List<int> SkillIds { get; set; } = new();
+        public List<Guid> SkillIds { get; set; } = new();
     }
 
     public class CreateEmployeeDto
     {
         [Required]
-        public int DepartmentId { get; set; }
+        public Guid DepartmentId { get; set; }
 
         [Required]
         [StringLength(100)]
@@ -28,7 +28,7 @@ namespace Beosztasmester.Models.DTOs;
 
         public DateTime EntryDate { get; set; } = DateTime.UtcNow;
 
-        public List<int> SkillIds { get; set; } = new();
+        public List<Guid> SkillIds { get; set; } = new();
     }
 
     public class UpdateEmployeeDto
@@ -37,7 +37,7 @@ namespace Beosztasmester.Models.DTOs;
         public string Status { get; set; } = "Active";
         public int ContractHoursPerWeek { get; set; }
         public DateTime? ExitDate { get; set; }
-        public List<int> SkillIds { get; set; } = new();
+        public List<Guid> SkillIds { get; set; } = new();
     }
 
 //import

@@ -12,6 +12,6 @@ public class RuleViolationDto
 {
     public string RuleTypeCode { get; set; } = string.Empty;
     public string Message { get; set; } = string.Empty;
-    public int? AffectedEmployeeId { get; set; }
+    public Guid? AffectedEmployeeId { get; set; }
     public DateTime? AffectedDate { get; set; }
 }

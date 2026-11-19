@@ -9,8 +9,8 @@ namespace Beosztasmester.Services;
 public interface IHorizonsService
 {
     Task<HorizonResponseDto> CreateHorizonAsync(CreateHorizonRequestDto dto);
-    Task<StartSolveResponseDto?> StartSolveAsync(int horizonId);
-    Task<SolverStatusResponseDto?> GetSolverStatusAsync(int runId);
+    Task<StartSolveResponseDto?> StartSolveAsync(Guid horizonId);
+    Task<SolverStatusResponseDto?> GetSolverStatusAsync(Guid runId);
 }
 
 public class HorizonsService : IHorizonsService
@@ -47,7 +47,7 @@ public class HorizonsService : IHorizonsService
         };
     }
 
-    public async Task<StartSolveResponseDto?> StartSolveAsync(int horizonId)
+    public async Task<StartSolveResponseDto?> StartSolveAsync(Guid horizonId)
     {
         if (!await _dataContext.Horizons.AnyAsync(h => h.Id == horizonId))
         {
@@ -72,7 +72,7 @@ public class HorizonsService : IHorizonsService
         return new StartSolveResponseDto { RunId = run.Id };
     }
 
-    private async Task SendToSolverAsync(int horizonId, int runId)
+    private async Task SendToSolverAsync(Guid horizonId, Guid runId)
     {
         var payload = new
         {
@@ -85,7 +85,7 @@ public class HorizonsService : IHorizonsService
         response.EnsureSuccessStatusCode();
     }
 
-    public async Task<SolverStatusResponseDto?> GetSolverStatusAsync(int runId)
+    public async Task<SolverStatusResponseDto?> GetSolverStatusAsync(Guid runId)
     {
         using var stateResponse = await _httpClient.GetAsync($"/solver-runs/{runId}");
         if (!stateResponse.IsSuccessStatusCode)
@@ -105,7 +105,7 @@ public class HorizonsService : IHorizonsService
         }
 
         var status = GetRequiredString(state, "status");
-        var horizonId = GetOptionalInt(state, "horizonId");
+        var horizonId = GetOptionalGuid(state, "horizonId");
         if (!IsCompleted(status))
         {
             return new SolverStatusResponseDto
@@ -133,7 +133,7 @@ public class HorizonsService : IHorizonsService
         var statusDto = new SolverStatusResponseDto
         {
             Status = "DONE",
-            HorizonId = GetOptionalInt(solverResult, "horizonId") ?? horizonId,
+            HorizonId = GetOptionalGuid(solverResult, "horizonId") ?? horizonId,
             Roster = new List<RosterItemDto>()
         };
 
@@ -152,7 +152,7 @@ public class HorizonsService : IHorizonsService
             {
                 statusDto.Roster.Add(new RosterItemDto
                 {
-                    EmployeeId = GetRequiredInt(item, "employeeId"),
+                    EmployeeId = GetRequiredGuid(item, "employeeId"),
                     Date = DateOnly.Parse(GetRequiredString(item, "date")),
                     ShiftType = GetRequiredString(item, "shiftType")
                 });
@@ -165,13 +165,13 @@ public class HorizonsService : IHorizonsService
             [
                 new RosterItemDto
                 {
-                    EmployeeId = 1,
+                    EmployeeId = Guid.Parse("00000000-0000-0000-0000-000000000001"),
                     Date = new DateOnly(2026, 3, 1),
                     ShiftType = "D"
                 },
                 new RosterItemDto
                 {
-                    EmployeeId = 2,
+                    EmployeeId = Guid.Parse("00000000-0000-0000-0000-000000000002"),
                     Date = new DateOnly(2026, 3, 1),
                     ShiftType = "N"
                 }
@@ -220,23 +220,23 @@ public class HorizonsService : IHorizonsService
             ?? throw new InvalidDataException($"The solver response did not include a valid '{propertyName}'.");
     }
 
-    private static int GetRequiredInt(JsonElement element, string propertyName)
+    private static Guid GetRequiredGuid(JsonElement element, string propertyName)
     {
         if (element.ValueKind != JsonValueKind.Object ||
             !element.TryGetProperty(propertyName, out var property) ||
-            property.ValueKind != JsonValueKind.Number ||
-            !property.TryGetInt32(out var value))
+            property.ValueKind != JsonValueKind.String ||
+            !Guid.TryParse(property.GetString(), out var value))
         {
-            throw new InvalidDataException($"The solver response did not include a valid integer '{propertyName}'.");
+            throw new InvalidDataException($"The solver response did not include a valid GUID '{propertyName}'.");
         }
 
         return value;
     }
 
-    private static int? GetOptionalInt(JsonElement element, string propertyName) =>
+    private static Guid? GetOptionalGuid(JsonElement element, string propertyName) =>
         element.TryGetProperty(propertyName, out var property) &&
-        property.ValueKind == JsonValueKind.Number &&
-        property.TryGetInt32(out var value)
+        property.ValueKind == JsonValueKind.String &&
+        Guid.TryParse(property.GetString(), out var value)
             ? value
             : null;
 }
