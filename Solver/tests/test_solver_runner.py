@@ -2,6 +2,7 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import FrozenInstanceError
 from threading import Event
 from unittest.mock import patch
+
 import pytest
 
 from app.solver.runner import (
