@@ -231,10 +231,10 @@ sequenceDiagram
     participant M as SolverRun
     participant E as SolverEngine
 
-    B->>A: POST /solve
+    B->>A: POST /solve (includes runId)
     A->>A: select_engine(engineType)
-    A->>R: submit(horizonId, engineType, instanceId)
-    R->>M: create(runId)
+    A->>R: submit(runId, horizonId, engineType, instanceId)
+    R->>M: register(runId)
     Note over M: ACCEPTED
     R-->>A: runId
     A->>R: schedule(runId, engine)

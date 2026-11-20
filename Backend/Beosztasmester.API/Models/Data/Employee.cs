@@ -6,9 +6,9 @@ namespace Beosztasmester.Models.Data
     public class Employee
     {
         [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
-        public int DepartmentId { get; set; }
+        public Guid DepartmentId { get; set; }
 
         [ForeignKey(nameof(DepartmentId))]
         public Department Department { get; set; } = null!;

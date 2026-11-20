@@ -9,17 +9,17 @@ public interface IMasterDataService
 {
     // Departments
     Task<IEnumerable<DepartmentDto>> GetDepartmentsAsync();
-    Task<DepartmentDto?> GetDepartmentByIdAsync(int id);
+    Task<DepartmentDto?> GetDepartmentByIdAsync(Guid id);
     Task<DepartmentDto> CreateDepartmentAsync(CreateDepartmentDto dto);
 
     // Skills
     Task<IEnumerable<SkillDto>> GetSkillsAsync();
-    Task<SkillDto?> GetSkillByIdAsync(int id);
+    Task<SkillDto?> GetSkillByIdAsync(Guid id);
     Task<SkillDto> CreateSkillAsync(CreateSkillDto dto);
 
     // ShiftTypes
-    Task<IEnumerable<ShiftTypeDto>> GetShiftTypesAsync(int? departmentId);
-    Task<ShiftTypeDto?> GetShiftTypeByIdAsync(int id);
+    Task<IEnumerable<ShiftTypeDto>> GetShiftTypesAsync(Guid? departmentId);
+    Task<ShiftTypeDto?> GetShiftTypeByIdAsync(Guid id);
     Task<ShiftTypeDto> CreateShiftTypeAsync(CreateShiftTypeDto dto);
 }
 
@@ -41,7 +41,7 @@ public class MasterDataService : IMasterDataService
                 ParentId = d.ParentId
             }).ToListAsync();
     }
-    public async Task<DepartmentDto?> GetDepartmentByIdAsync(int id)
+    public async Task<DepartmentDto?> GetDepartmentByIdAsync(Guid id)
     {
         var dept = await _dataContext.Department.FindAsync(id);
         if (dept == null) return null;
@@ -85,7 +85,7 @@ public class MasterDataService : IMasterDataService
             }).ToListAsync();
     }
 
-    public async Task<SkillDto?> GetSkillByIdAsync(int id)
+    public async Task<SkillDto?> GetSkillByIdAsync(Guid id)
     {
         var skill = await _dataContext.Competencies.FindAsync(id);
         if (skill == null) return null;
@@ -118,7 +118,7 @@ public class MasterDataService : IMasterDataService
     }
 
     // --- ShiftTypes ---
-    public async Task<IEnumerable<ShiftTypeDto>> GetShiftTypesAsync(int? departmentId)
+    public async Task<IEnumerable<ShiftTypeDto>> GetShiftTypesAsync(Guid? departmentId)
     {
         var query = _dataContext.ShiftTypes.AsQueryable();
 
@@ -139,7 +139,7 @@ public class MasterDataService : IMasterDataService
         }).ToListAsync();
     }
 
-    public async Task<ShiftTypeDto?> GetShiftTypeByIdAsync(int id)
+    public async Task<ShiftTypeDto?> GetShiftTypeByIdAsync(Guid id)
     {
         var st = await _dataContext.ShiftTypes.FindAsync(id);
         if (st == null) return null;

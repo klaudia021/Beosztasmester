@@ -21,11 +21,11 @@ public class DemandsController : ControllerBase
     /// </summary>
     [HttpGet]
     public async Task<ActionResult<IEnumerable<DemandDto>>> GetDemands(
-        [FromQuery] int departmentId,
+        [FromQuery] Guid departmentId,
         [FromQuery] DateTime? fromDate,
         [FromQuery] DateTime? toDate)
     {
-        if (departmentId == 0)
+        if (departmentId == Guid.Empty)
         {
             return BadRequest(new { message = "DepartmentId megadása kötelező!" });
         }
@@ -37,8 +37,8 @@ public class DemandsController : ControllerBase
     /// <summary>
     /// Egy konkrét kapacitásigény lekérdezése ID alapján
     /// </summary>
-    [HttpGet("{id:int}")]
-    public async Task<ActionResult<DemandDto>> GetDemand(int id)
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<DemandDto>> GetDemand(Guid id)
     {
         var demand = await _demandsService.GetDemandByIdAsync(id);
         if (demand == null) return NotFound(new { error = "not found" });
@@ -61,10 +61,10 @@ public class DemandsController : ControllerBase
     /// </summary>
     [HttpPost("bulk")]
     public async Task<ActionResult<IEnumerable<DemandDto>>> BulkUpsertDemands(
-        [FromQuery] int departmentId,
+        [FromQuery] Guid departmentId,
         [FromBody] List<CreateDemandDto> dtos)
     {
-        if (departmentId == 0)
+        if (departmentId == Guid.Empty)
         {
             return BadRequest(new { message = "DepartmentId megadása kötelező!" });
         }
@@ -76,8 +76,8 @@ public class DemandsController : ControllerBase
     /// <summary>
     /// Kapacitásigény törlése
     /// </summary>
-    [HttpDelete("{id:int}")]
-    public async Task<IActionResult> DeleteDemand(int id)
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> DeleteDemand(Guid id)
     {
         var deleted = await _demandsService.DeleteDemandAsync(id);
         if (!deleted) return NotFound(new { error = "not found" });

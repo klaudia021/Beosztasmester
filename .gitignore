@@ -118,6 +118,7 @@ poetry.lock
 ##############################
 *.log
 logs/
+Backend/Beosztasmester.API/Logs/
 *.bak
 *.orig
 docker-compose.override.yml

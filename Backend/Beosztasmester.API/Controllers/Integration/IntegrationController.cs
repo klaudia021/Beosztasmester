@@ -33,8 +33,8 @@ public class IntegrationController : ControllerBase
     /// <summary>
     /// I3: Egy beosztásverzió exportálása CSV fájlként
     /// </summary>
-    [HttpGet("rosters/{versionId:int}/export/csv")]
-    public async Task<IActionResult> ExportRosterCsv(int versionId)
+    [HttpGet("rosters/{versionId:guid}/export/csv")]
+    public async Task<IActionResult> ExportRosterCsv(Guid versionId)
     {
         var csvContent = await _integrationService.ExportRosterToCsvAsync(versionId);
         if (csvContent == null) return NotFound();

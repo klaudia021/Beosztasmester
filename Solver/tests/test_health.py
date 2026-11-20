@@ -20,6 +20,7 @@ def test_health() -> None:
 
 def test_solve() -> None:
     payload = {
+        "runId": "RUN-6",
         "horizonId": "H-01",
         "engineType": "dummy",
         "instance": {"instanceId": "M-01"},
@@ -68,6 +69,7 @@ def test_solve() -> None:
 
 def test_solve_invalid_request() -> None:
     payload = {
+        "runId": "RUN-7",
         "horizonId": "",
         "engineType": "dummy",
         "instance": {"instanceId": "M-01"},
@@ -81,6 +83,7 @@ def test_solve_invalid_request() -> None:
 
 def test_solve_unsupported_engine_type() -> None:
     payload = {
+        "runId": "RUN-8",
         "horizonId": "H-01",
         "engineType": "cpsat",
         "instance": {"instanceId": "M-01"},
@@ -99,6 +102,7 @@ def test_solve_unsupported_engine_type() -> None:
 
 def test_solve_duplicate_active_run() -> None:
     payload = {
+        "runId": "RUN-9",
         "horizonId": "H-01",
         "engineType": "dummy",
         "instance": {"instanceId": "M-01"},
@@ -169,7 +173,7 @@ def test_get_solver_run_unknown_id() -> None:
 def test_get_solver_run_accepted() -> None:
     with TestClient(app) as client:
         runner: SolverRunner = app.state.runner
-        run_id = runner.submit("horizon-1", "dummy", "instance-1")
+        run_id = runner.submit("run-7", "horizon-1", "dummy", "instance-1")
 
         response = client.get(f"/solver-runs/{run_id}")
 
@@ -207,6 +211,7 @@ def test_get_solver_run_during_and_after_execution() -> None:
                 response = client.post(
                     "/solve",
                     json={
+                        "runId": "RUN-10",
                         "horizonId": "H-01",
                         "engineType": "dummy",
                         "instance": {"instanceId": "M-01"},

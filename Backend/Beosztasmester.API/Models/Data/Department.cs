@@ -6,13 +6,13 @@ namespace Beosztasmester.Models.Data
     public class Department
     {
         [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         [Required]
         [StringLength(200)]
         public string Name { get; set; } = string.Empty;
 
-        public int? ParentId { get; set; }
+        public Guid? ParentId { get; set; }
 
         [ForeignKey(nameof(ParentId))]
         public Department? ParentUnit { get; set; }

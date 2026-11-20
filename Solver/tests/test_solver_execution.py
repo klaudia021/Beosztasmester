@@ -9,7 +9,7 @@ from app.solver.states import SolverRunState
 
 def test_default_dummy_provider_completes_run() -> None:
     runner = SolverRunner()
-    run_id = runner.submit("horizon-demo", "dummy", "instance-demo")
+    run_id = runner.submit("run-1", "horizon-demo", "dummy", "instance-demo")
     engine = DummySolverEngine(delay_seconds=0)
 
     try:
@@ -43,7 +43,7 @@ def test_dummy_engine_returns_provider_result() -> None:
 
 def test_scheduled_run_completes_and_stores_result() -> None:
     runner = SolverRunner()
-    run_id = runner.submit("horizon-1", "dummy", "instance-1")
+    run_id = runner.submit("run-2", "horizon-1", "dummy", "instance-1")
     assignments = [{"employeeId": "employee-1"}]
 
     try:
@@ -64,7 +64,7 @@ def test_scheduled_run_completes_and_stores_result() -> None:
 
 def test_engine_failure_marks_run_failed() -> None:
     runner = SolverRunner()
-    run_id = runner.submit("horizon-1", "dummy", "instance-1")
+    run_id = runner.submit("run-3", "horizon-1", "dummy", "instance-1")
 
     def failing_engine() -> list[dict[str, str]]:
         raise ValueError("Simulated engine failure")
@@ -94,8 +94,8 @@ def test_second_run_waits_for_available_worker() -> None:
             raise TimeoutError("Test worker was not released")
         return []
 
-    first_id = runner.submit("horizon-1", "dummy", "instance-1")
-    second_id = runner.submit("horizon-2", "dummy", "instance-1")
+    first_id = runner.submit("run-4", "horizon-1", "dummy", "instance-1")
+    second_id = runner.submit("run-5", "horizon-2", "dummy", "instance-1")
 
     try:
         runner.schedule(first_id, blocking_engine)
@@ -126,7 +126,7 @@ def test_second_run_waits_for_available_worker() -> None:
 
 def test_get_run_with_result_returns_independent_copy() -> None:
     runner = SolverRunner()
-    run_id = runner.submit("horizon-1", "dummy", "instance-1")
+    run_id = runner.submit("run-6", "horizon-1", "dummy", "instance-1")
 
     try:
         runner.schedule(

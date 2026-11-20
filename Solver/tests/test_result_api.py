@@ -33,6 +33,7 @@ def test_result_accepted_run_has_no_result() -> None:
         runner: SolverRunner = app.state.runner
 
         run_id = runner.submit(
+            run_id="RUN-001",
             horizon_id="H-001",
             engine_type="dummy",
             instance_id="M-001",
@@ -72,6 +73,7 @@ def test_completed_run_returns_engine_result() -> None:
         runner: SolverRunner = app.state.runner
 
         run_id = runner.submit(
+            run_id="RUN-002",
             horizon_id="H-002",
             engine_type="dummy",
             instance_id="M-002",
@@ -127,6 +129,7 @@ def test_http_solve_to_completed_result(
     )
 
     payload = {
+        "runId": "RUN-5",
         "horizonId": "H-INTEGRATION-001",
         "engineType": "dummy",
         "instance": {

@@ -177,7 +177,7 @@ public static class DatabaseSeeder
                 Entity = nameof(Employee),
                 EntityId = employees[index - 1].Id,
                 Operation = "Seed",
-                UserId = index,
+                UserId = Guid.NewGuid(),
                 ChangesJson = """{"source":"dummy seed data"}"""
             })
             .ToArray();

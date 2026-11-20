@@ -8,7 +8,11 @@ from app.solver.engines.dispatch import (
     UnsupportedEngineTypeError,
     select_engine,
 )
-from app.solver.runner import DuplicateActiveRunError, SolverRunner
+from app.solver.runner import (
+    DuplicateActiveRunError,
+    DuplicateRunIdError,
+    SolverRunner,
+)
 
 
 @asynccontextmanager
@@ -44,6 +48,7 @@ def solve(payload: SolveRequest, request: Request) -> dict[str, str]:
 
     try:
         run_id = runner.submit(
+            run_id=payload.runId,
             horizon_id=payload.horizonId,
             engine_type=payload.engineType,
             instance_id=payload.instance.instanceId,
@@ -52,6 +57,11 @@ def solve(payload: SolveRequest, request: Request) -> dict[str, str]:
         raise HTTPException(
             status_code=409,
             detail="Active Solver run already exists",
+        ) from exc
+    except DuplicateRunIdError as exc:
+        raise HTTPException(
+            status_code=409,
+            detail="Duplicate run ID",
         ) from exc
 
     runner.schedule(run_id, engine)

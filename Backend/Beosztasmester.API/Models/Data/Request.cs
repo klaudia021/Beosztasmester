@@ -6,9 +6,9 @@ namespace Beosztasmester.Models.Data
     public class Request
     {
         [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
-        public int EmployeeId { get; set; }
+        public Guid EmployeeId { get; set; }
 
         [ForeignKey(nameof(EmployeeId))]
         public Employee Employee { get; set; } = null!;
@@ -19,7 +19,7 @@ namespace Beosztasmester.Models.Data
         [StringLength(50)]
         public string Type { get; set; } = string.Empty; // e.g., DAY_OFF, SHIFT_PREFERENCE
 
-        public int? ShiftTypeId { get; set; }
+        public Guid? ShiftTypeId { get; set; }
 
         [ForeignKey(nameof(ShiftTypeId))]
         public ShiftType? ShiftType { get; set; }

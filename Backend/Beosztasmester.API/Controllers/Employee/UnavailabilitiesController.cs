@@ -21,7 +21,7 @@ public class UnavailabilitiesController : ControllerBase
     /// </summary>
     [HttpGet]
     public async Task<ActionResult<IEnumerable<UnavailabilityDto>>> GetUnavailabilities(
-        [FromQuery] int? employeeId,
+        [FromQuery] Guid? employeeId,
         [FromQuery] DateTime? fromDate,
         [FromQuery] DateTime? toDate)
     {
@@ -32,8 +32,8 @@ public class UnavailabilitiesController : ControllerBase
     /// <summary>
     /// Konkrét elérhetetlenség lekérdezése ID alapján
     /// </summary>
-    [HttpGet("{id:int}")]
-    public async Task<ActionResult<UnavailabilityDto>> GetUnavailability(int id)
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<UnavailabilityDto>> GetUnavailability(Guid id)
     {
         var result = await _unavailabilitiesService.GetUnavailabilityByIdAsync(id);
         if (result == null) return NotFound();
@@ -59,8 +59,8 @@ public class UnavailabilitiesController : ControllerBase
     /// <summary>
     /// Elérhetetlenség törlése
     /// </summary>
-    [HttpDelete("{id:int}")]
-    public async Task<IActionResult> DeleteUnavailability(int id)
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> DeleteUnavailability(Guid id)
     {
         var deleted = await _unavailabilitiesService.DeleteUnavailabilityAsync(id);
         if (!deleted) return NotFound();
